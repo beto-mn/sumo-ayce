@@ -1,0 +1,39 @@
+#!/bin/sh
+
+BRANCH=$(git branch --show-current)
+
+# Hotfix — skip everything
+if echo "$BRANCH" | grep -qE "^hotfix/"; then
+  echo "⚡ Hotfix branch — skipping pre-push hooks"
+  exit 0
+fi
+
+# Run Biome check (lint + format)
+echo "🔍 Running Biome check..."
+if ! pnpm check; then
+  echo ""
+  echo "❌ Biome found errors. Fix them before pushing."
+  echo "   Run: pnpm check:fix"
+  echo ""
+  exit 1
+fi
+
+# Run type check
+echo "📘 Running type check..."
+if ! pnpm typecheck; then
+  echo ""
+  echo "❌ TypeScript errors found. Fix them before pushing."
+  echo ""
+  exit 1
+fi
+
+# Run tests
+echo "🧪 Running tests..."
+if ! pnpm test; then
+  echo ""
+  echo "❌ Tests failed. Fix them before pushing."
+  echo ""
+  exit 1
+fi
+
+echo "✅ All checks passed"
