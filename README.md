@@ -217,7 +217,7 @@ Every commit passes through mandatory quality gates enforced by Husky:
 Senior Software Engineer
 
 - GitHub: [@beto-mn](https://github.com/beto-mn)
-- Email: roberto@retorna.app
+- Email: ing.betonajera@gmail.com
 
 ## License
 
