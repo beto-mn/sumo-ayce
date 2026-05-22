@@ -1,0 +1,54 @@
+#!/bin/sh
+
+BRANCH=$(git branch --show-current)
+VALID_PREFIXES="^(feat|fix|chore|docs|refactor|test|ci|build|perf|style)/"
+PROTECTED_BRANCHES="^(main|master|init)$"
+
+# Hotfix — skip everything
+if echo "$BRANCH" | grep -qE "^hotfix/"; then
+  echo "⚡ Hotfix branch — skipping pre-commit hooks"
+  exit 0
+fi
+
+# Validate branch name (skip on protected branches)
+if ! echo "$BRANCH" | grep -qE "$PROTECTED_BRANCHES"; then
+  if ! echo "$BRANCH" | grep -qE "$VALID_PREFIXES"; then
+    echo ""
+    echo "❌ Branch name '$BRANCH' does not follow naming convention."
+    echo ""
+    echo "   Valid prefixes:"
+    echo "   feat/     → new feature"
+    echo "   fix/      → bug fix"
+    echo "   chore/    → maintenance"
+    echo "   docs/     → documentation"
+    echo "   refactor/ → refactoring"
+    echo "   test/     → tests"
+    echo "   ci/       → CI/CD changes"
+    echo "   build/    → build system"
+    echo "   perf/     → performance"
+    echo "   style/    → formatting only"
+    echo ""
+    exit 1
+  fi
+fi
+
+# Run Biome check (lint + format)
+echo "🔍 Running Biome check..."
+if ! pnpm check; then
+  echo ""
+  echo "❌ Biome found errors. Fix them before committing."
+  echo "   Run: pnpm check:fix"
+  echo ""
+  exit 1
+fi
+
+# Run type check
+echo "📘 Running type check..."
+if ! pnpm typecheck; then
+  echo ""
+  echo "❌ TypeScript errors found. Fix them before committing."
+  echo ""
+  exit 1
+fi
+
+echo "✅ All checks passed"
