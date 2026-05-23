@@ -44,7 +44,7 @@ between layers — duplicating them is how divergence starts.
 The project MUST remain a single Nuxt 3 repository: frontend pages and backend server routes
 co-located in one repo, one deploy. WordPress MUST be treated as a headless CMS only
 (menu, promotions, branch info). Features with transactional state (reservations, loyalty,
-staff portal) MUST connect directly to Vercel Postgres — never through WordPress. All
+staff portal) MUST connect directly to Neon PostgreSQL — never through WordPress. All
 WordPress-sourced pages MUST use ISR with a 60-second revalidation interval. All external
 service credentials MUST be injected via environment variables.
 
@@ -87,7 +87,7 @@ search engines index content correctly, directly affecting discoverability.
 
 ### V. Security
 
-The staff portal MUST implement role-based authentication with two roles: `staff` and `admin`.
+The staff portal MUST implement role-based authentication with three roles: `staff`, `manager`, and `admin`.
 Every public API endpoint MUST validate input with Zod schemas before processing. Public API
 routes MUST be rate-limited. CORS MUST be restricted to `sumo.com.mx` (and `localhost` in
 development). No credentials, tokens, or secrets MAY be committed to the repository.
@@ -214,7 +214,7 @@ required:
 
 | Group | Variables |
 |-------|-----------|
-| `DATABASE` | Vercel Postgres connection string |
+| `DATABASE` | Neon PostgreSQL connection string (`DATABASE_URL`) |
 | `TWILIO` | Account SID, auth token, WhatsApp number |
 | `GOOGLE_DRIVE` | Service account credentials JSON, target folder ID |
 | `WORDPRESS` | API base URL |
@@ -233,7 +233,7 @@ exactly what they need without reading code.
 
 **Frontend**: Nuxt 3 (Vue 3 + TypeScript), deployed to Vercel.
 **Backend**: Nuxt server routes (`/server/api/`), deployed on the same Vercel project.
-**Database**: Vercel Postgres accessed via Prisma or Drizzle ORM.
+**Database**: Neon PostgreSQL (serverless HTTP driver) accessed via Drizzle ORM.
 **CMS**: WordPress (headless) on Hospedando.mx — REST API only, no WPGraphQL required.
 **Maps**: Mapbox GL JS — branch finder with geolocation and postal code fallback.
 **Messaging**: Twilio WhatsApp Business API (~$0.03 USD/message). Used for reservation
@@ -272,4 +272,4 @@ All implementation plans MUST include a Constitution Check gate before Phase 0 r
 Complexity that violates a principle MUST be justified in the plan's Complexity Tracking table.
 This document is the authoritative reference for all code review and specification decisions.
 
-**Version**: 1.1.1 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-21
+**Version**: 1.1.3 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-22
