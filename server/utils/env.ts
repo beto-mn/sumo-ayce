@@ -3,7 +3,6 @@ import { z } from 'zod'
 const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().min(1),
-  POSTGRES_PRISMA_URL: z.string().min(1),
 
   // WordPress
   WORDPRESS_API_URL: z.string().url(),
