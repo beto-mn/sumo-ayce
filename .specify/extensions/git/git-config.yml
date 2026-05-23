@@ -4,6 +4,22 @@
 # Branch numbering strategy: "sequential" (001, 002, ...) or "timestamp" (YYYYMMDD-HHMMSS)
 branch_numbering: sequential
 
+# Branch type prefixes — mirrors commit-msg hook types.
+# Pass --type <type> to create-new-feature.sh to prepend the right prefix.
+# Result: feat/001-user-auth, fix/002-login-bug, chore/003-deps, etc.
+branch_type_prefixes:
+  feat: feat/        # new feature
+  fix: fix/          # bug fix
+  chore: chore/      # maintenance, deps, config
+  docs: docs/        # documentation only
+  refactor: refactor/ # refactoring, no new feature or fix
+  test: test/        # adding or fixing tests
+  ci: ci/            # CI/CD pipeline changes
+  build: build/      # build system or dependencies
+  perf: perf/        # performance improvement
+  style: style/      # formatting, no logic change
+  revert: revert/    # revert a previous commit
+
 # Commit message used by `git commit` during repository initialization
 init_commit_message: "[Spec Kit] Initial commit"
 
