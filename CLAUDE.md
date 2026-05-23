@@ -17,7 +17,7 @@ Full-stack website redesign for SUMO, an All You Can Eat restaurant chain in Mex
 - **Framework:** Nuxt 3 (Vue 3 + TypeScript)
 - **Hosting:** Vercel (frontend + server routes + PostgreSQL)
 - **CMS:** WordPress headless (REST API or WPGraphQL) on Hospedando.mx
-- **Database:** Vercel Postgres with Prisma/Drizzle ORM
+- **Database:** Neon PostgreSQL with Drizzle ORM
 - **Maps:** Mapbox (branch finder with geolocation)
 - **Messaging:** Twilio WhatsApp Business API (reservations + loyalty notifications)
 - **Storage:** Google Drive API (daily CSV upload)
@@ -28,7 +28,7 @@ Full-stack website redesign for SUMO, an All You Can Eat restaurant chain in Mex
 
 Single Nuxt 3 project deployed to Vercel. Frontend pages and backend API routes (`/server/api/`) live together in one repo, one deploy. WordPress serves as a headless CMS only — the client edits content (menu, promotions, branch info) through the WordPress admin, and the Nuxt frontend fetches data via REST API. ISR with 60-second revalidation for content updates.
 
-Features like reservations, loyalty, and staff portal connect directly to Vercel Postgres, not WordPress.
+Features like reservations, loyalty, and staff portal connect directly to Neon PostgreSQL, not WordPress.
 
 ## Features
 
@@ -104,5 +104,16 @@ sumo-ayce/
 
 - SUMO Express section uses blue (#2B3990) as accent color with gradient transitions from the dark theme, not as a base color. This blue is exclusive to the Express product line.
 - All WhatsApp messages go through Twilio WhatsApp Business API (~$0.03 USD/message).
-- CSV daily report runs as a cron job at end of day, generates CSV from Vercel Postgres, uploads to client's shared Google Drive folder via Service Account.
+- CSV daily report runs as a cron job at end of day, generates CSV from Neon PostgreSQL, uploads to client's shared Google Drive folder via Service Account.
 - The client will manage content through WordPress admin as they always have. They should not need to touch code.
+
+<!-- SPECKIT START -->
+## Active Feature
+
+**Branch**: `feat/001-db-schema-drizzle`
+**Plan**: `specs/001-db-schema-drizzle/plan.md`
+**Spec**: `specs/001-db-schema-drizzle/spec.md`
+**Data Model**: `specs/001-db-schema-drizzle/data-model.md`
+**Quickstart**: `specs/001-db-schema-drizzle/quickstart.md`
+**Schema Contract**: `specs/001-db-schema-drizzle/contracts/schema.md`
+<!-- SPECKIT END -->
