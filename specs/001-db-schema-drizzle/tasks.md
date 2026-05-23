@@ -15,9 +15,9 @@
 
 **Purpose**: Align existing config files with the Neon + Drizzle-only decision before any schema work.
 
-- [ ] T001 Remove `POSTGRES_PRISMA_URL` from `server/utils/env.ts` Zod schema — `DATABASE_URL` is the only required DB variable
-- [ ] T002 Verify `drizzle.config.ts` uses `dialect: 'postgresql'` and points to `server/db/schema.ts` and `server/db/migrations` — no changes needed if already correct
-- [ ] T003 [P] Update `.env.example` to document local Docker format (`postgresql://sumo:sumo@localhost:5432/sumo_ayce`) vs Neon production format as inline comments
+- [x] T001 Remove `POSTGRES_PRISMA_URL` from `server/utils/env.ts` Zod schema — `DATABASE_URL` is the only required DB variable
+- [x] T002 Verify `drizzle.config.ts` uses `dialect: 'postgresql'` and points to `server/db/schema.ts` and `server/db/migrations` — no changes needed if already correct
+- [x] T003 [P] Update `.env.example` to document local Docker format (`postgresql://sumo:sumo@localhost:5432/sumo_ayce`) vs Neon production format as inline comments
 
 ---
 
@@ -27,10 +27,10 @@
 
 **⚠️ CRITICAL**: Complete before starting Phase 3 implementation testing.
 
-- [ ] T004 [US2] Create `docker-compose.yml` at project root with PostgreSQL 16 service, named volume `sumo_pg_data`, credentials matching `.env.example` local values, port 5432
-- [ ] T005 [US2] Add `db:up` (`docker compose up -d`) and `db:down` (`docker compose down`) scripts to `package.json`
-- [ ] T006 [US2] Create `.env.local` at project root with `DATABASE_URL=postgresql://sumo:sumo@localhost:5432/sumo_ayce` — required for all `pnpm db:*` commands to resolve the connection string
-- [ ] T007 [US2] Start the container (`pnpm db:up`) and verify connection using `pnpm db:studio` or `psql` — confirm the database is reachable with the credentials from `.env.local`
+- [x] T004 [US2] Create `docker-compose.yml` at project root with PostgreSQL 16 service, named volume `sumo_pg_data`, credentials matching `.env.example` local values, port 5433
+- [x] T005 [US2] Add `db:up` (`docker compose up -d`) and `db:down` (`docker compose down`) scripts to `package.json`
+- [x] T006 [US2] Create `.env.local` at project root with `DATABASE_URL=postgresql://sumo:sumo@localhost:5433/sumo_ayce` — required for all `pnpm db:*` commands to resolve the connection string
+- [x] T007 [US2] Start the container (`pnpm db:up`) and verify connection using `pnpm db:studio` or `psql` — confirm the database is reachable with the credentials from `.env.local`
 
 **Checkpoint**: Local PostgreSQL is running, `.env.local` has `DATABASE_URL`, migration can now be tested.
 
@@ -42,19 +42,19 @@
 
 **Independent Test**: Run `pnpm db:migrate` against local Docker PostgreSQL and verify all 8 tables appear in Drizzle Studio with the correct structure.
 
-- [ ] T008 [US1] Define 4 enums in `server/db/schema.ts`: `reservationStatus`, `loyaltyTransactionType`, `redemptionStatus`, `staffRole` using `pgEnum`
-- [ ] T009 [US1] Define `branches` table in `server/db/schema.ts` — uuid PK, name, address, phone, lat, lng, schedule (jsonb), is_active, created_at, updated_at
-- [ ] T010 [US1] Define `customers` table in `server/db/schema.ts` — uuid PK, name, phone (unique), whatsapp_opt_in, points_balance, timestamps, deleted_at
-- [ ] T011 [US1] Define `rewards` table in `server/db/schema.ts` — uuid PK, name, description, points_cost, is_active, timestamps (no branch FK — brand-wide)
-- [ ] T012 [US1] Define `reservations` table in `server/db/schema.ts` — uuid PK, branch_id FK, contact_name, contact_phone, party_size (check > 0), reservation_date, reservation_time, status enum, notes, timestamps, deleted_at — NO customer_id FK (reservations are fully anonymous from the landing page form)
-- [ ] T013 [US1] Define `loyalty_transactions` table in `server/db/schema.ts` — uuid PK, customer_id FK, branch_id FK, points_delta (check ≠ 0), transaction_type enum, reference_id nullable, created_at, deleted_at (no updated_at — immutable)
-- [ ] T014 [US1] Define `staff_users` table in `server/db/schema.ts` — uuid PK, name, email (unique), role enum (staff/manager/admin), branch_id FK nullable (null = all branches for admin only), password_hash, is_active, timestamps
-- [ ] T015 [US1] Define `redemptions` table in `server/db/schema.ts` — uuid PK, customer_id FK, reward_id FK, branch_id FK, used_by FK nullable → staff_users.id, status enum, used_at nullable, created_at, updated_at
-- [ ] T016 [US1] Define `staff_sessions` table in `server/db/schema.ts` — uuid PK, staff_user_id FK, token (unique), expires_at, ip_address (inet), created_at (no updated_at — immutable)
-- [ ] T017 [US1] Add all indexes from `specs/001-db-schema-drizzle/data-model.md` to `server/db/schema.ts`: composite indexes on reservations, loyalty_transactions; unique indexes on customers.phone, staff_users.email, staff_sessions.token
-- [ ] T018 [US1] Run `pnpm db:generate` — confirm a single migration file is created in `server/db/migrations/` with no errors
-- [ ] T019 [US1] Run `pnpm db:migrate` against local Docker PostgreSQL — confirm all 8 tables created, zero errors
-- [ ] T020 [US1] Open `pnpm db:studio` and visually verify: all 8 tables present, FK relationships correct, enums defined, indexes visible
+- [x] T008 [US1] Define 4 enums in `server/db/schema.ts`: `reservationStatus`, `loyaltyTransactionType`, `redemptionStatus`, `staffRole` using `pgEnum`
+- [x] T009 [US1] Define `branches` table in `server/db/schema.ts` — uuid PK, name, address, phone, lat, lng, schedule (jsonb), is_active, created_at, updated_at
+- [x] T010 [US1] Define `customers` table in `server/db/schema.ts` — uuid PK, name, phone (unique), whatsapp_opt_in, points_balance, timestamps, deleted_at
+- [x] T011 [US1] Define `rewards` table in `server/db/schema.ts` — uuid PK, name, description, points_cost, is_active, timestamps (no branch FK — brand-wide)
+- [x] T012 [US1] Define `reservations` table in `server/db/schema.ts` — uuid PK, branch_id FK, contact_name, contact_phone, party_size (check > 0), reservation_date, reservation_time, status enum, notes, timestamps, deleted_at — NO customer_id FK (reservations are fully anonymous from the landing page form)
+- [x] T013 [US1] Define `loyalty_transactions` table in `server/db/schema.ts` — uuid PK, customer_id FK, branch_id FK, points_delta (check ≠ 0), transaction_type enum, reference_id nullable, created_at, deleted_at (no updated_at — immutable)
+- [x] T014 [US1] Define `staff_users` table in `server/db/schema.ts` — uuid PK, name, email (unique), role enum (staff/manager/admin), branch_id FK nullable (null = all branches for admin only), password_hash, is_active, timestamps
+- [x] T015 [US1] Define `redemptions` table in `server/db/schema.ts` — uuid PK, customer_id FK, reward_id FK, branch_id FK, used_by FK nullable → staff_users.id, status enum, used_at nullable, created_at, updated_at
+- [x] T016 [US1] Define `staff_sessions` table in `server/db/schema.ts` — uuid PK, staff_user_id FK, token (unique), expires_at, ip_address (inet), created_at (no updated_at — immutable)
+- [x] T017 [US1] Add all indexes from `specs/001-db-schema-drizzle/data-model.md` to `server/db/schema.ts`: composite indexes on reservations, loyalty_transactions; unique indexes on customers.phone, staff_users.email, staff_sessions.token
+- [x] T018 [US1] Run `pnpm db:generate` — confirm a single migration file is created in `server/db/migrations/` with no errors
+- [x] T019 [US1] Run `pnpm db:migrate` against local Docker PostgreSQL — confirm all 8 tables created, zero errors
+- [x] T020 [US1] Open `pnpm db:studio` and visually verify: all 8 tables present, FK relationships correct, enums defined, indexes visible
 
 **Checkpoint**: US1 complete — local database has the full schema. All features can now be developed.
 
@@ -66,11 +66,11 @@
 
 **Independent Test**: Add a nullable column, migrate, verify it exists; then remove it and verify the revert also works cleanly.
 
-- [ ] T021 [US3] Add a nullable `whatsapp_number` varchar column to `branches` table in `server/db/schema.ts` as a test change
-- [ ] T022 [US3] Run `pnpm db:generate` — confirm a second incremental migration file is generated (not a full reset)
-- [ ] T023 [US3] Run `pnpm db:migrate` — verify the column was added to the `branches` table without touching any other table or data
-- [ ] T024 [US3] Remove the test `whatsapp_number` column from `server/db/schema.ts`, run `pnpm db:generate` + `pnpm db:migrate` to restore clean state
-- [ ] T025 [US3] Update `specs/001-db-schema-drizzle/quickstart.md` if any step in the iteration workflow differs from what was documented
+- [x] T021 [US3] Add a nullable `whatsapp_number` varchar column to `branches` table in `server/db/schema.ts` as a test change
+- [x] T022 [US3] Run `pnpm db:generate` — confirm a second incremental migration file is generated (not a full reset)
+- [x] T023 [US3] Run `pnpm db:migrate` — verify the column was added to the `branches` table without touching any other table or data
+- [x] T024 [US3] Remove the test `whatsapp_number` column from `server/db/schema.ts`, run `pnpm db:generate` + `pnpm db:migrate` to restore clean state
+- [x] T025 [US3] Update `specs/001-db-schema-drizzle/quickstart.md` if any step in the iteration workflow differs from what was documented
 
 **Checkpoint**: US3 complete — incremental migration workflow validated.
 
@@ -78,9 +78,9 @@
 
 ## Phase 5: Polish & Cross-Cutting
 
-- [ ] T026 [P] Ensure `server/db/schema.ts` exports all tables and enums as named exports so `drizzle.config.ts` and `server/utils/db.ts` can import cleanly
-- [ ] T027 Manually verify `server/utils/env.ts` startup failure: temporarily remove `DATABASE_URL` from `.env.local`, run `pnpm dev`, confirm error message lists the missing variable, then restore
-- [ ] T028 [P] Commit all schema files: `server/db/schema.ts`, `server/db/migrations/`, `docker-compose.yml`, updated `package.json`, updated `.env.example`
+- [x] T026 [P] Ensure `server/db/schema.ts` exports all tables and enums as named exports so `drizzle.config.ts` and `server/utils/db.ts` can import cleanly
+- [x] T027 Manually verify `server/utils/env.ts` startup failure: temporarily remove `DATABASE_URL` from `.env.local`, run `pnpm dev`, confirm error message lists the missing variable, then restore
+- [x] T028 [P] Commit all schema files: `server/db/schema.ts`, `server/db/migrations/`, `docker-compose.yml`, updated `package.json`, updated `.env.example`
 
 ---
 
