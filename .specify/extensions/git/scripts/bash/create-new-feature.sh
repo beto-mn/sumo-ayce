@@ -12,6 +12,7 @@ ALLOW_EXISTING=false
 SHORT_NAME=""
 BRANCH_NUMBER=""
 USE_TIMESTAMP=false
+BRANCH_TYPE=""
 ARGS=()
 i=1
 while [ $i -le $# ]; do
@@ -58,6 +59,19 @@ while [ $i -le $# ]; do
             ;;
         --timestamp)
             USE_TIMESTAMP=true
+            ;;
+        --type)
+            if [ $((i + 1)) -gt $# ]; then
+                echo 'Error: --type requires a value' >&2
+                exit 1
+            fi
+            i=$((i + 1))
+            next_arg="${!i}"
+            if [[ "$next_arg" == --* ]]; then
+                echo 'Error: --type requires a value' >&2
+                exit 1
+            fi
+            BRANCH_TYPE="$next_arg"
             ;;
         --help|-h)
             echo "Usage: $0 [--json] [--dry-run] [--allow-existing-branch] [--short-name <name>] [--number N] [--timestamp] <feature_description>"
@@ -353,6 +367,21 @@ else
         FEATURE_NUM=$(printf "%03d" "$((10#$BRANCH_NUMBER))")
         BRANCH_NAME="${FEATURE_NUM}-${BRANCH_SUFFIX}"
     fi
+fi
+
+# Apply branch type prefix (feat/, fix/, chore/, etc.) if provided
+# Valid types mirror the commit-msg hook: feat fix chore docs refactor test ci build perf style revert
+if [ -n "$BRANCH_TYPE" ]; then
+    VALID_TYPES="feat fix chore docs refactor test ci build perf style revert"
+    TYPE_VALID=false
+    for t in $VALID_TYPES; do
+        if [ "$BRANCH_TYPE" = "$t" ]; then TYPE_VALID=true; break; fi
+    done
+    if [ "$TYPE_VALID" = false ]; then
+        >&2 echo "Error: --type '$BRANCH_TYPE' is not valid. Use one of: $VALID_TYPES"
+        exit 1
+    fi
+    BRANCH_NAME="${BRANCH_TYPE}/${BRANCH_NAME}"
 fi
 
 # GitHub enforces a 244-byte limit on branch names
