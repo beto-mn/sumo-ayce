@@ -42,6 +42,7 @@
     "@storybook/vue3-vite": "^10.4.1",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "drizzle-kit": "^0.31.10",
     "husky": "^9.1.7",
     "pg": "^8.21.0",

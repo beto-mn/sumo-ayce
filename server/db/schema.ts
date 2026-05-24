@@ -39,18 +39,27 @@ export const staffRole = pgEnum('staff_role', ['staff', 'manager', 'admin'])
 
 // ─── Tables ──────────────────────────────────────────────────────────────────
 
-export const branches = pgTable('branches', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: varchar('name', { length: 100 }).notNull(),
-  address: text('address').notNull(),
-  phone: varchar('phone', { length: 20 }),
-  lat: decimal('lat', { precision: 10, scale: 8 }),
-  lng: decimal('lng', { precision: 11, scale: 8 }),
-  schedule: jsonb('schedule'),
-  isActive: boolean('is_active').notNull().default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+export const branches = pgTable(
+  'branches',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: varchar('name', { length: 100 }).notNull(),
+    address: text('address').notNull(),
+    postalCode: varchar('postal_code', { length: 10 }),
+    phone: varchar('phone', { length: 20 }),
+    lat: decimal('lat', { precision: 10, scale: 8 }),
+    lng: decimal('lng', { precision: 11, scale: 8 }),
+    schedule: jsonb('schedule'),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [
+    index('branches_active_idx').on(t.isActive).where(sql`is_active = true`),
+    index('branches_postal_code_idx').on(t.postalCode),
+    index('branches_coords_idx').on(t.lat, t.lng),
+  ]
+)
 
 export const customers = pgTable('customers', {
   id: uuid('id').primaryKey().defaultRandom(),
