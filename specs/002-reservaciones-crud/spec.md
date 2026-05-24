@@ -3,7 +3,7 @@
 **Feature Branch**: `feat/002-reservaciones-crud`
 **Created**: 2026-05-23
 **Status**: Draft
-**Input**: User description: "Sistema de Reservaciones — Backend CRUD API. Endpoints REST en /server/api/reservaciones/ para crear, leer, actualizar y cancelar reservaciones contra Neon PostgreSQL usando Drizzle ORM. Sin integración Twilio por ahora (solo el CRUD puro). Incluye validación de input, manejo de errores, y tests."
+**Input**: User description: "Sistema de Reservaciones — Backend CRUD API. Endpoints REST en /server/api/reservations/ para crear, leer, actualizar y cancelar reservaciones contra Neon PostgreSQL usando Drizzle ORM. Sin integración Twilio por ahora (solo el CRUD puro). Incluye validación de input, manejo de errores, y tests."
 
 ---
 
@@ -19,8 +19,8 @@ El formulario de reservación necesita mostrar un selector con las sucursales di
 
 **Acceptance Scenarios**:
 
-1. **Given** sucursales activas e inactivas en la base de datos, **When** se hace `GET /api/sucursales`, **Then** se devuelven solo las sucursales con `is_active = true`, ordenadas alfabéticamente por nombre, con código `200`.
-2. **Given** ninguna sucursal activa en la base de datos, **When** se hace `GET /api/sucursales`, **Then** se devuelve un array vacío con código `200`.
+1. **Given** sucursales activas e inactivas en la base de datos, **When** se hace `GET /api/branches`, **Then** se devuelven solo las sucursales con `is_active = true`, ordenadas alfabéticamente por nombre, con código `200`.
+2. **Given** ninguna sucursal activa en la base de datos, **When** se hace `GET /api/branches`, **Then** se devuelve un array vacío con código `200`.
 3. **Given** el endpoint responde, **When** se revisa la estructura del objeto, **Then** cada elemento contiene al menos `id`, `name` y `address`.
 
 ---
@@ -114,21 +114,21 @@ El staff o el sistema cancela una reservación existente. La reservación no se 
 
 ### Functional Requirements
 
-- **FR-000**: El sistema DEBE exponer un endpoint `GET /api/sucursales` que devuelva la lista de sucursales con `is_active = true`, ordenadas alfabéticamente por nombre, con campos mínimos `id`, `name`, `address` y `postal_code`.
+- **FR-000**: El sistema DEBE exponer un endpoint `GET /api/branches` que devuelva la lista de sucursales con `is_active = true`, ordenadas alfabéticamente por nombre, con campos mínimos `id`, `name`, `address` y `postal_code`.
 - **FR-000a**: La tabla `branches` DEBE agregar una columna `postal_code varchar(10)` nullable para soportar búsqueda por código postal, y generar la migración incremental correspondiente.
 - **FR-000b**: La tabla `branches` DEBE agregar los siguientes índices: (1) índice parcial en `is_active` filtrando `WHERE is_active = true`, (2) índice en `postal_code`, (3) índice compuesto en `(lat, lng)` para filtrado por bounding box en búsqueda por geolocalización.
-- **FR-001**: El sistema DEBE exponer un endpoint `POST /api/reservaciones` que cree una nueva reservación con `status = pending`.
-- **FR-002**: El sistema DEBE exponer un endpoint `GET /api/reservaciones` que devuelva la lista paginada de reservaciones no eliminadas, con soporte para filtros por `branch_id`, `status` y `reservation_date`.
-- **FR-003**: El sistema DEBE exponer un endpoint `GET /api/reservaciones/:id` que devuelva una reservación individual por su UUID.
-- **FR-004**: El sistema DEBE exponer un endpoint `PATCH /api/reservaciones/:id` que permita actualizar campos editables: `status`, `notes`, `reservation_date`, `reservation_time`, `party_size`.
-- **FR-005**: El sistema DEBE exponer un endpoint `DELETE /api/reservaciones/:id` que cancele (soft-delete) una reservación: marcar `status = cancelled` y poblar `deleted_at`.
+- **FR-001**: El sistema DEBE exponer un endpoint `POST /api/reservations` que cree una nueva reservación con `status = pending`.
+- **FR-002**: El sistema DEBE exponer un endpoint `GET /api/reservations` que devuelva la lista paginada de reservaciones no eliminadas, con soporte para filtros por `branch_id`, `status` y `reservation_date`.
+- **FR-003**: El sistema DEBE exponer un endpoint `GET /api/reservations/:id` que devuelva una reservación individual por su UUID.
+- **FR-004**: El sistema DEBE exponer un endpoint `PATCH /api/reservations/:id` que permita actualizar campos editables: `status`, `notes`, `reservation_date`, `reservation_time`, `party_size`.
+- **FR-005**: El sistema DEBE exponer un endpoint `DELETE /api/reservations/:id` que cancele (soft-delete) una reservación: marcar `status = cancelled` y poblar `deleted_at`.
 - **FR-006**: El sistema DEBE validar todos los campos de entrada y devolver `422` con mensajes descriptivos cuando la validación falle.
 - **FR-007**: El sistema DEBE devolver `404` cuando se referencie un `id` de reservación que no existe o está eliminado.
 - **FR-008**: El sistema DEBE devolver `409` cuando se intente modificar o cancelar una reservación ya cancelada.
 - **FR-009**: El sistema DEBE excluir automáticamente los registros con `deleted_at IS NOT NULL` de todos los endpoints de lectura y modificación, salvo consultas de auditoría explícitas.
 - **FR-010**: El sistema DEBE validar que `party_size > 0`, que `reservation_date` sea una fecha válida no pasada, y que `branch_id` corresponda a una sucursal existente.
 - **FR-011**: Los endpoints DEBEN devolver respuestas JSON consistentes con estructura `{ data, error, meta }`.
-- **FR-012**: El sistema DEBE incluir pruebas automatizadas que cubran los flujos felices y casos de error de cada endpoint, incluyendo `GET /api/sucursales`.
+- **FR-012**: El sistema DEBE incluir pruebas automatizadas que cubran los flujos felices y casos de error de cada endpoint, incluyendo `GET /api/branches`.
 
 ### Key Entities
 
@@ -160,4 +160,4 @@ El staff o el sistema cancela una reservación existente. La reservación no se 
 - Se usa Nuxt 3 server routes (`/server/api/`) como capa de API REST.
 - El schema de base de datos ya existe y fue migrado en el feature `001-db-schema-drizzle`.
 - La tabla `branches` no tiene índices adicionales más allá del PK. Con el volumen esperado (10–20 sucursales), un full scan es aceptable y no requiere índice en `is_active`.
-- El endpoint `GET /api/sucursales` es público (sin auth) ya que lo consume el formulario de reservación del sitio público.
+- El endpoint `GET /api/branches` es público (sin auth) ya que lo consume el formulario de reservación del sitio público.
