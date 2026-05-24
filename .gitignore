@@ -25,3 +25,6 @@ logs
 
 # Claude Code
 .claude/
+
+# Test coverage (generated artifact, never commit)
+coverage/
