@@ -1,19 +1,16 @@
 <!--
 ## Sync Impact Report
 
-**Version Change**: 1.1.0 → 1.1.1 (PATCH — structural consolidation, no rules lost or added)
+**Version Change**: 1.1.3 → 1.2.0 (MINOR — materially expanded guidance in VI: Storybook mandatory for all UI components + responsive breakpoints formalized)
 
 **Modified Principles**:
-- I. "Code Quality" → I. "TypeScript & Framework Standards" (rename for clarity)
-- III. "Testing" → III. "Testing" (merged with former VIII, content expanded)
+- VI. "UX Consistency" → VI. "UX Consistency & Component Documentation" (renamed + expanded with Storybook mandate)
 
-**Removed Sections**:
-- VIII. "Test Discipline" — absorbed entirely into III. Testing
+**Added**:
+- Storybook added to Technology Stack toolchain entry
+- Storybook mandatory coverage rule: stories MUST cover default state, all significant prop variants, and mobile/desktop breakpoints
 
-**Fixes Applied**:
-- Removed redundant try/catch sentence from VII (covered by XI Error Handling Convention)
-- Bare console.log prohibition retained in VII as a standalone rule
-- Principles renumbered after former VIII removal: IX→VIII, X→IX, XI→X, XII→XI, XIII→XII
+**Removed Sections**: None
 
 **Templates Status**:
 - `.specify/templates/plan-template.md` ✅ No updates required
@@ -97,19 +94,36 @@ privilege escalation here has direct financial consequences. Input validation at
 prevents injection and malformed-data bugs from propagating inward. Rate limiting protects
 against abuse of the reservation and loyalty endpoints without requiring authentication.
 
-### VI. UX Consistency
+### VI. UX Consistency & Component Documentation
 
 All pages MUST use the dark theme (`#0F0F0F` / `#1A1A1A` backgrounds). Brand orange `#F37021`
 is the primary accent color. Express blue `#2B3990` is reserved exclusively for SUMO Express
 content and MUST be introduced via gradient transitions from the dark theme — never as a
 standalone base color on non-Express pages. The SUMO logo MUST be used as-is: square format,
-orange background, white "SUMO" text, black bar. All layouts MUST be mobile-first. The Lato
-typeface MUST be used site-wide.
+orange background, white "SUMO" text, black bar. The Lato typeface MUST be used site-wide.
+
+All UI MUST be implemented mobile-first. Every layout and component MUST be fully responsive
+across at least three breakpoints: mobile (< 768px), tablet (768–1024px), and desktop (> 1024px).
+A component that is not responsive at all three breakpoints is considered incomplete and MUST
+NOT be merged.
+
+Every Vue component intended for UI MUST have a co-located Storybook story file
+(`ComponentName.stories.ts`). Each story file MUST include:
+
+- A **Default** story showing the component in its baseline state.
+- Stories covering all significant prop variants (e.g., disabled state, loading state, error state).
+- A **Responsive** story or viewport annotation demonstrating behavior at mobile and desktop breakpoints.
+
+Components without a story file MUST NOT be merged to the main branch. Autodocs
+(`autodocs: 'tag'`) is enabled — components tagged with `@satisfies Meta` will generate
+documentation pages automatically.
 
 **Rationale**: Visual consistency across a chain's digital presence builds brand recognition.
 The Express blue constraint prevents the sub-brand color from diluting the primary identity.
 Mobile-first is non-negotiable given the restaurant's Mexican market where smartphone browsing
-dominates.
+dominates. Storybook stories serve as living documentation and a visual regression baseline —
+they catch UI breakage without requiring a running Nuxt app and give designers a review surface
+independent of the backend.
 
 ### VII. Clean Code Discipline
 
@@ -243,7 +257,8 @@ data at end of day.
 **DNS/Hosting**: Hospedando.mx (domain + email); optionally Cloudflare for DNS.
 **Font**: Lato (self-hosted or Google Fonts).
 **Toolchain**: Biome (lint + format), Husky (git hooks), commitlint (commit message
-validation), vue-tsc (type-checking).
+validation), vue-tsc (type-checking), Storybook 10 with `@storybook/vue3-vite` and
+`@storybook/addon-docs` (component documentation and visual review).
 
 Monthly infrastructure costs are bounded at approximately $550–2,950 MXN + $20 USD (Vercel Pro),
 with Twilio being the primary variable cost.
@@ -272,4 +287,4 @@ All implementation plans MUST include a Constitution Check gate before Phase 0 r
 Complexity that violates a principle MUST be justified in the plan's Complexity Tracking table.
 This document is the authoritative reference for all code review and specification decisions.
 
-**Version**: 1.1.3 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-22
+**Version**: 1.2.0 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-23
