@@ -1,5 +1,13 @@
 import { z } from 'zod'
 
+const toTitleCase = (str: string) =>
+  str.replace(
+    /\w\S*/g,
+    w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+  )
+
+const phoneDigits = (str: string) => str.replace(/\D/g, '')
+
 export const BranchSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -11,8 +19,8 @@ const today = () => new Date().toISOString().slice(0, 10)
 
 export const CreateReservationSchema = z.object({
   branchId: z.string().uuid(),
-  contactName: z.string().min(1).max(100),
-  contactPhone: z.string().min(1).max(20),
+  contactName: z.string().trim().min(1).max(100).transform(toTitleCase),
+  contactPhone: z.string().trim().min(1).max(20).transform(phoneDigits),
   partySize: z.number().int().positive(),
   reservationDate: z
     .string()
@@ -23,7 +31,7 @@ export const CreateReservationSchema = z.object({
   reservationTime: z
     .string()
     .regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Must be HH:MM or HH:MM:SS'),
-  notes: z.string().max(500).optional(),
+  notes: z.string().trim().max(500).optional(),
 })
 
 export const UpdateReservationSchema = z
@@ -41,7 +49,7 @@ export const UpdateReservationSchema = z
       .regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Must be HH:MM or HH:MM:SS')
       .optional(),
     partySize: z.number().int().positive().optional(),
-    notes: z.string().max(500).nullable().optional(),
+    notes: z.string().trim().max(500).nullable().optional(),
   })
   .refine(data => Object.keys(data).length > 0, {
     message: 'At least one field must be provided',
