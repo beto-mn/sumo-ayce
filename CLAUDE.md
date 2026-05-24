@@ -110,10 +110,10 @@ sumo-ayce/
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/001-db-schema-drizzle`
-**Plan**: `specs/001-db-schema-drizzle/plan.md`
-**Spec**: `specs/001-db-schema-drizzle/spec.md`
-**Data Model**: `specs/001-db-schema-drizzle/data-model.md`
-**Quickstart**: `specs/001-db-schema-drizzle/quickstart.md`
-**Schema Contract**: `specs/001-db-schema-drizzle/contracts/schema.md`
+**Branch**: `feat/002-reservaciones-crud`
+**Plan**: `specs/002-reservaciones-crud/plan.md`
+**Spec**: `specs/002-reservaciones-crud/spec.md`
+**Data Model**: `specs/002-reservaciones-crud/data-model.md`
+**Quickstart**: `specs/002-reservaciones-crud/quickstart.md`
+**API Contract**: `specs/002-reservaciones-crud/contracts/api.md`
 <!-- SPECKIT END -->
