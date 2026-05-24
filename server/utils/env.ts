@@ -19,6 +19,9 @@ const envSchema = z.object({
 
   // Mapbox
   NUXT_PUBLIC_MAPBOX_TOKEN: z.string().min(1),
+
+  // Cron
+  CRON_SECRET: z.string().min(1).optional(),
 })
 
 const parsed = envSchema.safeParse(process.env)
