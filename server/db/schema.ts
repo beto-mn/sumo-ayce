@@ -21,7 +21,10 @@ import {
 export const reservationStatus = pgEnum('reservation_status', [
   'pending',
   'confirmed',
+  'rejected',
   'cancelled',
+  'escalated',
+  'cancelled_auto',
 ])
 
 export const loyaltyTransactionType = pgEnum('loyalty_transaction_type', [
@@ -50,6 +53,10 @@ export const branches = pgTable(
     lat: decimal('lat', { precision: 10, scale: 8 }),
     lng: decimal('lng', { precision: 11, scale: 8 }),
     schedule: jsonb('schedule'),
+    whatsappReservaciones: varchar('whatsapp_reservaciones', { length: 20 }),
+    whatsappReservacionesBackup: varchar('whatsapp_reservaciones_backup', {
+      length: 20,
+    }),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -99,7 +106,10 @@ export const reservations = pgTable(
     reservationDate: date('reservation_date').notNull(),
     reservationTime: time('reservation_time').notNull(),
     status: reservationStatus('status').notNull().default('pending'),
+    folio: varchar('folio', { length: 8 }).notNull().unique(),
     notes: text('notes'),
+    firstReminderAt: timestamp('first_reminder_at'),
+    escalatedAt: timestamp('escalated_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     deletedAt: timestamp('deleted_at'),
