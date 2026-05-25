@@ -1,10 +1,10 @@
 import { and, eq, isNull } from 'drizzle-orm'
 import { defineEventHandler, getRouterParam, readValidatedBody } from 'h3'
-import { UpdateReservationSchema } from '../../../types/reservations'
-import { reservations } from '../../db/schema'
-import { db } from '../../utils/db'
-import { ConflictError, NotFoundError } from '../../utils/error-handler'
-import { ok } from '../../utils/response'
+import { UpdateReservationSchema } from '../../../../types/reservations'
+import { reservations } from '../../../db/schema'
+import { db } from '../../../utils/db'
+import { ConflictError, NotFoundError } from '../../../utils/error-handler'
+import { ok } from '../../../utils/response'
 
 export default defineEventHandler(async event => {
   const id = getRouterParam(event, 'id') ?? ''

@@ -16,7 +16,7 @@ vi.mock('h3', async () => {
   return { ...actual, getRouterParam: mockGetRouterParam }
 })
 
-import handler from '../../../../server/api/reservations/[id].delete'
+import handler from '../../../../server/api/v1/reservations/[id].delete'
 
 const event = {} as unknown as H3Event
 
@@ -40,7 +40,7 @@ const CANCELLED_ROW = {
   deletedAt: new Date(),
 }
 
-describe('DELETE /api/reservations/:id', () => {
+describe('DELETE /api/v1/reservations/:id', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
