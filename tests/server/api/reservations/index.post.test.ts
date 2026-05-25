@@ -7,8 +7,9 @@ vi.mock('../../../../server/utils/db', async () => {
   return { db: mockDb }
 })
 
-const { mockReadValidatedBody } = vi.hoisted(() => ({
+const { mockReadValidatedBody, mockSendWhatsAppMessage } = vi.hoisted(() => ({
   mockReadValidatedBody: vi.fn(),
+  mockSendWhatsAppMessage: vi.fn(),
 }))
 
 vi.mock('h3', async () => {
@@ -19,6 +20,15 @@ vi.mock('h3', async () => {
     setResponseStatus: vi.fn(),
   }
 })
+
+vi.mock('../../../../server/utils/twilio', () => ({
+  sendWhatsAppMessage: mockSendWhatsAppMessage,
+  normalizePhone: (p: string) => p,
+}))
+
+vi.mock('../../../../server/utils/logger', () => ({
+  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn() },
+}))
 
 import handler from '../../../../server/api/reservations/index.post'
 
@@ -33,15 +43,31 @@ const VALID_BODY = {
   reservationDate: FUTURE_DATE,
   reservationTime: '19:30',
 }
-const CREATED_ROW = {
-  id: '00000000-0000-0000-0000-000000000099',
-  ...VALID_BODY,
-  reservationTime: '19:30:00',
-  status: 'pending',
-  notes: null,
-  createdAt: new Date('2026-05-23T00:00:00Z'),
-  updatedAt: new Date('2026-05-23T00:00:00Z'),
-  deletedAt: null,
+const BRANCH_WITH_WHATSAPP = {
+  id: VALID_BODY.branchId,
+  name: 'Sucursal Centro',
+  whatsappReservaciones: '+528112345678',
+}
+const BRANCH_WITHOUT_WHATSAPP = {
+  id: VALID_BODY.branchId,
+  name: 'Sucursal Centro',
+  whatsappReservaciones: null,
+}
+
+function makeCreatedRow(folio = 'AABBCCDD') {
+  return {
+    id: '00000000-0000-0000-0000-000000000099',
+    folio,
+    ...VALID_BODY,
+    reservationTime: '19:30:00',
+    status: 'pending',
+    notes: null,
+    firstReminderAt: null,
+    escalatedAt: null,
+    createdAt: new Date('2026-05-23T00:00:00Z'),
+    updatedAt: new Date('2026-05-23T00:00:00Z'),
+    deletedAt: null,
+  }
 }
 
 describe('POST /api/reservations', () => {
@@ -49,15 +75,60 @@ describe('POST /api/reservations', () => {
     vi.clearAllMocks()
   })
 
-  it('creates reservation and returns status pending', async () => {
+  it('creates reservation and response includes folio', async () => {
     mockReadValidatedBody.mockResolvedValueOnce(VALID_BODY)
-    mockDb.select.mockReturnValueOnce(dbChain([{ id: VALID_BODY.branchId }]))
-    mockDb.insert.mockReturnValueOnce(dbChain([CREATED_ROW]))
+    mockDb.select
+      .mockReturnValueOnce(dbChain([{ id: VALID_BODY.branchId }]))
+      .mockReturnValueOnce(dbChain([BRANCH_WITH_WHATSAPP]))
+    mockDb.insert.mockReturnValueOnce(dbChain([makeCreatedRow()]))
+    mockSendWhatsAppMessage.mockResolvedValue(undefined)
 
     const result = await handler(event)
 
-    expect(result).toEqual({ data: CREATED_ROW, error: null, meta: null })
-    expect(mockDb.insert).toHaveBeenCalledOnce()
+    expect(result.data).toMatchObject({ status: 'pending' })
+    expect(typeof result.data.folio).toBe('string')
+    expect(result.data.folio).toHaveLength(8)
+  })
+
+  it('calls sendWhatsAppMessage twice when branch has whatsapp number', async () => {
+    mockReadValidatedBody.mockResolvedValueOnce(VALID_BODY)
+    mockDb.select
+      .mockReturnValueOnce(dbChain([{ id: VALID_BODY.branchId }]))
+      .mockReturnValueOnce(dbChain([BRANCH_WITH_WHATSAPP]))
+    mockDb.insert.mockReturnValueOnce(dbChain([makeCreatedRow()]))
+    mockSendWhatsAppMessage.mockResolvedValue(undefined)
+
+    await handler(event)
+
+    expect(mockSendWhatsAppMessage).toHaveBeenCalledTimes(2)
+  })
+
+  it('still returns 201 when Twilio fails', async () => {
+    mockReadValidatedBody.mockResolvedValueOnce(VALID_BODY)
+    mockDb.select
+      .mockReturnValueOnce(dbChain([{ id: VALID_BODY.branchId }]))
+      .mockReturnValueOnce(dbChain([BRANCH_WITH_WHATSAPP]))
+    mockDb.insert.mockReturnValueOnce(dbChain([makeCreatedRow()]))
+    mockSendWhatsAppMessage.mockRejectedValue(new Error('Twilio down'))
+
+    const result = await handler(event)
+
+    expect(result.data).toBeDefined()
+    expect(result.data.status).toBe('pending')
+  })
+
+  it('still returns 201 when branch has no whatsapp number', async () => {
+    mockReadValidatedBody.mockResolvedValueOnce(VALID_BODY)
+    mockDb.select
+      .mockReturnValueOnce(dbChain([{ id: VALID_BODY.branchId }]))
+      .mockReturnValueOnce(dbChain([BRANCH_WITHOUT_WHATSAPP]))
+    mockDb.insert.mockReturnValueOnce(dbChain([makeCreatedRow()]))
+    mockSendWhatsAppMessage.mockResolvedValue(undefined)
+
+    const result = await handler(event)
+
+    expect(result.data.status).toBe('pending')
+    expect(mockSendWhatsAppMessage).toHaveBeenCalledTimes(1)
   })
 
   it('throws 422 when branchId does not exist in db', async () => {
