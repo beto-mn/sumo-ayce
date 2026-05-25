@@ -5,7 +5,7 @@
 
 ---
 
-## `GET /api/branches`
+## `GET /api/v1/branches`
 
 Regresa sucursales activas, con filtrado por radio opcional basado en coordenadas.
 

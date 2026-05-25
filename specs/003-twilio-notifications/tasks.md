@@ -49,14 +49,14 @@
 
 ## Phase 3: US1 — Cliente y encargado notificados al crear reservación (Priority: P1) 🎯 MVP
 
-**Goal**: Al hacer POST /api/reservations, el cliente recibe acuse de "pendiente" y el encargado recibe solicitud de aceptación/rechazo. La reservación se guarda aunque Twilio falle.
+**Goal**: Al hacer POST /api/v1/reservations, el cliente recibe acuse de "pendiente" y el encargado recibe solicitud de aceptación/rechazo. La reservación se guarda aunque Twilio falle.
 
 **Independent Test**: Crear reservación via curl, verificar respuesta incluye `folio`, y que ambos WhatsApp llegan (o los logs muestran el intento si no hay Twilio configurado).
 
-- [x] T011 [US1] Update `tests/server/api/reservations/index.post.test.ts` — add test cases: (a) response data includes `folio` field with 8-char string; (b) `sendWhatsAppMessage` called twice (client + branch) after successful insert; (c) Twilio failure does not cause 5xx — still returns 201; (d) branch without `whatsappReservaciones` still returns 201 (mock second DB select returning branch without whatsapp field)
-- [x] T012 [US1] Modify `server/api/reservations/index.post.ts` — (a) pre-generate `const id = crypto.randomUUID()` and `const folio = generateFolio(id)`; (b) INSERT with explicit `id` and `folio`; (c) fetch branch with `name` and `whatsappReservaciones`; (d) call `sendWhatsAppMessage` for client and branch in parallel via `Promise.allSettled`; (e) log errors via logger, never rethrow; imports from `@/server/utils/folio`, `@/server/utils/twilio`, `@/server/utils/whatsapp-messages`
+- [x] T011 [US1] Update `tests/server/api/v1/reservations/index.post.test.ts` — add test cases: (a) response data includes `folio` field with 8-char string; (b) `sendWhatsAppMessage` called twice (client + branch) after successful insert; (c) Twilio failure does not cause 5xx — still returns 201; (d) branch without `whatsappReservaciones` still returns 201 (mock second DB select returning branch without whatsapp field)
+- [x] T012 [US1] Modify `server/api/v1/reservations/index.post.ts` — (a) pre-generate `const id = crypto.randomUUID()` and `const folio = generateFolio(id)`; (b) INSERT with explicit `id` and `folio`; (c) fetch branch with `name` and `whatsappReservaciones`; (d) call `sendWhatsAppMessage` for client and branch in parallel via `Promise.allSettled`; (e) log errors via logger, never rethrow; imports from `@/server/utils/folio`, `@/server/utils/twilio`, `@/server/utils/whatsapp-messages`
 
-**Checkpoint**: `pnpm test` pasa T011. POST /api/reservations retorna `folio` en la respuesta. Twilio mock muestra 2 llamadas.
+**Checkpoint**: `pnpm test` pasa T011. POST /api/v1/reservations retorna `folio` en la respuesta. Twilio mock muestra 2 llamadas.
 
 ---
 
@@ -142,7 +142,7 @@ T010 server/utils/twilio.ts + test
 ### Phases 3, 4, 5 — Pueden avanzar en paralelo (tras Phase 2)
 
 ```
-Phase 3: T011 → T012   (POST /api/reservations)
+Phase 3: T011 → T012   (POST /api/v1/reservations)
 Phase 4: T013 → T014   (webhook)
 Phase 5: T015 → T016 → T017  (cron)
 ```
@@ -155,7 +155,7 @@ Phase 5: T015 → T016 → T017  (cron)
 
 1. Phase 1: instalar Twilio SDK.
 2. Phase 2: schema + utilidades core.
-3. Phase 3: modificar POST /api/reservations.
+3. Phase 3: modificar POST /api/v1/reservations.
 4. **VALIDAR**: crear reservación, confirmar `folio` en respuesta, confirmar WhatsApp al cliente y encargado.
 5. **Deployable**: el cliente ya puede ver el flujo de notificación inicial.
 

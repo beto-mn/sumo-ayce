@@ -6,7 +6,7 @@
 
 ## Endpoints Existentes (comportamiento modificado)
 
-### POST /api/reservations
+### POST /api/v1/reservations
 
 Crea una nueva reservación. **Cambio**: después del INSERT, dispara las notificaciones de WhatsApp de forma asíncrona (sin bloquear la respuesta HTTP).
 

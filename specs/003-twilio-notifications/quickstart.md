@@ -122,7 +122,7 @@ Servidor en `http://localhost:3000`.
 ### Paso 1 — Crear una reservación
 
 ```bash
-curl -X POST http://localhost:3000/api/reservations \
+curl -X POST http://localhost:3000/api/v1/reservations \
   -H "Content-Type: application/json" \
   -d '{
     "branchId": "<uuid-de-sucursal>",

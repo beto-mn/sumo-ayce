@@ -152,12 +152,12 @@ El schema de Drizzle (`schema.ts`) también se actualiza para reflejar la column
 ```ts
 // Pattern de test
 import { describe, it, expect, vi } from 'vitest'
-import handler from '~/server/api/reservations/index.post'
+import handler from '~/server/api/v1/reservations/index.post'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 mockNuxtImport('~/server/utils/db', () => ({ db: mockDb }))
 
-describe('POST /api/reservations', () => {
+describe('POST /api/v1/reservations', () => {
   it('should create a reservation and return 201', async () => { ... })
   it('should return 422 when party_size is 0', async () => { ... })
 })

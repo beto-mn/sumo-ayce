@@ -137,11 +137,11 @@ Objetivo: las tres utilidades nuevas con sus tests antes de usarlas en rutas.
 
 ---
 
-### Fase 3 — Modificar POST /api/reservations
+### Fase 3 — Modificar POST /api/v1/reservations
 
 Objetivo: al crear una reservación, disparar las notificaciones WhatsApp.
 
-Cambios en `server/api/reservations/index.post.ts`:
+Cambios en `server/api/v1/reservations/index.post.ts`:
 1. Generar UUID en la aplicación (antes del INSERT): `const id = crypto.randomUUID()`.
 2. Calcular `folio = generateFolio(id)`.
 3. INSERT con `id` y `folio` explícitos.
@@ -210,7 +210,7 @@ Fase 1 (Schema)
     ↓
 Fase 2 (Utilidades + tests)
     ↓
-Fase 3 (POST /api/reservations + tests)
+Fase 3 (POST /api/v1/reservations + tests)
     ↓
 Fase 4 (Webhook + tests)
     ↓

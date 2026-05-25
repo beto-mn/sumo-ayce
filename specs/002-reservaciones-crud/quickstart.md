@@ -67,10 +67,10 @@ El servidor queda en `http://localhost:3000`.
 
 ```bash
 # Listar sucursales activas
-curl http://localhost:3000/api/branches
+curl http://localhost:3000/api/v1/branches
 
 # Crear una reservación
-curl -X POST http://localhost:3000/api/reservations \
+curl -X POST http://localhost:3000/api/v1/reservations \
   -H "Content-Type: application/json" \
   -d '{
     "branchId": "<uuid-de-sucursal>",
@@ -82,18 +82,18 @@ curl -X POST http://localhost:3000/api/reservations \
   }'
 
 # Listar reservaciones
-curl "http://localhost:3000/api/reservations?page=1&limit=10"
+curl "http://localhost:3000/api/v1/reservations?page=1&limit=10"
 
 # Obtener por ID
-curl http://localhost:3000/api/reservations/<uuid>
+curl http://localhost:3000/api/v1/reservations/<uuid>
 
 # Confirmar una reservación
-curl -X PATCH http://localhost:3000/api/reservations/<uuid> \
+curl -X PATCH http://localhost:3000/api/v1/reservations/<uuid> \
   -H "Content-Type: application/json" \
   -d '{ "status": "confirmed" }'
 
 # Cancelar una reservación
-curl -X DELETE http://localhost:3000/api/reservations/<uuid>
+curl -X DELETE http://localhost:3000/api/v1/reservations/<uuid>
 ```
 
 ---
