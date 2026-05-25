@@ -47,9 +47,8 @@ export default defineEventHandler(async event => {
 
   const match = KEYWORD_REGEX.exec(body)
   if (!match) {
-    const folio = body.split(/\s+/)[1] ?? '????????'
-    await sendWhatsAppMessage(from, msgEncargadoKeywordInvalido(folio)).catch(
-      err => logger.error({ err }, 'Failed to send keyword help')
+    await sendWhatsAppMessage(from, msgEncargadoKeywordInvalido()).catch(err =>
+      logger.error({ err }, 'Failed to send keyword help')
     )
     setResponseHeader(event, 'content-type', 'text/xml')
     return TWIML_EMPTY

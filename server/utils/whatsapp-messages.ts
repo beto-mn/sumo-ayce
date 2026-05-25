@@ -42,6 +42,7 @@ export function msgClienteConfirmado(data: ReservationData): string {
 
 ¡Tu reservación está confirmada, ${data.contactName}!
 
+🔖 Folio: ${data.folio}
 📍 Sucursal: ${data.branchName}
 📅 Fecha: ${data.reservationDate}
 🕐 Hora: ${data.reservationTime}
@@ -67,11 +68,11 @@ Puedes:
 ¡Gracias por tu comprensión!`
 }
 
-export function msgEncargadoKeywordInvalido(folio: string): string {
+export function msgEncargadoKeywordInvalido(): string {
   return `❓ No reconocí tu respuesta.
 
-Para aceptar: ACEPTAR ${folio}
-Para rechazar: RECHAZAR ${folio}
+Para aceptar: ACEPTAR [FOLIO]
+Para rechazar: RECHAZAR [FOLIO]
 
 El folio aparece en el mensaje de la reservación.`
 }
