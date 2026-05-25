@@ -55,10 +55,10 @@ describe('whatsapp-messages', () => {
     expect(msg).toContain(data.reservationDate)
   })
 
-  it('msgEncargadoKeywordInvalido includes folio and format instructions', () => {
-    const msg = msgEncargadoKeywordInvalido(data.folio)
-    expect(msg).toContain(`ACEPTAR ${data.folio}`)
-    expect(msg).toContain(`RECHAZAR ${data.folio}`)
+  it('msgEncargadoKeywordInvalido shows generic format instructions', () => {
+    const msg = msgEncargadoKeywordInvalido()
+    expect(msg).toContain('ACEPTAR [FOLIO]')
+    expect(msg).toContain('RECHAZAR [FOLIO]')
   })
 
   it('msgEncargadoRecordatorio includes folio and accept/reject instructions', () => {
