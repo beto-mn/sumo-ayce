@@ -6,7 +6,6 @@ import {
   decimal,
   index,
   integer,
-  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -48,11 +47,8 @@ export const branches = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     name: varchar('name', { length: 100 }).notNull(),
     address: text('address').notNull(),
-    postalCode: varchar('postal_code', { length: 10 }),
-    phone: varchar('phone', { length: 20 }),
     lat: decimal('lat', { precision: 10, scale: 8 }),
     lng: decimal('lng', { precision: 11, scale: 8 }),
-    schedule: jsonb('schedule'),
     whatsappReservaciones: varchar('whatsapp_reservaciones', { length: 20 }),
     whatsappReservacionesBackup: varchar('whatsapp_reservaciones_backup', {
       length: 20,
@@ -63,7 +59,6 @@ export const branches = pgTable(
   },
   t => [
     index('branches_active_idx').on(t.isActive).where(sql`is_active = true`),
-    index('branches_postal_code_idx').on(t.postalCode),
     index('branches_coords_idx').on(t.lat, t.lng),
   ]
 )
