@@ -26,6 +26,15 @@ export class ConflictError extends Error {
   }
 }
 
+export class ExternalServiceError extends Error {
+  readonly statusCode = 502
+  constructor(service: string, cause?: unknown) {
+    super(`External service error: ${service}`)
+    this.name = 'ExternalServiceError'
+    this.cause = cause
+  }
+}
+
 export function handleError(error: unknown): H3Error {
   if (error instanceof H3Error) return error
 

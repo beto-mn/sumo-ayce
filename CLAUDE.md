@@ -110,10 +110,11 @@ sumo-ayce/
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/002-reservaciones-crud`
-**Plan**: `specs/002-reservaciones-crud/plan.md`
-**Spec**: `specs/002-reservaciones-crud/spec.md`
-**Data Model**: `specs/002-reservaciones-crud/data-model.md`
-**Quickstart**: `specs/002-reservaciones-crud/quickstart.md`
-**API Contract**: `specs/002-reservaciones-crud/contracts/api.md`
+**Branch**: `feat/003-twilio-notifications`
+**Plan**: `specs/003-twilio-notifications/plan.md`
+**Spec**: `specs/003-twilio-notifications/spec.md`
+**Data Model**: `specs/003-twilio-notifications/data-model.md`
+**Quickstart**: `specs/003-twilio-notifications/quickstart.md`
+**API Contract**: `specs/003-twilio-notifications/contracts/api.md`
+**Research**: `specs/003-twilio-notifications/research.md`
 <!-- SPECKIT END -->
