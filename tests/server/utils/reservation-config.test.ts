@@ -17,9 +17,9 @@ describe('reservationTimeouts', () => {
     const { reservationTimeouts } = await import(
       '../../../server/utils/reservation-config'
     )
-    expect(reservationTimeouts.firstReminderMin).toBe(30)
-    expect(reservationTimeouts.escalationMin).toBe(30)
-    expect(reservationTimeouts.autoCancelMin).toBe(60)
+    expect(reservationTimeouts.firstReminderMin).toBe(5)
+    expect(reservationTimeouts.escalationMin).toBe(5)
+    expect(reservationTimeouts.autoCancelMin).toBe(20)
   })
 
   it('parses values as integers', async () => {
