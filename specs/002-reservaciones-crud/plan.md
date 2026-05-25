@@ -5,7 +5,7 @@
 
 ## Summary
 
-Implement a REST API for the reservations system and branch listing within Nuxt 3 server routes (`/server/api/`). This includes: a `GET /api/branches` endpoint for the branch selector, five CRUD endpoints for reservations against Neon PostgreSQL via Drizzle ORM, Zod-based input validation, centralized error handling, a schema migration adding `postal_code` and three indexes to `branches`, and Vitest unit tests covering all endpoints.
+Implement a REST API for the reservations system and branch listing within Nuxt 3 server routes (`/server/api/`). This includes: a `GET /api/v1/branches` endpoint for the branch selector, five CRUD endpoints for reservations against Neon PostgreSQL via Drizzle ORM, Zod-based input validation, centralized error handling, a schema migration adding `postal_code` and three indexes to `branches`, and Vitest unit tests covering all endpoints.
 
 ## Technical Context
 
@@ -64,13 +64,13 @@ specs/002-reservaciones-crud/
 server/
 ├── api/
 │   ├── branches/
-│   │   └── index.get.ts            # GET /api/branches
+│   │   └── index.get.ts            # GET /api/v1/branches
 │   └── reservations/
-│       ├── index.get.ts            # GET /api/reservations
-│       ├── index.post.ts           # POST /api/reservations
-│       ├── [id].get.ts             # GET /api/reservations/:id
-│       ├── [id].patch.ts           # PATCH /api/reservations/:id
-│       └── [id].delete.ts          # DELETE /api/reservations/:id
+│       ├── index.get.ts            # GET /api/v1/reservations
+│       ├── index.post.ts           # POST /api/v1/reservations
+│       ├── [id].get.ts             # GET /api/v1/reservations/:id
+│       ├── [id].patch.ts           # PATCH /api/v1/reservations/:id
+│       └── [id].delete.ts          # DELETE /api/v1/reservations/:id
 ├── db/
 │   ├── schema.ts                   # (existing — add postal_code + 3 indexes)
 │   └── migrations/

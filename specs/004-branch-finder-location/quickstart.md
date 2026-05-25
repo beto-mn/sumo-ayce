@@ -13,7 +13,7 @@
 
 ```bash
 # Usando coordenadas del centro de Polanco, CDMX
-curl "http://localhost:3000/api/branches?lat=19.4326&lng=-99.1332"
+curl "http://localhost:3000/api/v1/branches?lat=19.4326&lng=-99.1332"
 ```
 
 **Expected**:
@@ -32,7 +32,7 @@ curl "http://localhost:3000/api/branches?lat=19.4326&lng=-99.1332"
 
 ```bash
 # Coordenadas de una zona sin sucursales cercanas (ej. aeropuerto AIFA)
-curl "http://localhost:3000/api/branches?lat=19.7472&lng=-99.0145"
+curl "http://localhost:3000/api/v1/branches?lat=19.7472&lng=-99.0145"
 ```
 
 **Expected**: `searchContext.expanded = true`, `radiusUsed > 10`
@@ -41,7 +41,7 @@ curl "http://localhost:3000/api/branches?lat=19.7472&lng=-99.0145"
 
 ```bash
 # Coordenadas fuera de cobertura (ej. Cancún)
-curl "http://localhost:3000/api/branches?lat=21.1619&lng=-86.8515"
+curl "http://localhost:3000/api/v1/branches?lat=21.1619&lng=-86.8515"
 ```
 
 **Expected**:
@@ -57,7 +57,7 @@ curl "http://localhost:3000/api/branches?lat=21.1619&lng=-86.8515"
 ## Scenario 4: Listado completo sin coordenadas
 
 ```bash
-curl "http://localhost:3000/api/branches"
+curl "http://localhost:3000/api/v1/branches"
 ```
 
 **Expected**: todas las sucursales activas, sin `distanceKm`, sin `searchContext`.
@@ -65,7 +65,7 @@ curl "http://localhost:3000/api/branches"
 ## Scenario 5: Validación — lat sin lng
 
 ```bash
-curl "http://localhost:3000/api/branches?lat=19.43"
+curl "http://localhost:3000/api/v1/branches?lat=19.43"
 ```
 
 **Expected**: HTTP 400, mensaje de error descriptivo.
@@ -73,7 +73,7 @@ curl "http://localhost:3000/api/branches?lat=19.43"
 ## Scenario 6: Validación — coordenadas inválidas
 
 ```bash
-curl "http://localhost:3000/api/branches?lat=999&lng=-99.13"
+curl "http://localhost:3000/api/v1/branches?lat=999&lng=-99.13"
 ```
 
 **Expected**: HTTP 400.
@@ -83,6 +83,6 @@ curl "http://localhost:3000/api/branches?lat=999&lng=-99.13"
 ```bash
 # Reducir el default a 1 km para forzar expansión
 BRANCH_FINDER_DEFAULT_RADIUS_KM=1 pnpm dev
-curl "http://localhost:3000/api/branches?lat=19.4326&lng=-99.1332"
+curl "http://localhost:3000/api/v1/branches?lat=19.4326&lng=-99.1332"
 # Debe mostrar searchContext.expanded=true si no hay sucursales a 1 km del punto
 ```

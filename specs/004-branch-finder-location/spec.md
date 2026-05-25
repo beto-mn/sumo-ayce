@@ -3,7 +3,7 @@
 **Feature Branch**: `feat/004-branch-finder-location`  
 **Created**: 2026-05-24  
 **Status**: Draft  
-**Scope**: Backend únicamente — endpoint `GET /api/branches`  
+**Scope**: Backend únicamente — endpoint `GET /api/v1/branches`  
 **Input**: User description: "Buscar sucursales SUMO por ubicación del usuario"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -14,7 +14,7 @@ Un cliente (frontend u otro consumidor) envía coordenadas `lat`/`lng` al endpoi
 
 **Why this priority**: Es el caso de uso central de la feature. Todo el valor del Branch Finder depende de que este cálculo y filtrado funcionen correctamente.
 
-**Independent Test**: `GET /api/branches?lat=19.4326&lng=-99.1332` — verificar que el response incluye sucursales con `distanceKm` y `searchContext.radiusUsed`.
+**Independent Test**: `GET /api/v1/branches?lat=19.4326&lng=-99.1332` — verificar que el response incluye sucursales con `distanceKm` y `searchContext.radiusUsed`.
 
 **Acceptance Scenarios**:
 
@@ -31,7 +31,7 @@ El consumidor del endpoint no envía coordenadas. El sistema regresa todas las s
 
 **Why this priority**: Fallback necesario. Si no hay coordenadas disponibles, el consumidor igual debe poder obtener el catálogo completo de sucursales.
 
-**Independent Test**: `GET /api/branches` sin parámetros — verificar que regresa todas las sucursales sin `distanceKm` ni `searchContext`.
+**Independent Test**: `GET /api/v1/branches` sin parámetros — verificar que regresa todas las sucursales sin `distanceKm` ni `searchContext`.
 
 **Acceptance Scenarios**:
 
@@ -52,7 +52,7 @@ El consumidor del endpoint no envía coordenadas. El sistema regresa todas las s
 
 ### Functional Requirements
 
-- **FR-001**: El endpoint `GET /api/branches` DEBE aceptar parámetros de query opcionales: `lat` (número), `lng` (número), `radius` (número, km).
+- **FR-001**: El endpoint `GET /api/v1/branches` DEBE aceptar parámetros de query opcionales: `lat` (número), `lng` (número), `radius` (número, km).
 - **FR-002**: Si se reciben `lat` y `lng`, el sistema DEBE calcular la distancia de cada sucursal al punto usando la fórmula Haversine.
 - **FR-003**: Si se reciben coordenadas, el sistema DEBE filtrar sucursales dentro del radio activo (default o especificado), devolviendo solo las que están dentro.
 - **FR-004**: Si el radio inicial no produce resultados, el sistema DEBE expandir automáticamente: radio inicial → 25 km → radio máximo (default 50 km). Se usan exactamente 3 intentos.

@@ -5,7 +5,7 @@
 
 ## Summary
 
-Implementar `GET /api/branches` — un endpoint que acepta `lat`/`lng` opcionales y regresa sucursales filtradas por radio con expansión automática (10 → 25 → 50 km) o el catálogo completo si no hay coordenadas. El cálculo de distancia usa la fórmula Haversine implementada en TypeScript puro. No requiere cambios de schema — la tabla `branches` ya tiene columnas `lat`/`lng` con índice compuesto.
+Implementar `GET /api/v1/branches` — un endpoint que acepta `lat`/`lng` opcionales y regresa sucursales filtradas por radio con expansión automática (10 → 25 → 50 km) o el catálogo completo si no hay coordenadas. El cálculo de distancia usa la fórmula Haversine implementada en TypeScript puro. No requiere cambios de schema — la tabla `branches` ya tiene columnas `lat`/`lng` con índice compuesto.
 
 ## Technical Context
 
@@ -24,7 +24,7 @@ Implementar `GET /api/branches` — un endpoint que acepta `lat`/`lng` opcionale
 | Principio | Estado | Notas |
 |-----------|--------|-------|
 | I. TypeScript strict | ✅ | `lat`/`lng` de Drizzle son `string \| null` (decimal) — parsear a `number` en la utilidad |
-| II. Arquitectura | ✅ | Route en `server/api/branches/index.get.ts`, utilidad en `server/utils/haversine.ts` |
+| II. Arquitectura | ✅ | Route en `server/api/v1/branches/index.get.ts`, utilidad en `server/utils/haversine.ts` |
 | III. Testing | ✅ | Tests antes de implementación: `haversine.test.ts` → `index.get.test.ts` |
 | V. Seguridad | ✅ | Zod valida `lat`, `lng`, `radius`; rate-limiting existente aplica |
 | VII. Clean Code | ✅ | Haversine ≤ 15 líneas, route descompuesta en utilidad + handler ≤ 30 líneas c/u |
@@ -56,7 +56,7 @@ specs/004-branch-finder-location/
 server/
 ├── api/
 │   └── branches/
-│       └── index.get.ts          # GET /api/branches (nuevo)
+│       └── index.get.ts          # GET /api/v1/branches (nuevo)
 └── utils/
     ├── haversine.ts               # Haversine distance util (nuevo)
     └── branch-finder-config.ts    # Env vars: defaultRadius, maxRadius (nuevo)

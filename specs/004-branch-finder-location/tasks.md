@@ -38,13 +38,13 @@
 
 ## Phase 3: US1 — Búsqueda por Coordenadas (Priority: P1) 🎯 MVP
 
-**Goal**: `GET /api/branches?lat&lng` filtra sucursales por radio, expande automáticamente con progresión geométrica, y regresa `distanceKm` + `searchContext`.
+**Goal**: `GET /api/v1/branches?lat&lng` filtra sucursales por radio, expande automáticamente con progresión geométrica, y regresa `distanceKm` + `searchContext`.
 
-**Independent Test**: `curl "http://localhost:3000/api/branches?lat=19.4326&lng=-99.1332"` retorna sucursales con `distanceKm` y `searchContext.radiusUsed`.
+**Independent Test**: `curl "http://localhost:3000/api/v1/branches?lat=19.4326&lng=-99.1332"` retorna sucursales con `distanceKm` y `searchContext.radiusUsed`.
 
-- [x] T004 [US1] Write test cases in `tests/server/api/branches/index.get.test.ts` for the coordinates path — (a) lat/lng with a branch at 5 km → `data[0].distanceKm` present, `searchContext.radiusUsed=10`, `expanded=false`, `noResults=false`; (b) no branches in default radius but one at 20 km → `searchContext.expanded=true`, `radiusUsed` is intermediate; (c) no branches in any radius → `data=[]`, `searchContext.noResults=true`; (d) results sorted ascending by `distanceKm`; (e) response excludes `whatsappReservaciones`, `whatsappReservacionesBackup`, `createdAt`, `updatedAt` fields; (f) lat without lng → 400; (g) lng without lat → 400; (h) lat=999 → 400; (i) lng=-999 → 400; (j) radius=0 → 400; (k) lat=abc → 400 (non-numeric coercion fails)
+- [x] T004 [US1] Write test cases in `tests/server/api/v1/branches/index.get.test.ts` for the coordinates path — (a) lat/lng with a branch at 5 km → `data[0].distanceKm` present, `searchContext.radiusUsed=10`, `expanded=false`, `noResults=false`; (b) no branches in default radius but one at 20 km → `searchContext.expanded=true`, `radiusUsed` is intermediate; (c) no branches in any radius → `data=[]`, `searchContext.noResults=true`; (d) results sorted ascending by `distanceKm`; (e) response excludes `whatsappReservaciones`, `whatsappReservacionesBackup`, `createdAt`, `updatedAt` fields; (f) lat without lng → 400; (g) lng without lat → 400; (h) lat=999 → 400; (i) lng=-999 → 400; (j) radius=0 → 400; (k) lat=abc → 400 (non-numeric coercion fails)
 
-- [x] T005 [US1] Create `server/api/branches/index.get.ts` — (a) define Zod schema with `z.coerce.number()` for `lat` (min -90, max 90), `lng` (min -180, max 180), `radius` (positive, optional); add `.refine()` that lat and lng must be provided together or not at all, throw ZodError with message `"lat and lng must be provided together"`; wrap handler in try/catch with `handleError`; (b) if lat/lng present: query `db.select()` from `branches` where `isActive=true` and `lat IS NOT NULL` and `lng IS NOT NULL`; compute `haversineKm` for each; loop `buildRadii(radius ?? branchFinderConfig.defaultRadiusKm, branchFinderConfig.maxRadiusKm)`, filter branches at each radius, stop at first radius with results; return `{ ...ok(results.map(stripInternalFields)), searchContext: { radiusUsed, expanded: radiusUsed > defaultRadius, noResults: results.length === 0 } }`; (c) `stripInternalFields` omits `whatsappReservaciones`, `whatsappReservacionesBackup`, `createdAt`, `updatedAt`; imports from `@/server/utils/haversine`, `@/server/utils/branch-finder-config`, `@/server/utils/db`, `@/server/utils/error-handler`, `@/server/utils/response`
+- [x] T005 [US1] Create `server/api/v1/branches/index.get.ts` — (a) define Zod schema with `z.coerce.number()` for `lat` (min -90, max 90), `lng` (min -180, max 180), `radius` (positive, optional); add `.refine()` that lat and lng must be provided together or not at all, throw ZodError with message `"lat and lng must be provided together"`; wrap handler in try/catch with `handleError`; (b) if lat/lng present: query `db.select()` from `branches` where `isActive=true` and `lat IS NOT NULL` and `lng IS NOT NULL`; compute `haversineKm` for each; loop `buildRadii(radius ?? branchFinderConfig.defaultRadiusKm, branchFinderConfig.maxRadiusKm)`, filter branches at each radius, stop at first radius with results; return `{ ...ok(results.map(stripInternalFields)), searchContext: { radiusUsed, expanded: radiusUsed > defaultRadius, noResults: results.length === 0 } }`; (c) `stripInternalFields` omits `whatsappReservaciones`, `whatsappReservacionesBackup`, `createdAt`, `updatedAt`; imports from `@/server/utils/haversine`, `@/server/utils/branch-finder-config`, `@/server/utils/db`, `@/server/utils/error-handler`, `@/server/utils/response`
 
 **Checkpoint**: `pnpm test` pasa T004. `curl` con coordenadas retorna sucursales con `distanceKm` y `searchContext`.
 
@@ -52,13 +52,13 @@
 
 ## Phase 4: US2 — Listado Completo sin Filtro (Priority: P2)
 
-**Goal**: `GET /api/branches` sin params retorna todas las sucursales activas ordenadas por nombre, sin `distanceKm` ni `searchContext`.
+**Goal**: `GET /api/v1/branches` sin params retorna todas las sucursales activas ordenadas por nombre, sin `distanceKm` ni `searchContext`.
 
-**Independent Test**: `curl "http://localhost:3000/api/branches"` retorna todas las sucursales activas sin `searchContext`.
+**Independent Test**: `curl "http://localhost:3000/api/v1/branches"` retorna todas las sucursales activas sin `searchContext`.
 
-- [x] T006 [US2] Add test cases to `tests/server/api/branches/index.get.test.ts` for the no-coords path — (a) no params → all active branches returned, no `distanceKm` field on any item, no `searchContext` in response; (b) inactive branches (`isActive=false`) excluded; (c) results ordered by `name` ascending; (d) branches without lat/lng included (no exclusion for missing coords when returning full list)
+- [x] T006 [US2] Add test cases to `tests/server/api/v1/branches/index.get.test.ts` for the no-coords path — (a) no params → all active branches returned, no `distanceKm` field on any item, no `searchContext` in response; (b) inactive branches (`isActive=false`) excluded; (c) results ordered by `name` ascending; (d) branches without lat/lng included (no exclusion for missing coords when returning full list)
 
-- [x] T007 [US2] Extend `server/api/branches/index.get.ts` — add else branch when no lat/lng: query all `isActive=true` branches ordered by `name` ascending; return `ok(branches.map(stripInternalFields))` without `searchContext`
+- [x] T007 [US2] Extend `server/api/v1/branches/index.get.ts` — add else branch when no lat/lng: query all `isActive=true` branches ordered by `name` ascending; return `ok(branches.map(stripInternalFields))` without `searchContext`
 
 **Checkpoint**: `pnpm test` pasa T006. `curl` sin params retorna catálogo completo sin `searchContext`.
 

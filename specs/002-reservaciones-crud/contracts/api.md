@@ -40,7 +40,7 @@
 
 ---
 
-## GET /api/branches
+## GET /api/v1/branches
 
 Lista las sucursales activas para el selector del formulario de reservación.
 
@@ -70,7 +70,7 @@ Lista las sucursales activas para el selector del formulario de reservación.
 
 ---
 
-## POST /api/reservations
+## POST /api/v1/reservations
 
 Crea una nueva reservación con estado `pending`.
 
@@ -128,7 +128,7 @@ Crea una nueva reservación con estado `pending`.
 
 ---
 
-## GET /api/reservations
+## GET /api/v1/reservations
 
 Lista reservaciones con soporte para filtros y paginación.
 
@@ -159,7 +159,7 @@ Lista reservaciones con soporte para filtros y paginación.
 
 ---
 
-## GET /api/reservations/:id
+## GET /api/v1/reservations/:id
 
 Retorna una reservación por su UUID.
 
@@ -177,7 +177,7 @@ Retorna una reservación por su UUID.
 
 ---
 
-## PATCH /api/reservations/:id
+## PATCH /api/v1/reservations/:id
 
 Actualiza campos editables de una reservación existente.
 
@@ -216,7 +216,7 @@ Actualiza campos editables de una reservación existente.
 
 ---
 
-## DELETE /api/reservations/:id
+## DELETE /api/v1/reservations/:id
 
 Cancela una reservación (soft-delete): marca `status = cancelled` y `deleted_at = NOW()`.
 
