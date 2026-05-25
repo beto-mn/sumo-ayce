@@ -16,7 +16,7 @@ vi.mock('h3', async () => {
   return { ...actual, getQuery: mockGetQuery }
 })
 
-import handler from '../../../../server/api/branches/index.get'
+import handler from '../../../../server/api/v1/branches/index.get'
 
 const event = {} as unknown as H3Event
 
@@ -70,7 +70,7 @@ const INTERNAL_FIELDS = [
   'updatedAt',
 ]
 
-describe('GET /api/branches — with coordinates (US1)', () => {
+describe('GET /api/v1/branches — with coordinates (US1)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -209,7 +209,7 @@ describe('GET /api/branches — with coordinates (US1)', () => {
   })
 })
 
-describe('GET /api/branches — without coordinates (US2)', () => {
+describe('GET /api/v1/branches — without coordinates (US2)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

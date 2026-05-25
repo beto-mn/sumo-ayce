@@ -21,7 +21,7 @@ vi.mock('h3', async () => {
   }
 })
 
-import handler from '../../../../server/api/reservations/[id].patch'
+import handler from '../../../../server/api/v1/reservations/[id].patch'
 
 const event = {} as unknown as H3Event
 
@@ -45,7 +45,7 @@ const CANCELLED_ROW = {
   deletedAt: new Date(),
 }
 
-describe('PATCH /api/reservations/:id', () => {
+describe('PATCH /api/v1/reservations/:id', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

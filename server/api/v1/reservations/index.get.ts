@@ -1,9 +1,9 @@
 import { and, asc, count, eq, isNull } from 'drizzle-orm'
 import { defineEventHandler, getValidatedQuery } from 'h3'
-import { ListReservationsQuerySchema } from '../../../types/reservations'
-import { reservations } from '../../db/schema'
-import { db } from '../../utils/db'
-import { paginated } from '../../utils/response'
+import { ListReservationsQuerySchema } from '../../../../types/reservations'
+import { reservations } from '../../../db/schema'
+import { db } from '../../../utils/db'
+import { paginated } from '../../../utils/response'
 
 export default defineEventHandler(async event => {
   const query = await getValidatedQuery(event, v =>

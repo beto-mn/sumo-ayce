@@ -30,7 +30,7 @@ vi.mock('../../../../server/utils/logger', () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn() },
 }))
 
-import handler from '../../../../server/api/reservations/index.post'
+import handler from '../../../../server/api/v1/reservations/index.post'
 
 const event = {} as unknown as H3Event
 
@@ -70,7 +70,7 @@ function makeCreatedRow(folio = 'AABBCCDD') {
   }
 }
 
-describe('POST /api/reservations', () => {
+describe('POST /api/v1/reservations', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
