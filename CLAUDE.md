@@ -110,11 +110,11 @@ sumo-ayce/
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/003-twilio-notifications`
-**Plan**: `specs/003-twilio-notifications/plan.md`
-**Spec**: `specs/003-twilio-notifications/spec.md`
-**Data Model**: `specs/003-twilio-notifications/data-model.md`
-**Quickstart**: `specs/003-twilio-notifications/quickstart.md`
-**API Contract**: `specs/003-twilio-notifications/contracts/api.md`
-**Research**: `specs/003-twilio-notifications/research.md`
+**Branch**: `feat/004-branch-finder-location`
+**Plan**: `specs/004-branch-finder-location/plan.md`
+**Spec**: `specs/004-branch-finder-location/spec.md`
+**Data Model**: `specs/004-branch-finder-location/data-model.md`
+**Quickstart**: `specs/004-branch-finder-location/quickstart.md`
+**API Contract**: `specs/004-branch-finder-location/contracts/api.md`
+**Research**: `specs/004-branch-finder-location/research.md`
 <!-- SPECKIT END -->
