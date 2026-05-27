@@ -34,9 +34,9 @@ Cuando un cliente visita el restaurante y consume, un colaborador registra la vi
 
 **Acceptance Scenarios**:
 
-1. **Given** un cliente registrado, **When** el staff registra una visita en una sucursal específica, **Then** el saldo aumenta por el valor configurado de puntos-por-visita y se envía WhatsApp de confirmación con el nuevo saldo.
+1. **Given** un cliente registrado, **When** el staff registra una visita en una sucursal específica con el ID de ticket y su usuario, **Then** el saldo aumenta por el valor configurado de puntos-por-visita y se envía WhatsApp de confirmación con el nuevo saldo.
 2. **Given** un teléfono no registrado en el programa, **When** el staff intenta registrar una visita, **Then** el sistema rechaza la operación (el cliente debe estar registrado primero).
-3. **Given** un cliente registrado, **When** se registra una visita, **Then** la transacción queda en el historial con sucursal, fecha y puntos ganados.
+3. **Given** un cliente registrado, **When** se registra una visita, **Then** la transacción queda en el historial con sucursal, fecha, puntos ganados, ID de ticket y el colaborador que la registró.
 4. **Given** un cliente con `deletedAt` registrado, **When** el staff intenta registrar una visita, **Then** el sistema rechaza la operación.
 5. **Given** un cliente cuyo nuevo saldo alcanza el costo de una o más recompensas activas, **When** se registra la visita, **Then** se envía un WhatsApp adicional notificando que tiene recompensas disponibles, incluyendo el nombre, descripción y costo en puntos de cada recompensa desbloqueada.
 
@@ -112,7 +112,7 @@ El staff procesa un canje a petición del cliente. Se descuentan los puntos del 
 - **FR-001**: System MUST allow staff to register a new customer with name and phone number.
 - **FR-002**: System MUST prevent duplicate registrations by phone number, returning the existing customer profile instead.
 - **FR-003**: System MUST send a WhatsApp welcome notification to the customer upon registration (if opted in).
-- **FR-004**: System MUST allow staff to record a visit for a registered, active customer at a specific branch, crediting a configurable fixed number of points.
+- **FR-004**: System MUST allow staff to record a visit for a registered, active customer at a specific branch, crediting a configurable fixed number of points. Each visit record MUST include the staff member who registered it and the POS ticket ID associated with the visit.
 - **FR-005**: System MUST maintain a running points balance per customer, updated atomically on each earn or redeem event.
 - **FR-006**: System MUST send a WhatsApp notification to the customer (if opted in) when points are earned, including the new balance.
 - **FR-006b**: After earning points, if the customer's new balance meets or exceeds the cost of one or more active rewards, system MUST send an additional WhatsApp message listing each newly unlocked reward (name, description, points cost).
