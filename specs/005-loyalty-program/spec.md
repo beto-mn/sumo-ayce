@@ -82,19 +82,20 @@ Cualquier usuario puede ver la lista actual de recompensas disponibles con su co
 
 ### User Story 5 — Canje de Recompensa (Priority: P3)
 
-El staff procesa un canje a petición del cliente. Se descuentan los puntos del saldo del cliente y se crea un registro de canje con estado "pendiente". El cliente recibe un mensaje WhatsApp con el código de canje para presentarlo al staff. El staff marca el canje como utilizado cuando el cliente lo presenta.
+Cuando un cliente visita la sucursal y quiere canjear una recompensa, le indica al staff cuál quiere. El staff la procesa en el portal: los puntos se descuentan del saldo del cliente en ese momento, el canje queda registrado como usado y el cliente recibe un WhatsApp confirmando qué canjeó y cuántos puntos le quedan.
+
+La notificación al ganar puntos (US2) es solo informativa — lista las recompensas disponibles pero no genera ningún código ni reserva puntos. El cliente decide qué canjear al visitar la sucursal.
 
 **Why this priority**: El canje es la recompensa final del programa; depende de que el earn esté funcionando primero.
 
-**Independent Test**: Procesar un canje para un cliente con saldo suficiente y verificar: puntos descontados, canje creado en estado 'pending', notificación WhatsApp enviada con código.
+**Independent Test**: Procesar un canje para un cliente con saldo suficiente y verificar: puntos descontados, canje creado en estado 'used', WhatsApp de confirmación enviado con nombre de recompensa y saldo restante.
 
 **Acceptance Scenarios**:
 
-1. **Given** un cliente con saldo suficiente, **When** el staff procesa un canje de una recompensa, **Then** los puntos se descuentan, el canje se crea en estado 'pending' y se envía WhatsApp al cliente con: la recompensa canjeada (nombre y descripción), el saldo de puntos restante, y el código de canje para presentar al staff.
-2. **Given** un cliente con saldo insuficiente, **When** se intenta canjear, **Then** el sistema rechaza con error claro (puntos insuficientes).
-3. **Given** un canje en estado 'pending', **When** el staff lo marca como usado, **Then** el estado cambia a 'used', se registra la fecha/hora de uso y el cliente recibe WhatsApp de confirmación.
-4. **Given** un canje en estado 'pending' que supera la ventana de expiración configurada, **When** el sistema verifica su estado, **Then** el estado cambia a 'expired' y los puntos NO se reembolsan.
-5. **Given** un canje ya marcado como 'used', **When** se intenta marcarlo como usado de nuevo, **Then** el sistema rechaza la operación.
+1. **Given** un cliente con saldo suficiente, **When** el staff procesa el canje en sucursal, **Then** los puntos se descuentan, el canje se crea directamente en estado 'used' y se envía WhatsApp con nombre de recompensa, descripción y saldo restante.
+2. **Given** un cliente con saldo insuficiente, **When** el staff intenta procesar el canje, **Then** el sistema rechaza con error claro (puntos insuficientes).
+3. **Given** un cliente con puntos suficientes para dos recompensas distintas, **When** el staff procesa una de ellas, **Then** solo se descuentan los puntos de esa recompensa; el saldo restante puede o no alcanzar para la otra.
+4. **Given** un cliente inactivo (deletedAt), **When** el staff intenta procesar un canje, **Then** el sistema rechaza la operación.
 
 ---
 
@@ -120,10 +121,9 @@ El staff procesa un canje a petición del cliente. Se descuentan los puntos del 
 - **FR-008**: System MUST allow staff (authenticated) to look up a customer's full profile, balance, and transaction history by phone number.
 - **FR-008b**: System MUST respond to a customer sending the keyword "saldo" via WhatsApp with a message containing only their current points balance — no history, no personal data beyond the balance total.
 - **FR-009**: System MUST expose a catalog of active rewards ordered by points cost ascending.
-- **FR-010**: System MUST allow staff to create a redemption for a customer with sufficient balance, atomically deducting points and creating the redemption record.
+- **FR-010**: System MUST allow staff to process a redemption for a customer with sufficient balance, atomically deducting points and creating the redemption record with status 'used' in a single operation.
 - **FR-011**: System MUST reject redemption requests when the customer's balance is less than the reward's points cost.
-- **FR-012**: System MUST send a WhatsApp notification to the customer (if opted in) when a redemption is created, including: the redeemed reward name and description, the remaining points balance, and the unique redemption code.
-- **FR-013**: System MUST allow staff to mark a pending redemption as used, recording the staff member and timestamp.
+- **FR-012**: System MUST send a WhatsApp notification to the customer (if opted in) when a redemption is processed, including the redeemed reward name, description, and remaining points balance.
 - **FR-014**: System MUST reject operations on customers marked as deleted.
 - **FR-015**: The points-per-visit value MUST be configurable without code changes.
 

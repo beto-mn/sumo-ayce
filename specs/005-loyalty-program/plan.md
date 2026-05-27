@@ -69,9 +69,7 @@ server/
 │   │       ├── rewards/
 │   │       │   └── index.get.ts               # GET /api/v1/loyalty/rewards
 │   │       └── redemptions/
-│   │           ├── index.post.ts              # POST /api/v1/loyalty/redemptions
-│   │           └── [id]/
-│   │               └── use.patch.ts           # PATCH /api/v1/loyalty/redemptions/:id/use
+│   │           └── index.post.ts              # POST /api/v1/loyalty/redemptions (crea + usa en un paso)
 │   └── webhooks/
 │       └── twilio.post.ts                     # Extender con SALDO keyword (existente)
 └── utils/
@@ -85,9 +83,7 @@ tests/server/
 │   │   └── [phone]/index.get.test.ts
 │   ├── transactions/index.post.test.ts
 │   ├── rewards/index.get.test.ts
-│   └── redemptions/
-│       ├── index.post.test.ts
-│       └── [id]/use.patch.test.ts
+│   └── redemptions/index.post.test.ts
 └── utils/
     └── loyalty-messages.test.ts
 ```
@@ -99,8 +95,8 @@ tests/server/
 ### Atomicidad del balance
 `db.transaction()` con `SELECT ... FOR UPDATE` antes de cualquier deducción. Garantiza que el saldo nunca llega a negativo incluso con concurrencia.
 
-### Código de canje
-Reutilizar `server/utils/folio.ts` (8 chars `[A-Z0-9]`). Requiere migración para agregar columna `code VARCHAR(8) NOT NULL UNIQUE` a `redemptions`.
+### Canje en un solo paso
+`POST /redemptions` crea el canje directamente en estado `used` — no existe estado `pending` en este feature. La operación es atómica: descuento de puntos + insert de redemption + insert de loyaltyTransaction en una sola `db.transaction()`. No hay `PATCH /use` endpoint.
 
 ### Detección de recompensas desbloqueadas
 Después de acreditar puntos, query de rewards activas en JS: `rewards.filter(r => r.pointsCost > prevBalance && r.pointsCost <= newBalance)`. Solo notifica las recién desbloqueadas.

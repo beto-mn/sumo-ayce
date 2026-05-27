@@ -106,12 +106,11 @@ code: varchar('code', { length: 8 }).notNull(),
 ### Redemption Status
 
 ```
-[created] → pending
-pending   → used      (staff marks as used via PATCH /redemptions/:id/use)
-pending   → expired   (cron job or lazy check after LOYALTY_REDEMPTION_EXPIRY_HOURS)
+[created] → used   (staff processes redemption on the spot — single operation)
 used      → (terminal)
-expired   → (terminal)
 ```
+
+> `pending` y `expired` se conservan en el enum de BD para uso futuro pero no se usan en esta feature.
 
 ### Customer Points Balance
 
