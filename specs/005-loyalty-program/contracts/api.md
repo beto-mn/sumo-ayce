@@ -181,7 +181,7 @@ Ordenadas por `pointsCost ASC`. Solo recompensas con `isActive=true`.
 
 ## POST /api/v1/loyalty/redemptions `[staff]`
 
-Procesa un canje de recompensa para un cliente.
+Procesa un canje de recompensa para un cliente. El canje se crea y marca como usado en una sola operación atómica — no existe estado intermedio 'pending'.
 
 **Auth**: Staff (feat/006 agrega middleware)
 
@@ -213,7 +213,8 @@ Procesa un canje de recompensa para un cliente.
     "rewardName": "Postre gratis",
     "pointsDeducted": 20,
     "remainingBalance": 25,
-    "status": "pending",
+    "status": "used",
+    "usedAt": "2026-05-26T15:00:00Z",
     "createdBy": "uuid",
     "createdAt": "2026-05-26T15:00:00Z"
   },
@@ -226,36 +227,7 @@ Procesa un canje de recompensa para un cliente.
 **Response 422** — puntos insuficientes.  
 **Response 400** — cliente inactivo, recompensa inactiva, o branch inválido.
 
-**Side effect**: WhatsApp al cliente con nombre de recompensa, descripción, saldo restante y código de canje.
-
----
-
-## PATCH /api/v1/loyalty/redemptions/:id/use `[staff]`
-
-Marca un canje pendiente como utilizado.
-
-**Auth**: Staff (feat/006 agrega middleware)
-
-**Path param**: `id` — UUID del canje
-
-**Request body**: vacío `{}`
-
-**Response 200**:
-```json
-{
-  "data": {
-    "redemptionId": "uuid",
-    "code": "AB3X9KP2",
-    "status": "used",
-    "usedAt": "2026-05-26T15:30:00Z"
-  },
-  "error": null,
-  "meta": null
-}
-```
-
-**Response 404** — canje no encontrado.  
-**Response 409** — canje ya fue usado o está expirado.
+**Side effect**: WhatsApp al cliente con nombre de recompensa, descripción y saldo restante.
 
 ---
 
