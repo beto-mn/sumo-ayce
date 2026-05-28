@@ -58,12 +58,16 @@ Todas las tablas existen desde `feat/001-db-schema-drizzle`. No se requiere migr
 | `customer_id` | `uuid` FK → customers | |
 | `reward_id` | `uuid` FK → rewards | |
 | `branch_id` | `uuid` FK → branches | Sucursal donde se procesó |
+| `ticket_id` | `varchar(100)` NOT NULL | Folio del ticket del POS asociado al canje |
 | `created_by` | `uuid` NOT NULL FK → staff_users | Colaborador que procesó el canje |
-| `used_by` | `uuid` nullable FK → staff_users | Colaborador que marcó el canje como usado |
-| `status` | `enum('pending','used','expired')` DEFAULT 'pending' | |
-| `used_at` | `timestamp` nullable | Cuando el staff marcó como usado |
+| `status` | `enum('pending','used','expired')` DEFAULT 'used' | Siempre 'used' en esta versión |
+| `used_at` | `timestamp` NOT NULL | Momento en que se procesó el canje |
 | `created_at` | `timestamp` | |
 | `updated_at` | `timestamp` | |
+
+**Constraints**:
+- `UNIQUE (ticket_id)` — un ticket solo puede usarse para un canje
+- `UNIQUE (ticket_id)` en `loyalty_transactions WHERE transaction_type = 'earn'` — un ticket solo puede acumular puntos una vez
 
 ---
 
@@ -79,25 +83,61 @@ ALTER TABLE loyalty_transactions
 
 Ambas columnas son nullable — los registros de tipo `redeem` no tienen ticket ni createdBy.
 
-### Migration 2: Add `code` and `created_by` to `redemptions`
+### Migration 2: Add `ticket_id` and `created_by` to `redemptions`
 
-La tabla `redemptions` no tiene código corto ni registro de quién creó el canje.
+La tabla `redemptions` no tiene folio del ticket ni registro de quién procesó el canje.
 
-**Change**: Agregar columnas `code varchar(8) NOT NULL UNIQUE` y `created_by uuid NOT NULL REFERENCES staff_users(id)` a `redemptions`.
+**Change**: Agregar columnas `ticket_id VARCHAR(100) NOT NULL` y `created_by UUID NOT NULL REFERENCES staff_users(id)`.
 
 ```sql
-ALTER TABLE redemptions ADD COLUMN code VARCHAR(8) NOT NULL DEFAULT '';
-CREATE UNIQUE INDEX redemptions_code_idx ON redemptions(code);
+ALTER TABLE redemptions
+  ADD COLUMN ticket_id VARCHAR(100) NOT NULL DEFAULT '',
+  ADD COLUMN created_by UUID REFERENCES staff_users(id);
+
+CREATE UNIQUE INDEX redemptions_ticket_id_idx ON redemptions(ticket_id);
 -- Luego remover el DEFAULT en Drizzle schema
+```
+
+**Migration 2b**: Agregar unique index en `loyalty_transactions` para prevenir earn duplicado por ticket.
+
+```sql
+CREATE UNIQUE INDEX loyalty_transactions_ticket_earn_idx
+  ON loyalty_transactions(ticket_id)
+  WHERE transaction_type = 'earn';
 ```
 
 **Drizzle schema update**:
 ```typescript
-code: varchar('code', { length: 8 }).notNull(),
-// + uniqueIndex('redemptions_code_idx').on(t.code) en el array de table config
+ticketId: varchar('ticket_id', { length: 100 }).notNull(),
+createdBy: uuid('created_by').notNull().references(() => staffUsers.id),
+// + uniqueIndex('redemptions_ticket_id_idx').on(t.ticketId)
 ```
 
-**Generation**: Reutilizar `server/utils/folio.ts` (mismo patrón que reservaciones).
+### Migration 3: Add `manager_phone` to `branches`
+
+Requerido para alertas de velocidad (FR-018). El campo es nullable — sucursales sin manager_phone no reciben alertas.
+
+```sql
+ALTER TABLE branches ADD COLUMN manager_phone VARCHAR(20);
+```
+
+**Drizzle schema update**:
+```typescript
+managerPhone: varchar('manager_phone', { length: 20 }),
+```
+
+---
+
+## Anti-Fraud Constraints
+
+| Regla | Mecanismo | Capa |
+|-------|-----------|------|
+| Un ticket → un solo earn | Unique index parcial `(ticket_id) WHERE type='earn'` | DB |
+| Un ticket → un solo canje | Unique index `redemptions(ticket_id)` | DB |
+| Max 1 earn por cliente por día | Check `COUNT earn WHERE customer + date = today` | App |
+| Empleado no opera su propia cuenta | Comparar `staff_users.phone` vs `customers.phone` | App |
+| Earn y canje del mismo ticket requieren dos empleados | Verificar `earn.created_by ≠ staffId` cuando `ticket_id` coincide | App |
+| Alerta de velocidad por empleado | Contar earns del staff en última hora; notificar si supera umbral | App (fire-and-forget) |
 
 ---
 
@@ -106,11 +146,11 @@ code: varchar('code', { length: 8 }).notNull(),
 ### Redemption Status
 
 ```
-[created] → used   (staff processes redemption on the spot — single operation)
+[created] → used   (staff processes redemption — single atomic operation)
 used      → (terminal)
 ```
 
-> `pending` y `expired` se conservan en el enum de BD para uso futuro pero no se usan en esta feature.
+> Todo canje se crea directamente en `used`. No existe estado intermedio. El staff selecciona la recompensa en el portal, se descuentan los puntos y se notifica al cliente vía WhatsApp — sin códigos ni pasos adicionales.
 
 ### Customer Points Balance
 

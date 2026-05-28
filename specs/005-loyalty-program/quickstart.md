@@ -7,13 +7,11 @@
 ```bash
 # .env.local debe tener las variables de feat/001–004 más las nuevas:
 LOYALTY_POINTS_PER_VISIT=10
-LOYALTY_REDEMPTION_EXPIRY_HOURS=72
 ```
 
 ## Setup: Migración de schema
 
 ```bash
-# Agregar columna 'code' a redemptions
 pnpm drizzle-kit generate
 pnpm drizzle-kit migrate
 ```
@@ -41,13 +39,13 @@ curl -s -X POST http://localhost:3000/api/v1/loyalty/customers \
 ## Scenario 3 — Registrar visita y ganar puntos
 
 ```bash
-# Requiere branchId válido de la BD
+# Requiere branchId y staffId válidos de la BD
 curl -s -X POST http://localhost:3000/api/v1/loyalty/transactions \
   -H "Content-Type: application/json" \
-  -d '{"phone":"5512345678","branchId":"<uuid-sucursal>"}' | jq .
+  -d '{"phone":"5512345678","branchId":"<uuid-sucursal>","ticketId":"T-001","staffId":"<uuid-staff>"}' | jq .
 ```
 
-**Esperado**: `201`, `data.pointsDelta=10`, `data.newBalance=10`. WhatsApp enviado con saldo.
+**Esperado**: `201`, `data.pointsDelta=10`, `data.newBalance=10`. WhatsApp enviado con saldo. Si el saldo alcanza para alguna recompensa, se envía un segundo WhatsApp listando qué puede canjear (sin código).
 
 ## Scenario 4 — Consultar catálogo de recompensas
 
@@ -67,35 +65,27 @@ curl -s "http://localhost:3000/api/v1/loyalty/customers/5512345678" | jq .
 
 ## Scenario 6 — Canjear recompensa
 
+El mesero consulta al cliente, selecciona la recompensa en el portal y la procesa en un solo paso.
+
 ```bash
 curl -s -X POST http://localhost:3000/api/v1/loyalty/redemptions \
   -H "Content-Type: application/json" \
-  -d '{"phone":"5512345678","rewardId":"<uuid-reward>","branchId":"<uuid-sucursal>"}' | jq .
+  -d '{"phone":"5512345678","rewardId":"<uuid-reward>","branchId":"<uuid-sucursal>","ticketId":"T-00421","staffId":"<uuid-staff>"}' | jq .
 ```
 
-**Esperado**: `201`, `data.code` de 8 chars, `data.status=pending`. WhatsApp con código enviado.
+**Esperado**: `201`, `data.status=used`, `data.ticketId=T-00421`, `data.usedAt` presente, `data.remainingBalance` actualizado. WhatsApp enviado al cliente con nombre de recompensa y saldo restante.
 
 ## Scenario 7 — Intentar canjear con puntos insuficientes
 
 ```bash
 curl -s -X POST http://localhost:3000/api/v1/loyalty/redemptions \
   -H "Content-Type: application/json" \
-  -d '{"phone":"5512345678","rewardId":"<uuid-reward-caro>","branchId":"<uuid>"}' | jq .
+  -d '{"phone":"5512345678","rewardId":"<uuid-reward-caro>","branchId":"<uuid>","ticketId":"T-00422","staffId":"<uuid-staff>"}' | jq .
 ```
 
 **Esperado**: `422 Unprocessable`, mensaje de puntos insuficientes.
 
-## Scenario 8 — Marcar canje como usado
-
-```bash
-curl -s -X PATCH "http://localhost:3000/api/v1/loyalty/redemptions/<redemption-id>/use" \
-  -H "Content-Type: application/json" \
-  -d '{}' | jq .
-```
-
-**Esperado**: `200`, `data.status=used`, `data.usedAt` presente.
-
-## Scenario 9 — WhatsApp SALDO (simular webhook)
+## Scenario 8 — WhatsApp SALDO (simular webhook)
 
 ```bash
 # Simular mensaje entrante de Twilio (sin verificación de firma en dev)

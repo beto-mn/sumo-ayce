@@ -39,6 +39,9 @@ Cuando un cliente visita el restaurante y consume, un colaborador registra la vi
 3. **Given** un cliente registrado, **When** se registra una visita, **Then** la transacción queda en el historial con sucursal, fecha, puntos ganados, ID de ticket y el colaborador que la registró.
 4. **Given** un cliente con `deletedAt` registrado, **When** el staff intenta registrar una visita, **Then** el sistema rechaza la operación.
 5. **Given** un cliente cuyo nuevo saldo alcanza el costo de una o más recompensas activas, **When** se registra la visita, **Then** se envía un WhatsApp adicional notificando que tiene recompensas disponibles, incluyendo el nombre, descripción y costo en puntos de cada recompensa desbloqueada.
+6. **Given** un cliente que ya acumuló puntos hoy en cualquier sucursal, **When** el staff intenta registrar una segunda visita el mismo día, **Then** el sistema rechaza la operación indicando que el cliente ya acumuló puntos hoy.
+7. **Given** que el staff intenta registrar una visita para su propia cuenta de cliente (mismo número de teléfono), **When** envía la solicitud, **Then** el sistema rechaza con error de auto-operación prohibida.
+8. **Given** que un colaborador registra más transacciones de las permitidas en una hora, **When** se completa la transacción que supera el umbral, **Then** el sistema envía un WhatsApp de alerta al número del manager de la sucursal (si está configurado), incluyendo nombre del colaborador, cantidad de transacciones y sucursal.
 
 ---
 
@@ -96,6 +99,8 @@ La notificación al ganar puntos (US2) es solo informativa — lista las recompe
 2. **Given** un cliente con saldo insuficiente, **When** el staff intenta procesar el canje, **Then** el sistema rechaza con error claro (puntos insuficientes).
 3. **Given** un cliente con puntos suficientes para dos recompensas distintas, **When** el staff procesa una de ellas, **Then** solo se descuentan los puntos de esa recompensa; el saldo restante puede o no alcanzar para la otra.
 4. **Given** un cliente inactivo (deletedAt), **When** el staff intenta procesar un canje, **Then** el sistema rechaza la operación.
+5. **Given** que el staff intenta procesar un canje para su propia cuenta de cliente (mismo número de teléfono), **When** envía la solicitud, **Then** el sistema rechaza con error de auto-operación prohibida.
+6. **Given** que el mismo ticket ya fue usado para acumular puntos por el empleado X, **When** el empleado X intenta procesar un canje con ese mismo ticket, **Then** el sistema rechaza exigiendo un segundo colaborador para el canje.
 
 ---
 
@@ -105,6 +110,10 @@ La notificación al ganar puntos (US2) es solo informativa — lista las recompe
 - ¿Qué ocurre con dos solicitudes concurrentes que intentan descontar puntos simultáneamente? → El sistema debe prevenir saldo negativo mediante control atómico.
 - ¿Qué pasa si el valor de puntos-por-visita se modifica? → Las transacciones históricas conservan su valor original; solo las nuevas usan el nuevo valor.
 - ¿Qué pasa si se intenta consultar un cliente con `deletedAt`? → Se devuelve not-found (el cliente no existe públicamente).
+- ¿Qué pasa si la sucursal no tiene `manager_phone` configurado? → La alerta de velocidad se omite silenciosamente; la transacción se procesa con normalidad.
+- ¿Qué pasa si el WhatsApp de alerta al manager falla? → Se loguea el error pero no se revierte la transacción.
+- ¿Puede el mismo colaborador hacer el earn y el canje en tickets diferentes? → Sí. La restricción D aplica solo cuando earn y canje comparten el mismo `ticket_id`.
+- ¿Qué pasa si el umbral de velocidad se configura en 0 o negativo? → El sistema ignora la alerta (umbral inválido = feature desactivada).
 
 ## Requirements *(mandatory)*
 
@@ -126,13 +135,17 @@ La notificación al ganar puntos (US2) es solo informativa — lista las recompe
 - **FR-012**: System MUST send a WhatsApp notification to the customer (if opted in) when a redemption is processed, including the redeemed reward name, description, and remaining points balance.
 - **FR-014**: System MUST reject operations on customers marked as deleted.
 - **FR-015**: The points-per-visit value MUST be configurable without code changes.
+- **FR-016**: System MUST reject earn requests if the customer already has an earn transaction on the current calendar day (any branch). Returns 409.
+- **FR-017**: System MUST reject earn and redemption requests when the `staffId` belongs to a staff account whose phone number matches the customer's phone number. Returns 403.
+- **FR-018**: After a successful earn, if the processing staff member has registered more transactions than the configured hourly threshold, the system MUST send a WhatsApp alert to the branch's manager phone (if set). Alert is fire-and-forget — it does not block or revert the transaction.
+- **FR-019**: System MUST reject a redemption if the `ticketId` was previously used to earn points by the same staff member processing the current redemption. A second staff member must process the redemption on that ticket. Returns 403.
 
 ### Key Entities
 
 - **Customer**: Miembro del programa identificado por teléfono. Tiene nombre, flag de opt-in WhatsApp y saldo de puntos actual.
 - **LoyaltyTransaction**: Registro inmutable de un cambio de puntos (earn o redeem) para un cliente en una sucursal. Incluye monto, tipo, fecha y referencia opcional.
 - **Reward**: Premio o beneficio que un cliente puede canjear. Tiene nombre, descripción, costo en puntos y estado activo/inactivo.
-- **Redemption**: Instancia de un cliente solicitando una recompensa específica. Tiene estado (pending, used, expired), código único, fecha de uso y referencia al colaborador que lo validó.
+- **Redemption**: Instancia de un cliente canjeando una recompensa. Siempre se crea en estado 'used'. Incluye el ticket del POS, la sucursal, el colaborador que la procesó y la fecha de uso.
 
 ## Success Criteria *(mandatory)*
 
@@ -143,16 +156,20 @@ La notificación al ganar puntos (US2) es solo informativa — lista las recompe
 - **SC-003**: La consulta de saldo e historial devuelve resultados en menos de 2 segundos.
 - **SC-004**: El sistema garantiza que ningún cliente pueda llegar a saldo negativo, incluso ante solicitudes concurrentes de canje.
 - **SC-005**: Las notificaciones WhatsApp se entregan a clientes con opt-in dentro de los 10 segundos posteriores a registrar una transacción.
-- **SC-006**: El 100% de las transacciones de puntos quedan registradas con trazabilidad completa (sucursal, fecha, tipo, monto).
+- **SC-006**: El 100% de las transacciones de puntos quedan registradas con trazabilidad completa (sucursal, fecha, tipo, monto, ticket, colaborador).
+- **SC-007**: El sistema detecta y alerta actividad anormal de un colaborador dentro del mismo ciclo de request que genera la transacción número umbral+1.
 
 ## Assumptions
 
 - Los puntos por visita son un valor entero fijo (no variable según consumo). Se configura mediante variable de entorno.
 - El registro de clientes y el registro de visitas son realizados por el staff, no son acciones de autoservicio del cliente en esta versión.
 - El cliente inicia la solicitud de canje comunicándolo verbalmente al staff, quien lo procesa en el sistema desde el Staff Portal.
-- Los códigos de canje son generados por el sistema (no ingresados manualmente).
+- No se generan ni envían códigos de canje. La notificación de recompensa disponible es solo informativa.
 - Los canjes expirados no generan reembolso de puntos.
 - La integración de WhatsApp reutiliza la implementación existente de feat/003 (Twilio).
 - Un cliente con `deletedAt` registrado se considera inactivo y no puede operar en el programa.
 - Los puntos son siempre enteros positivos; no se admiten puntos fraccionarios ni negativos.
 - Las recompensas y su costo en puntos son gestionadas directamente en base de datos por administradores (no hay CRUD de rewards en esta feature).
+- El `manager_phone` de la sucursal es un número de WhatsApp opcional. Si no está configurado, las alertas de velocidad se omiten sin error.
+- El umbral de velocidad (`LOYALTY_VELOCITY_THRESHOLD`) se aplica a transacciones de tipo earn en una ventana deslizante de 60 minutos por colaborador. Un valor de 0 o negativo desactiva la alerta.
+- La comparación de teléfonos entre staff y cliente (FR-017) se hace con números normalizados en formato E.164.
