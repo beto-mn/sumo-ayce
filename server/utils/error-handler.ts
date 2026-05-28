@@ -26,6 +26,14 @@ export class ConflictError extends Error {
   }
 }
 
+export class ForbiddenError extends Error {
+  readonly statusCode = 403
+  constructor(message: string) {
+    super(message)
+    this.name = 'ForbiddenError'
+  }
+}
+
 export class ExternalServiceError extends Error {
   readonly statusCode = 502
   constructor(service: string, cause?: unknown) {
@@ -50,7 +58,8 @@ export function handleError(error: unknown): H3Error {
   if (
     error instanceof UnprocessableError ||
     error instanceof NotFoundError ||
-    error instanceof ConflictError
+    error instanceof ConflictError ||
+    error instanceof ForbiddenError
   ) {
     return createError({
       statusCode: error.statusCode,
