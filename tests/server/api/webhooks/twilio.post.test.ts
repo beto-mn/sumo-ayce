@@ -175,4 +175,84 @@ describe('POST /api/webhooks/twilio', () => {
     expect(mockDb.update).not.toHaveBeenCalled()
     expect(result).toContain('<Response/>')
   })
+
+  it('SALDO from registered number sends balance message', async () => {
+    mockGetHeader.mockReturnValue('valid_sig')
+    mockReadRawBody.mockResolvedValue(
+      `From=whatsapp%3A%2B528112345678&Body=SALDO`
+    )
+    mockDb.select.mockReturnValueOnce(
+      dbChain([
+        {
+          id: 'c1',
+          name: 'Ana',
+          phone: FROM,
+          pointsBalance: 30,
+          whatsappOptIn: true,
+          deletedAt: null,
+        },
+      ])
+    )
+
+    const result = await handler(makeEvent())
+
+    expect(mockSendWhatsAppMessage).toHaveBeenCalledOnce()
+    expect(mockSendWhatsAppMessage.mock.calls[0][0]).toBe(FROM)
+    expect(result).toContain('<Response/>')
+  })
+
+  it('SALDO lowercase is treated the same as uppercase', async () => {
+    mockGetHeader.mockReturnValue('valid_sig')
+    mockReadRawBody.mockResolvedValue(
+      `From=whatsapp%3A%2B528112345678&Body=saldo`
+    )
+    mockDb.select.mockReturnValueOnce(
+      dbChain([
+        {
+          id: 'c1',
+          name: 'Ana',
+          phone: FROM,
+          pointsBalance: 30,
+          whatsappOptIn: true,
+          deletedAt: null,
+        },
+      ])
+    )
+
+    const result = await handler(makeEvent())
+
+    expect(mockSendWhatsAppMessage).toHaveBeenCalledOnce()
+    expect(result).toContain('<Response/>')
+  })
+
+  it('SALDO from unregistered number sends not-found message', async () => {
+    mockGetHeader.mockReturnValue('valid_sig')
+    mockReadRawBody.mockResolvedValue(
+      `From=whatsapp%3A%2B528100000000&Body=SALDO`
+    )
+    mockDb.select.mockReturnValueOnce(dbChain([]))
+
+    const result = await handler(makeEvent())
+
+    expect(mockSendWhatsAppMessage).toHaveBeenCalledOnce()
+    expect(result).toContain('<Response/>')
+  })
+
+  it('SALDO does not interfere with ACEPTAR handling', async () => {
+    mockGetHeader.mockReturnValue('valid_sig')
+    mockReadRawBody.mockResolvedValue(
+      `From=whatsapp%3A%2B528112345678&Body=ACEPTAR+${FOLIO}`
+    )
+    mockDb.select
+      .mockReturnValueOnce(dbChain([PENDING_RESERVATION]))
+      .mockReturnValueOnce(dbChain([BRANCH_DETAILS]))
+    mockDb.update.mockReturnValueOnce(
+      dbChain([{ ...PENDING_RESERVATION, status: 'confirmed' }])
+    )
+
+    const result = await handler(makeEvent())
+
+    expect(mockDb.update).toHaveBeenCalledOnce()
+    expect(result).toContain('<Response/>')
+  })
 })

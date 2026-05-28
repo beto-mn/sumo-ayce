@@ -110,11 +110,11 @@ sumo-ayce/
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/004-branch-finder-location`
-**Plan**: `specs/004-branch-finder-location/plan.md`
-**Spec**: `specs/004-branch-finder-location/spec.md`
-**Data Model**: `specs/004-branch-finder-location/data-model.md`
-**Quickstart**: `specs/004-branch-finder-location/quickstart.md`
-**API Contract**: `specs/004-branch-finder-location/contracts/api.md`
-**Research**: `specs/004-branch-finder-location/research.md`
+**Branch**: `feat/005-loyalty-program`
+**Plan**: `specs/005-loyalty-program/plan.md`
+**Spec**: `specs/005-loyalty-program/spec.md`
+**Data Model**: `specs/005-loyalty-program/data-model.md`
+**Quickstart**: `specs/005-loyalty-program/quickstart.md`
+**API Contract**: `specs/005-loyalty-program/contracts/api.md`
+**Research**: `specs/005-loyalty-program/research.md`
 <!-- SPECKIT END -->
