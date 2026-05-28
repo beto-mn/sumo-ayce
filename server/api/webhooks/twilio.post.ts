@@ -1,4 +1,4 @@
-import { and, eq, inArray } from 'drizzle-orm'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
 import {
   createError,
   defineEventHandler,
@@ -6,10 +6,14 @@ import {
   readRawBody,
   setResponseHeader,
 } from 'h3'
-import { branches, reservations } from '../../db/schema'
+import { branches, customers, reservations } from '../../db/schema'
 import { db } from '../../utils/db'
 import { env } from '../../utils/env'
 import { logger } from '../../utils/logger'
+import {
+  msgLoyaltySaldo,
+  msgLoyaltySaldoNoEncontrado,
+} from '../../utils/loyalty-messages'
 import {
   normalizePhone,
   sendWhatsAppMessage,
@@ -44,6 +48,23 @@ export default defineEventHandler(async event => {
 
   const from = normalizePhone((params.From ?? '').replace('whatsapp:', ''))
   const body = (params.Body ?? '').trim().toUpperCase()
+
+  if (body === 'SALDO') {
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(and(eq(customers.phone, from), isNull(customers.deletedAt)))
+
+    const msg = customer
+      ? msgLoyaltySaldo(customer.name, customer.pointsBalance)
+      : msgLoyaltySaldoNoEncontrado()
+
+    await sendWhatsAppMessage(from, msg).catch(err =>
+      logger.error({ err }, 'Failed to send SALDO reply')
+    )
+    setResponseHeader(event, 'content-type', 'text/xml')
+    return TWIML_EMPTY
+  }
 
   const match = KEYWORD_REGEX.exec(body)
   if (!match) {

@@ -11,6 +11,7 @@ import {
   text,
   time,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
@@ -53,6 +54,7 @@ export const branches = pgTable(
     whatsappReservacionesBackup: varchar('whatsapp_reservaciones_backup', {
       length: 20,
     }),
+    managerPhone: varchar('manager_phone', { length: 20 }),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -128,6 +130,8 @@ export const loyaltyTransactions = pgTable(
     pointsDelta: integer('points_delta').notNull(),
     transactionType: loyaltyTransactionType('transaction_type').notNull(),
     referenceId: uuid('reference_id'),
+    ticketId: varchar('ticket_id', { length: 100 }),
+    createdBy: uuid('created_by').references(() => staffUsers.id),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     deletedAt: timestamp('deleted_at'),
   },
@@ -138,6 +142,9 @@ export const loyaltyTransactions = pgTable(
       t.branchId,
       t.createdAt
     ),
+    uniqueIndex('loyalty_transactions_ticket_earn_idx')
+      .on(t.ticketId)
+      .where(sql`transaction_type = 'earn'`),
   ]
 )
 
@@ -145,6 +152,7 @@ export const staffUsers = pgTable('staff_users', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 100 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  phone: varchar('phone', { length: 20 }),
   role: staffRole('role').notNull(),
   branchId: uuid('branch_id').references(() => branches.id),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
@@ -153,23 +161,31 @@ export const staffUsers = pgTable('staff_users', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
-export const redemptions = pgTable('redemptions', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  customerId: uuid('customer_id')
-    .notNull()
-    .references(() => customers.id),
-  rewardId: uuid('reward_id')
-    .notNull()
-    .references(() => rewards.id),
-  branchId: uuid('branch_id')
-    .notNull()
-    .references(() => branches.id),
-  usedBy: uuid('used_by').references(() => staffUsers.id),
-  status: redemptionStatus('status').notNull().default('pending'),
-  usedAt: timestamp('used_at'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+export const redemptions = pgTable(
+  'redemptions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    customerId: uuid('customer_id')
+      .notNull()
+      .references(() => customers.id),
+    rewardId: uuid('reward_id')
+      .notNull()
+      .references(() => rewards.id),
+    branchId: uuid('branch_id')
+      .notNull()
+      .references(() => branches.id),
+    ticketId: varchar('ticket_id', { length: 100 }).notNull(),
+    createdBy: uuid('created_by')
+      .notNull()
+      .references(() => staffUsers.id),
+    usedBy: uuid('used_by').references(() => staffUsers.id),
+    status: redemptionStatus('status').notNull().default('used'),
+    usedAt: timestamp('used_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [uniqueIndex('redemptions_ticket_id_idx').on(t.ticketId)]
+)
 
 export const staffSessions = pgTable('staff_sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
