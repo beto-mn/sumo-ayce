@@ -139,11 +139,14 @@ Registra una visita y acredita puntos al cliente.
 ```
 
 **Response 404** — cliente no encontrado.  
+**Response 409** — ticket ya utilizado para acumular puntos, o cliente ya acumuló puntos hoy.  
+**Response 403** — el staff está intentando operar su propia cuenta de cliente.  
 **Response 400** — cliente inactivo o branch no válido.
 
 **Side effects**:
 1. WhatsApp al cliente con nuevo saldo (si opt-in).
-2. Si el nuevo saldo desbloquea recompensas nuevas: WhatsApp adicional con detalle de recompensas.
+2. Si el nuevo saldo desbloquea recompensas nuevas: WhatsApp adicional con detalle de recompensas (sin código).
+3. Si el colaborador supera el umbral de velocidad: WhatsApp de alerta al `manager_phone` de la sucursal (si configurado, fire-and-forget).
 
 ---
 
@@ -191,6 +194,7 @@ Procesa un canje de recompensa para un cliente. El canje se crea y marca como us
   "phone": "5512345678",
   "rewardId": "uuid",
   "branchId": "uuid",
+  "ticketId": "T-00421",
   "staffId": "uuid"
 }
 ```
@@ -200,6 +204,7 @@ Procesa un canje de recompensa para un cliente. El canje se crea y marca como us
 | `phone` | string | ✅ | teléfono del cliente |
 | `rewardId` | string | ✅ | UUID de recompensa activa |
 | `branchId` | string | ✅ | UUID de sucursal activa |
+| `ticketId` | string | ✅ | Folio del ticket POS, 1–100 chars, único globalmente |
 | `staffId` | string | ✅ | UUID del colaborador que procesa el canje |
 
 **Response 201**:
@@ -207,10 +212,10 @@ Procesa un canje de recompensa para un cliente. El canje se crea y marca como us
 {
   "data": {
     "redemptionId": "uuid",
-    "code": "AB3X9KP2",
     "customerId": "uuid",
     "rewardId": "uuid",
     "rewardName": "Postre gratis",
+    "ticketId": "T-00421",
     "pointsDeducted": 20,
     "remainingBalance": 25,
     "status": "used",
@@ -224,6 +229,8 @@ Procesa un canje de recompensa para un cliente. El canje se crea y marca como us
 ```
 
 **Response 404** — cliente o recompensa no encontrados.  
+**Response 409** — ticket ya utilizado (earn o canje previo).  
+**Response 403** — staff operando su propia cuenta, o mismo staff intentando hacer earn y canje en el mismo ticket.  
 **Response 422** — puntos insuficientes.  
 **Response 400** — cliente inactivo, recompensa inactiva, o branch inválido.
 
