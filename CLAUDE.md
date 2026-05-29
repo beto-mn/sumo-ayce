@@ -110,11 +110,11 @@ sumo-ayce/
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/005-loyalty-program`
-**Plan**: `specs/005-loyalty-program/plan.md`
-**Spec**: `specs/005-loyalty-program/spec.md`
-**Data Model**: `specs/005-loyalty-program/data-model.md`
-**Quickstart**: `specs/005-loyalty-program/quickstart.md`
-**API Contract**: `specs/005-loyalty-program/contracts/api.md`
-**Research**: `specs/005-loyalty-program/research.md`
+**Branch**: `feat/006-staff-portal`
+**Plan**: `specs/006-staff-portal/plan.md`
+**Spec**: `specs/006-staff-portal/spec.md`
+**Data Model**: `specs/006-staff-portal/data-model.md`
+**Quickstart**: `specs/006-staff-portal/quickstart.md`
+**API Contract**: `specs/006-staff-portal/contracts/api.md`
+**Research**: `specs/006-staff-portal/research.md`
 <!-- SPECKIT END -->
