@@ -26,6 +26,14 @@ export class ConflictError extends Error {
   }
 }
 
+export class AuthError extends Error {
+  readonly statusCode = 401
+  constructor(message = 'Unauthorized') {
+    super(message)
+    this.name = 'AuthError'
+  }
+}
+
 export class ForbiddenError extends Error {
   readonly statusCode = 403
   constructor(message: string) {
@@ -59,7 +67,8 @@ export function handleError(error: unknown): H3Error {
     error instanceof UnprocessableError ||
     error instanceof NotFoundError ||
     error instanceof ConflictError ||
-    error instanceof ForbiddenError
+    error instanceof ForbiddenError ||
+    error instanceof AuthError
   ) {
     return createError({
       statusCode: error.statusCode,

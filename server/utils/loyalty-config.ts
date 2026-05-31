@@ -5,7 +5,7 @@ function parsePositiveInt(value: string | undefined, fallback: number): number {
 
 export const loyaltyConfig = {
   get pointsPerVisit() {
-    return parsePositiveInt(process.env.LOYALTY_POINTS_PER_VISIT, 10)
+    return parsePositiveInt(process.env.LOYALTY_POINTS_PER_VISIT, 1)
   },
   get velocityThreshold() {
     const n = parseInt(process.env.LOYALTY_VELOCITY_THRESHOLD ?? '', 10)

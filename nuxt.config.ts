@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  css: ['~/assets/css/staff.css'],
   vite: {
     server: {
       allowedHosts: ['.ngrok-free.app'],

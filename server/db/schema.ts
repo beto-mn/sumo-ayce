@@ -38,7 +38,7 @@ export const redemptionStatus = pgEnum('redemption_status', [
   'expired',
 ])
 
-export const staffRole = pgEnum('staff_role', ['staff', 'manager', 'admin'])
+export const staffRole = pgEnum('staff_role', ['staff', 'admin', 'owner'])
 
 // ─── Tables ──────────────────────────────────────────────────────────────────
 
@@ -132,6 +132,9 @@ export const loyaltyTransactions = pgTable(
     referenceId: uuid('reference_id'),
     ticketId: varchar('ticket_id', { length: 100 }),
     createdBy: uuid('created_by').references(() => staffUsers.id),
+    voidedBy: uuid('voided_by').references(() => staffUsers.id),
+    voidedAt: timestamp('voided_at'),
+    voidReason: text('void_reason'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     deletedAt: timestamp('deleted_at'),
   },
