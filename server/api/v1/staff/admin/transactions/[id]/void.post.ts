@@ -1,4 +1,4 @@
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { defineEventHandler, getRouterParam, readValidatedBody } from 'h3'
 import { z } from 'zod'
 import { customers, loyaltyTransactions } from '../../../../../../db/schema'

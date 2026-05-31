@@ -32,7 +32,7 @@ export async function requireStaffAuth(
     .limit(1)
 
   const row = rows[0]
-  if (!row || !row.isActive) throw new AuthError()
+  if (!row?.isActive) throw new AuthError()
 
   if (minRole && ROLE_RANK[row.role as StaffRole] < ROLE_RANK[minRole]) {
     throw new ForbiddenError('Insufficient role')
