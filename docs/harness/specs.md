@@ -57,15 +57,20 @@ Numbers are sequential (`001-`, `002-`, ...) and spec-kit assigns them.
 ```markdown
 ### Phase -1: Pre-Implementation Gates
 
-#### Constitutional Compliance (Article I — TypeScript strict)
+#### Code Organization (Article I — NON-NEGOTIABLE)
+- [ ] Feature lives entirely in `app/features/<name>/` and `server/api/v1/<name>/`?
+- [ ] No cross-feature imports?
+- [ ] Components parameterized via props (no duplicate variant files)?
+
+#### Constitutional Compliance (Article II — TypeScript strict)
 - [ ] No `any` types?
 - [ ] Vue components in `<script setup lang="ts">`?
 
-#### Test Gate (Article III — NON-NEGOTIABLE)
+#### Test Gate (Article IV)
 - [ ] Tests written BEFORE production code?
 - [ ] Tests failing (Red phase) before implementing?
 
-#### UI Documentation (Article VI)
+#### UI Documentation (Article VII)
 - [ ] Every new UI component has a story?
 - [ ] The story covers default + variants + breakpoints?
 ```

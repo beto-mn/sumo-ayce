@@ -46,3 +46,36 @@
 - [ ] `spec.md` has no unresolved `[NEEDS CLARIFICATION]` markers
 - [ ] Every `done` feature with `sdd: true` has all its tasks marked `[x]` in `tasks.md`
 - [ ] Each acceptance criterion in `spec.md` is covered by at least one concrete test
+
+## C7 — Security: no sensitive data committed (per Constitution Article VI)
+
+Applies to EVERY commit, every file type (`.ts`, `.vue`, `.md`, `.json`, `.yml`, `.sh`, etc.).
+
+- [ ] No hardcoded API keys, tokens, or secrets in any file. All secret values
+      are read from `process.env.*` or runtime config.
+- [ ] No database connection strings with embedded credentials. Only env-var references.
+- [ ] No Twilio Account SID / Auth Token, Mapbox secret token, AWS keys, JWT tokens,
+      or Google service account JSON anywhere in the tree.
+- [ ] No PEM blocks (`-----BEGIN ... PRIVATE KEY-----`) committed.
+- [ ] `.env`, `.env.local`, `.env.production` and similar are gitignored and absent
+      from `git ls-files`. Only `.env.example` is committed, with placeholder values.
+- [ ] If new env vars were added in the feature, they appear in `.env.example` with
+      descriptive placeholders AND in the Zod schema at `server/utils/env.ts`.
+- [ ] Test fixtures and seed data use synthetic values:
+      phones like `+5215555555555`, emails like `test@example.com`, generic names
+      — no real customer or staff data.
+- [ ] No logs, screenshots, or debug dumps committed that might contain session data,
+      auth headers, or real credentials.
+
+Verification commands:
+
+```bash
+# Secret-pattern scan against the diff
+git diff master...HEAD -- ':!pnpm-lock.yaml' ':!package-lock.json' | \
+  grep -niE '(api[_-]?key|secret|token|password|bearer|private_key|AKIA|^AC[a-f0-9]{32}|postgres://[^:]+:[^@]+@|-----BEGIN)'
+
+# Confirm no env files are tracked (except .env.example)
+git ls-files | grep -E '^\.env($|\.)' | grep -v '\.example$'
+```
+
+Both commands should return EMPTY for a clean commit.
