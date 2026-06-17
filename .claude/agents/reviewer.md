@@ -187,6 +187,47 @@ the design context in `docs/business/overview.md`.
   as a base color on non-Express pages. If you find Express blue on AYCE
   or shared pages, REJECTED.
 
+**Design token enforcement (NON-NEGOTIABLE per Article VII):**
+
+The project's `tailwind.config.ts` deliberately **overrides** `theme.colors`
+(not extends it), so Tailwind's default palette is NOT compiled into the
+build. Every color, radius, shadow, and type-scale value used in `app/`
+MUST resolve to a project token (defined in `app/assets/css/tokens.css`
+and mirrored in `tailwind.config.ts`). Reject any of the following:
+
+- **Default-palette utility classes** anywhere under `app/` or `.storybook/`.
+  Run:
+  ```bash
+  grep -rEn '(bg|text|border|ring|fill|stroke|divide|outline|shadow|placeholder|accent|caret|decoration)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(50|100|200|300|400|500|600|700|800|900|950)\b' app/ .storybook/
+  ```
+  Zero matches required. A match means the implementer used `bg-orange-500`
+  (Tailwind default `#f97316`) instead of `bg-orange` (token `#FF6B2B`) →
+  REJECTED with file:line.
+
+- **Arbitrary Tailwind values** (`bg-[#FF6B2B]`, `text-[14px]`, etc.) in
+  `app/` or `.storybook/`. Run:
+  ```bash
+  grep -rEn '(bg|text|border|ring|fill|stroke|outline|shadow|from|to|via)-\[' app/ .storybook/
+  ```
+  Zero matches required. Arbitrary values bypass the token contract → REJECTED.
+
+- **Inline hex colors** in components, layouts, or pages (in `style=` attrs,
+  `<style>` blocks, or raw CSS files outside `tokens.css`). Run:
+  ```bash
+  grep -rEn '(style=|: ?)#[0-9a-fA-F]{3,8}\b' app/components/ app/layouts/ app/pages/
+  ```
+  Zero matches required (the only place hex values live is `app/assets/css/tokens.css`,
+  which is excluded from this scan). Use `var(--token)` for raw CSS,
+  utility classes elsewhere → otherwise REJECTED.
+
+- **Adding a token without mirroring it.** If a PR adds a CSS custom property
+  to `tokens.css` without also adding the corresponding entry to
+  `tailwind.config.ts` (or vice versa), REJECTED — the dual surface (CSS
+  vars + Tailwind theme) is the contract from data-model.md §1.
+
+When ambiguous (e.g., a one-off color in a third-party library override),
+ASK before approving — do not approve a borderline case.
+
 ### 3. Decision
 
 Write the result to `progress/review_<feature>.md`:

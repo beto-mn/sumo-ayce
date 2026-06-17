@@ -145,7 +145,7 @@ Branch map: **orange pin = AYCE**, **blue pin = Express**.
 
 ## 7. Features (aligned to the repo stack)
 
-- **Branch finder:** geolocation (distance sort, haversine), postal-code fallback, denied-permission handling. In production: **Mapbox** (the prototype uses a schematic grid map with pins positioned by normalized lat/lng). Each card: type (color tag), name, address, distance, and Reserve / Directions (Google Maps) / Call actions.
+- **Branch finder:** geolocation (distance sort, haversine), postal-code fallback, denied-permission handling. In production: **Mapbox** as the default provider, consumed through a provider-agnostic `<MapView>` + adapter (see [`maps-strategy.md`](./maps-strategy.md)) so renderer/tiles can be swapped without cascading changes. The prototype uses a schematic grid map with pins positioned by normalized lat/lng. Each card: type (color tag), name, address, distance, and Reserve / Directions (Google Maps) / Call actions.
 - **Reservation:** modal with branch → **branch-dependent time slots** (each branch has its own `hours` range), date, party size, name, WhatsApp. On confirm: prefilled WhatsApp message **to that branch's number**. In production this goes through **Twilio** (confirmation to the client + notice to the manager) and is logged to Neon + a CSV to Drive.
 - **Promotions:** CRUD designed to map to **WordPress CPT `promociones`**. Each promo: `badge`, `title`, `desc`, `validity` (bilingual), `color`, `type` (all/ayce/express), `active`. (The prototype's "edit" button was a demo; in production it's edited in WP admin.)
 - **Bilingual ES/EN:** every UI and content string has `es`/`en`. Default **Spanish**. Language button in the nav. Use Nuxt i18n (`@nuxtjs/i18n`).

@@ -69,7 +69,7 @@ Files in the prototype:
 ## 4. Branch Finder  `/sucursales`
 
 **Purpose:** find nearest SUMO; distinguish AYCE vs Express.
-**Flow:** geolocation (sort by distance, haversine) → permission-denied handling → postal-code fallback → list + interactive map (**Mapbox**). Pin color: orange=AYCE, blue=Express. Card actions: Reserve (opens reservation), Directions (Google Maps), Call.
+**Flow:** geolocation (sort by distance, haversine) → permission-denied handling → postal-code fallback → list + interactive map. The map is consumed through a **provider-agnostic abstraction** (`<MapView>` + adapter pattern); default provider is **Mapbox**. See [`docs/business/maps-strategy.md`](./maps-strategy.md) for the architectural rule. Pin color: orange=AYCE, blue=Express. Card actions: Reserve (opens reservation), Directions (Google Maps), Call.
 **Data (WordPress CPT `sucursales`):** `name, type, address, zone, phone, lat, lng, hours[open,close]`. Seed: 29 branches in `sumo_ayce.json`. Express: Buenavista, Portal Centro (+confirm Tepepan).
 **Server:** none required for search (client-side distance); optional `/server/api/sucursales` proxy/cache of WP data. **Backend geolocation API already exists** (feature 004-branch-finder-location, done).
 **Acceptance:** denied geolocation falls back gracefully; CP search works; nearest-first order correct; map pins clickable ↔ list.
@@ -107,7 +107,7 @@ Files in the prototype:
 
 ## 8. Suggested build order
 
-1. **Scaffold + design system** (feature 007) — verify and install missing libs (Tailwind CSS, `@nuxtjs/i18n`, `mapbox-gl`); set up design tokens from `docs/business/overview.md` §2; build base components (Button, Card, Chip, Sticker, Kicker, Input/Select/Textarea, Nav); i18n config; layouts.
+1. **Scaffold + design system** (feature 007) — verify and install missing libs (Tailwind CSS, `@nuxtjs/i18n`, `mapbox-gl` — install-only here; the provider-agnostic wrapper lands in feature 012, see [`docs/business/maps-strategy.md`](./maps-strategy.md)); set up design tokens from `docs/business/overview.md` §2; build base components (Button, Card, Chip, Sticker, Kicker, Input/Select/Textarea, Nav); i18n config; layouts.
 2. **Frontend unit test setup** (feature 008) — Vitest config to actually include `app/`, happy-dom environment, `@vue/test-utils`, convention "Component.vue ↔ Component.spec.ts", backfill specs for base components delivered in 007. MUST land before any page work.
 3. **Content pages** — Homepage (009), Menu (010), Promotions (011), Branches (012).
 4. **Reservations modal** (013) — UI on top of existing backend 002 + 003.
