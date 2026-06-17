@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "menu": "Menu",
+    "promociones": "Promotions",
+    "sucursales": "Branches",
+    "lealtad": "Loyalty",
+    "contacto": "Contact",
+    "reservar": "Reserve"
+  },
+  "common": {
+    "cta": {
+      "reserve": "Reserve",
+      "viewMenu": "View menu",
+      "findBranch": "Find a branch"
+    },
+    "lang": {
+      "toggle": "ES"
+    }
+  },
+  "brand": {
+    "tagline": "American-Japanese style",
+    "ayceBadge": "All You Can Eat"
+  }
+}

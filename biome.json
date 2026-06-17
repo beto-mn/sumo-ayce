@@ -12,7 +12,10 @@
       "!.specify",
       "!public",
       "!server/db/migrations",
-      "!coverage"
+      "!coverage",
+      "!storybook-static",
+      "!.output",
+      "!.nuxt"
     ]
   },
   "formatter": {

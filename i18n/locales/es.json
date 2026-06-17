@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "menu": "Menú",
+    "promociones": "Promociones",
+    "sucursales": "Sucursales",
+    "lealtad": "Lealtad",
+    "contacto": "Contacto",
+    "reservar": "Reservar"
+  },
+  "common": {
+    "cta": {
+      "reserve": "Reservar",
+      "viewMenu": "Ver menú",
+      "findBranch": "Buscar sucursal"
+    },
+    "lang": {
+      "toggle": "EN"
+    }
+  },
+  "brand": {
+    "tagline": "Estilo americano-japonés",
+    "ayceBadge": "All You Can Eat"
+  }
+}

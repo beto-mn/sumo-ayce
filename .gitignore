@@ -25,3 +25,6 @@ logs
 
 # Test coverage (generated artifact, never commit)
 coverage/
+
+# Storybook static build (generated artifact, never commit)
+storybook-static/
