@@ -49,7 +49,7 @@ pnpm dev           # starts Nuxt on localhost
 pnpm storybook     # starts Storybook for isolated components
 ```
 
-The constitution (Article VI) requires stories for every new UI component
+The constitution (Article VII) requires stories for every new UI component
 with default + significant variants + mobile/desktop breakpoints.
 
 ## Database verification
