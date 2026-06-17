@@ -108,10 +108,10 @@ Files in the prototype:
 ## 8. Suggested build order
 
 1. **Scaffold + design system** (feature 007) — verify and install missing libs (Tailwind CSS, `@nuxtjs/i18n`, `mapbox-gl`); set up design tokens from `docs/business/overview.md` §2; build base components (Button, Card, Chip, Sticker, Kicker, Input/Select/Textarea, Nav); i18n config; layouts.
-2. **Content pages** — Homepage, Menu, Promotions, Branches.
-3. **Branch finder** — Mapbox + geolocation/CP (UI on top of existing backend 004).
-4. **Reservations modal** — UI on top of existing backend 002 + 003.
-5. **Loyalty user portal** — UI on top of existing backend 005.
+2. **Frontend unit test setup** (feature 008) — Vitest config to actually include `app/`, happy-dom environment, `@vue/test-utils`, convention "Component.vue ↔ Component.spec.ts", backfill specs for base components delivered in 007. MUST land before any page work.
+3. **Content pages** — Homepage (009), Menu (010), Promotions (011), Branches (012).
+4. **Reservations modal** (013) — UI on top of existing backend 002 + 003.
+5. **Loyalty user portal** (014) — UI on top of existing backend 005.
 
 > The prototype already implements the UI for the content pages and the branch finder /
 > reservation UX end-to-end (without the real Twilio/Neon backend). Use its `.css`/`.js`

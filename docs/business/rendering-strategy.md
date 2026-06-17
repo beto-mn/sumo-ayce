@@ -97,12 +97,12 @@ How the rendering rules apply to each feature in `feature_list.json`:
 
 | Feature                            | Route(s)          | Mode                    | Notes                                                                                       |
 |------------------------------------|-------------------|-------------------------|---------------------------------------------------------------------------------------------|
-| 008 Homepage                       | `/`               | `isr: 3600`             | WP-driven content. Reservation modal opens via state, not a separate page.                 |
-| 009 Menu page                      | `/menu`           | `isr: 3600`             | WP CPT `menu_item`. Filters (type/modality/category) are client-side over fetched data.    |
-| 010 Promotions page                | `/promociones`    | `isr: 60`               | Most dynamic — short ISR window because the client edits this frequently.                  |
-| 011 Branches page                  | `/sucursales`     | `isr: 3600`             | WP CPT `sucursales`. Geolocation + Mapbox + distance happen client-side over cached list. |
-| 012 Reservation modal              | (overlay)         | n/a                     | Renders on top of any page. Form posts to `/api/v1/reservations` (dynamic Vercel function). |
-| 013 Loyalty user portal            | `/lealtad`        | `ssr: true`             | Per-user balance + history. Always SSR for fresh data + SEO-safe shell.                    |
+| 009 Homepage                       | `/`               | `isr: 3600`             | WP-driven content. Reservation modal opens via state, not a separate page.                 |
+| 010 Menu page                      | `/menu`           | `isr: 3600`             | WP CPT `menu_item`. Filters (type/modality/category) are client-side over fetched data.    |
+| 011 Promotions page                | `/promociones`    | `isr: 60`               | Most dynamic — short ISR window because the client edits this frequently.                  |
+| 012 Branches page                  | `/sucursales`     | `isr: 3600`             | WP CPT `sucursales`. Geolocation + Mapbox + distance happen client-side over cached list. |
+| 013 Reservation modal              | (overlay)         | n/a                     | Renders on top of any page. Form posts to `/api/v1/reservations` (dynamic Vercel function). |
+| 014 Loyalty user portal            | `/lealtad`        | `ssr: true`             | Per-user balance + history. Always SSR for fresh data + SEO-safe shell.                    |
 | Staff portal (already shipped 006) | `/staff/**`       | `ssr: true`             | Role-gated, per-user. Never cache statically.                                              |
 
 If a new feature adds a route, this table MUST be updated at the same time as the spec.
