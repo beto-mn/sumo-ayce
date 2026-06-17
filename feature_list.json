@@ -1,0 +1,67 @@
+{
+  "project": "sumo-ayce",
+  "description": "SUMO All You Can Eat — website redesign with headless architecture (Nuxt 4 + WordPress) + reservations, loyalty, branch finder and staff portal.",
+  "rules": {
+    "one_feature_at_a_time": true,
+    "require_tests_to_close": true,
+    "require_approved_spec_to_implement": true,
+    "valid_status": ["pending", "spec_ready", "in_progress", "done", "blocked"],
+    "sdd_required_when": "feature has \"sdd\": true"
+  },
+  "features": [
+    {
+      "id": 1,
+      "name": "db-schema-drizzle",
+      "title": "Database Schema & Local Development Environment",
+      "description": "Base schema with Drizzle ORM pointing to Neon PostgreSQL in production and Docker Compose locally.",
+      "spec_path": "specs/001-db-schema-drizzle",
+      "sdd": true,
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "name": "reservaciones-crud",
+      "title": "Reservations — Backend CRUD API",
+      "description": "Reservation endpoints with validation, folio generation and Postgres persistence.",
+      "spec_path": "specs/002-reservaciones-crud",
+      "sdd": true,
+      "status": "done"
+    },
+    {
+      "id": 3,
+      "name": "twilio-notifications",
+      "title": "Reservation Confirmation Flow via WhatsApp",
+      "description": "Integration with Twilio WhatsApp Business: customer confirmation, manager notification, escalation via cron.",
+      "spec_path": "specs/003-twilio-notifications",
+      "sdd": true,
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "name": "branch-finder-location",
+      "title": "Branch Finder by Location",
+      "description": "Branch search via geolocation with postal code fallback.",
+      "spec_path": "specs/004-branch-finder-location",
+      "sdd": true,
+      "status": "done"
+    },
+    {
+      "id": 5,
+      "name": "loyalty-program",
+      "title": "Loyalty Program",
+      "description": "Points-based loyalty program with atomic redemption and balance query via WhatsApp.",
+      "spec_path": "specs/005-loyalty-program",
+      "sdd": true,
+      "status": "done"
+    },
+    {
+      "id": 6,
+      "name": "staff-portal",
+      "title": "Staff Portal",
+      "description": "Staff portal with role-based login, dashboard, loyalty transaction management and daily reports.",
+      "spec_path": "specs/006-staff-portal",
+      "sdd": true,
+      "status": "done"
+    }
+  ]
+}
