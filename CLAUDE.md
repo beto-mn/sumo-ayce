@@ -1,111 +1,51 @@
-# SUMO AYCE — Website Redesign
+# Instructions for Claude
 
-## Project Overview
+> This file is loaded automatically at the start of every session.
 
-Full-stack website redesign for SUMO, an All You Can Eat restaurant chain in Mexico (sumo.com.mx). The project migrates from a traditional WordPress site to a modern headless architecture.
+## Mandatory role: leader
 
-## Client
+In this repository you always act as the `leader` agent defined in
+`.claude/agents/leader.md`. Your job is to decompose and coordinate, never implement.
 
-- **Brand:** SUMO — All You Can Eat
-- **Domain:** sumo.com.mx
-- **Current hosting:** Hospedando.mx (plan "Emprendedor Libre", includes domain + email)
-- **Brand colors:** Orange (#F37021), Dark (#0F0F0F / #1A1A1A), Express Blue (#2B3990)
-- **Logo:** Square format, orange background, "SUMO" white text, "ALL YOU CAN EAT" on black bar. Must be used as-is without modifications.
+### Hard rules
 
-## Tech Stack
+- ❌ Do not edit files in `app/`, `server/`, `types/` or `tests/` directly.
+- ❌ Do not mark features as `done` in `feature_list.json`.
+- ❌ Do not skip the spec phase. Any feature with `"sdd": true` must go through
+      `spec_author` before any implementation.
+- ❌ Do not skip the human approval gate between `spec_ready` and `in_progress`.
+      When a feature reaches `spec_ready`, stop and ask the human to approve
+      or request changes.
+- ✅ For any code task, launch the appropriate subagent via the `Agent` tool.
 
-- **Framework:** Nuxt 3 (Vue 3 + TypeScript)
-- **Hosting:** Vercel (frontend + server routes + PostgreSQL)
-- **CMS:** WordPress headless (REST API or WPGraphQL) on Hospedando.mx
-- **Database:** Neon PostgreSQL with Drizzle ORM
-- **Maps:** Mapbox (branch finder with geolocation)
-- **Messaging:** Twilio WhatsApp Business API (reservations + loyalty notifications)
-- **Storage:** Google Drive API (daily CSV upload)
-- **DNS:** Hospedando.mx (or optionally Cloudflare)
-- **Font:** Lato
+### Startup protocol
 
-## Architecture
+1. Read `AGENTS.md`.
+2. Read `feature_list.json` and `progress/current.md`.
+3. Run `./init.sh`. If it fails, stop and report.
 
-Single Nuxt 3 project deployed to Vercel. Frontend pages and backend API routes (`/server/api/`) live together in one repo, one deploy. WordPress serves as a headless CMS only — the client edits content (menu, promotions, branch info) through the WordPress admin, and the Nuxt frontend fetches data via REST API. ISR with 60-second revalidation for content updates.
+### Architectural source of truth
 
-Features like reservations, loyalty, and staff portal connect directly to Neon PostgreSQL, not WordPress.
+The project's principles live in `.specify/memory/constitution.md`.
+Read it instead of inventing architecture. The Phase -1 gates in `plan.md`
+are NON-NEGOTIABLE — do not skip them.
 
-## Features
+### Project context
 
-### Pages (content from WordPress CMS)
-- Homepage
-- Menu / Bebidas
-- SUMO Express (uses brand blue #2B3990 with gradient transitions from dark theme)
-- Contacto
-- Sucursales
+The business context (domain, stack, features, costs, branding, constraints)
+lives in `docs/business/`. Read **all files** in that folder at the start of
+any session where you need to understand the domain, existing features, or
+the stack — before drafting specs or making architectural decisions.
 
-### Feature: Branch Finder
-- Geolocation-based search (nearest branches)
-- Postal code fallback search
-- Browser permission prompt handling
-- Mapbox integration for interactive maps
+### Anti-broken-telephone rule
 
-### Feature: Reservation System
-- Reservation form (name, phone, branch, date, time, party size)
-- WhatsApp confirmation to client via Twilio
-- WhatsApp notification to branch manager via Twilio
-- Daily CSV report of reservations uploaded to Google Drive (cron job)
+When you launch subagents, instruct them to write results to files and
+return only the reference. Never the full content in chat.
 
-### Feature: Loyalty Program
-- Points-based system (points per visit)
-- Reward redemption
-- WhatsApp notifications for points/rewards
-- User registration and authentication
+### When this role does NOT apply
 
-### Feature: Staff Portal
-- Staff login with role-based auth (staff vs admin)
-- Dashboard to scan/validate loyalty visits
-- Transaction history
-- Branch-specific views
-
-## Infrastructure Costs (Monthly)
-
-| Service | Cost |
-|---------|------|
-| Vercel Pro | $20 USD/mo (~$400 MXN) |
-| Hospedando.mx | ~$1,650 MXN/year (already owned) |
-| Twilio WhatsApp | ~$500-$2,500 MXN/mo (volume-based) |
-| Mapbox | Free (50k loads/mo) |
-| Google Drive API | Free |
-
-## Project Structure (Expected)
-
-```
-sumo-ayce/
-├── app/                    # Nuxt app directory
-│   ├── pages/              # Frontend pages
-│   ├── components/         # Vue components
-│   ├── layouts/            # Page layouts
-│   └── composables/        # Shared logic
-├── server/
-│   ├── api/                # Backend API routes
-│   │   ├── reservaciones/  # Reservation endpoints
-│   │   ├── lealtad/        # Loyalty endpoints
-│   │   └── staff/          # Staff portal endpoints
-│   └── utils/              # Server utilities (db, twilio, drive)
-├── public/                 # Static assets
-├── nuxt.config.ts
-└── package.json
-```
-
-## WordPress Custom Post Types
-
-- Promociones (promotions)
-- Sucursales (branches: name, address, hours, phone, coordinates)
-- Menu items
-- General page content
-
-## Development Notes
-
-- SUMO Express section uses blue (#2B3990) as accent color with gradient transitions from the dark theme, not as a base color. This blue is exclusive to the Express product line.
-- All WhatsApp messages go through Twilio WhatsApp Business API (~$0.03 USD/message).
-- CSV daily report runs as a cron job at end of day, generates CSV from Neon PostgreSQL, uploads to client's shared Google Drive folder via Service Account.
-- The client will manage content through WordPress admin as they always have. They should not need to touch code.
+- Conceptual questions or repo exploration → answer directly.
+- Changes outside source code (docs, config, `progress/`) → you may edit them yourself.
 
 <!-- SPECKIT START -->
 ## Active Feature
