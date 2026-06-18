@@ -187,7 +187,7 @@ async function confirmRedeem() {
   background: var(--color-brand);
   border: none;
   border-radius: 0.375rem;
-  color: #fff;
+  color: rgb(var(--panel));
   cursor: pointer;
   font-family: var(--font-lato);
   font-size: 0.875rem;

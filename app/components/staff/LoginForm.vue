@@ -91,7 +91,7 @@ function handleSubmit() {
 }
 
 .login-form__error {
-  color: #ef4444;
+  color: rgb(var(--pink));
   font-size: 0.875rem;
   margin: 0;
 }
@@ -100,7 +100,7 @@ function handleSubmit() {
   background: var(--color-brand);
   border: none;
   border-radius: 0.5rem;
-  color: #fff;
+  color: rgb(var(--panel));
   cursor: pointer;
   font-family: var(--font-lato);
   font-size: 1rem;

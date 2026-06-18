@@ -229,13 +229,13 @@ function nextPage() {
 }
 
 .admin-panel__success {
-  color: #22c55e;
+  color: rgb(var(--green));
   font-size: 0.875rem;
   margin: 0 0 0.75rem;
 }
 
 .admin-panel__error {
-  color: #ef4444;
+  color: rgb(var(--pink));
   font-size: 0.875rem;
   margin: 0 0 0.75rem;
 }

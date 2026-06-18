@@ -81,7 +81,7 @@ function submit() {
   background: var(--color-brand);
   border: none;
   border-radius: 0.5rem;
-  color: #fff;
+  color: rgb(var(--panel));
   cursor: pointer;
   font-family: var(--font-lato);
   font-size: 0.9375rem;
@@ -123,13 +123,13 @@ function submit() {
 }
 
 .visit-btn__success {
-  color: #22c55e;
+  color: rgb(var(--green));
   font-size: 0.875rem;
   margin: 0;
 }
 
 .visit-btn__error {
-  color: #ef4444;
+  color: rgb(var(--pink));
   font-size: 0.875rem;
   margin: 0;
 }
