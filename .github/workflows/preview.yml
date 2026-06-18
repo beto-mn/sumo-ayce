@@ -3,7 +3,7 @@
 # three secrets scoped to the `dev` GitHub Environment. Surfaces the preview
 # URL on the corresponding GitHub commit via the Deployments API.
 #
-# Vercel CLI major pinned (must match production.yml — contract C7.3): vercel@34
+# Vercel CLI major pinned (must match production.yml — contract C7.3): vercel@54
 # Contract: specs/009-ci-cd-github-actions/contracts/workflows.md §C2.
 
 name: Preview Deploy
@@ -31,34 +31,34 @@ jobs:
     environment: dev
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Pull Vercel preview environment
-        run: npx vercel@34 pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel@54 pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build with Vercel
-        run: npx vercel@34 build --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel@54 build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy prebuilt artifact to Vercel preview
         id: deploy
         run: |
-          npx vercel@34 deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} | tee /tmp/vercel_deploy.txt
+          npx vercel@54 deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} | tee /tmp/vercel_deploy.txt
           echo "preview_url=$(tail -n 1 /tmp/vercel_deploy.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Surface preview URL on commit (Deployments API)
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const previewUrl = '${{ steps.deploy.outputs.preview_url }}';

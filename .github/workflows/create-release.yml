@@ -7,9 +7,9 @@
 # This workflow does NOT call the Vercel CLI directly. The Vercel deploy
 # happens in production.yml, invoked by the `deploy` job below.
 #
-# softprops/action-gh-release pinned to major v2: routine security patches
-# arrive within v2 automatically; any breaking change requires a manual
-# upgrade to v3 (and a contract revision).
+# softprops/action-gh-release pinned to major v3: runs on the Node 24
+# Actions runtime; routine security patches arrive within v3 automatically;
+# any breaking change requires a manual upgrade (and a contract revision).
 # Contract: specs/009-ci-cd-github-actions/contracts/workflows.md §C4.
 
 name: Create release
@@ -47,19 +47,19 @@ jobs:
       tag: ${{ steps.bump.outputs.new_tag }}
     steps:
       - name: Checkout master with full history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -180,7 +180,7 @@ jobs:
           echo "release_title=${RELEASE_TITLE}" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ steps.bump.outputs.new_version }}
           name: ${{ steps.body.outputs.release_title }}
