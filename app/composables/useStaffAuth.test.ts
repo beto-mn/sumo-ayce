@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockFetch = vi.fn()
+const mockNavigateTo = vi.fn()
 vi.stubGlobal('$fetch', mockFetch)
 vi.stubGlobal('reactive', (obj: object) => obj)
 vi.stubGlobal('readonly', (ref: unknown) => ref)
 vi.stubGlobal('toRef', (obj: Record<string, unknown>, key: string) => ({
   value: obj[key],
 }))
+vi.stubGlobal('navigateTo', mockNavigateTo)
 
 describe('useStaffAuth', () => {
   beforeEach(() => {
