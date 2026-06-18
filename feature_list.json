@@ -83,55 +83,64 @@
     },
     {
       "id": 9,
-      "name": "homepage",
-      "title": "Homepage (/)",
-      "description": "Public homepage with hero (ALL YOU CAN EAT headline, kicker, price sticker, hero photo), type selector (AYCE / Express cards routing to /menu), featured dishes rail, top 3 promotions, Google reviews, branches CTA band. Content from WordPress (featured dishes, promos, reviews) fetched server-side via useFetch. Rendering mode per docs/business/rendering-strategy.md. Reduced-motion disables marquee/bounce. See docs/business/features.md §1.",
-      "spec_path": "specs/009-homepage",
+      "name": "ci-cd-github-actions",
+      "title": "CI/CD via GitHub Actions + Vercel CLI (develop staging, master production)",
+      "description": "Stand up CI/CD entirely from GitHub Actions (NOT the native Vercel↔GitHub integration) so the repository never has to grant Vercel direct access. Three workflows under .github/workflows/: (1) ci.yml — runs on every pull request: pnpm install with frozen lockfile, pnpm check, pnpm typecheck, pnpm test (must show ≥226 tests), pnpm build. Cache pnpm-store between runs. Node version pinned to 20 (Vercel runtime). Concurrency group per ref with cancel-in-progress. (2) preview.yml — runs on push to `develop`: pulls Vercel preview env, runs `vercel build`, `vercel deploy --prebuilt`, posts the preview URL as a check output / GitHub Deployments entry. (3) production.yml — runs on push to `master`: pulls Vercel production env, runs `vercel build --prod`, `vercel deploy --prebuilt --prod`. All three consume the three required GitHub secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID (document the exact dashboard paths to retrieve each). Document required secrets + branch-protection recommendations in docs/harness/ci-cd.md (new). MUST land BEFORE feature 010 (homepage) so every page PR from 010 onward ships with a working preview link. Excluded from scope: native Vercel↔GitHub integration (intentional — see context), DB migration runners, CDN-cache invalidation hooks (these may come later).",
+      "spec_path": "specs/009-ci-cd-github-actions",
       "sdd": true,
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": 10,
-      "name": "menu-page",
-      "title": "Menu / Bebidas Page (/menu)",
-      "description": "Menu browsing by location type (AYCE / Express) and modality (All You Can Eat / À la carte — AYCE only) with category chips filtering the dish grid. Sauce picker for Wings & Boneless. Per-dish price in à la carte, 'incluido' in All You Can Eat. Lightbox for full printed-menu images. Content via WordPress CPT menu_item fetched server-side. Rendering mode per docs/business/rendering-strategy.md. See docs/business/features.md §2.",
-      "spec_path": "specs/010-menu-page",
+      "name": "homepage",
+      "title": "Homepage (/)",
+      "description": "Public homepage with hero (ALL YOU CAN EAT headline, kicker, price sticker, hero photo), type selector (AYCE / Express cards routing to /menu), featured dishes rail, top 3 promotions, Google reviews, branches CTA band. Content from WordPress (featured dishes, promos, reviews) fetched server-side via useFetch. Rendering mode per docs/business/rendering-strategy.md. Reduced-motion disables marquee/bounce. See docs/business/features.md §1.",
+      "spec_path": "specs/010-homepage",
       "sdd": true,
       "status": "pending"
     },
     {
       "id": 11,
-      "name": "promotions-page",
-      "title": "Promotions Page (/promociones)",
-      "description": "Grid of active promotions from WordPress CPT promociones. Bilingual fields (badge, title, desc, validity). Per-type color coding (Express promos use blue). Inactive promos hidden. Editable in WP admin without code changes. Rendering mode per docs/business/rendering-strategy.md (short ISR — most dynamic content). See docs/business/features.md §3.",
-      "spec_path": "specs/011-promotions-page",
+      "name": "menu-page",
+      "title": "Menu / Bebidas Page (/menu)",
+      "description": "Menu browsing by location type (AYCE / Express) and modality (All You Can Eat / À la carte — AYCE only) with category chips filtering the dish grid. Sauce picker for Wings & Boneless. Per-dish price in à la carte, 'incluido' in All You Can Eat. Lightbox for full printed-menu images. Content via WordPress CPT menu_item fetched server-side. Rendering mode per docs/business/rendering-strategy.md. See docs/business/features.md §2.",
+      "spec_path": "specs/011-menu-page",
       "sdd": true,
       "status": "pending"
     },
     {
       "id": 12,
-      "name": "branches-page",
-      "title": "Branches Page (/sucursales)",
-      "description": "Branch finder UI on top of existing backend (feature 004). Branch list cached via ISR per docs/business/rendering-strategy.md; geolocation, postal-code fallback, distance sort and Mapbox map all run client-side over the cached list. Pin colors: orange=AYCE, blue=Express. Card actions: Reserve, Directions, Call. See docs/business/features.md §4.",
-      "spec_path": "specs/012-branches-page",
+      "name": "promotions-page",
+      "title": "Promotions Page (/promociones)",
+      "description": "Grid of active promotions from WordPress CPT promociones. Bilingual fields (badge, title, desc, validity). Per-type color coding (Express promos use blue). Inactive promos hidden. Editable in WP admin without code changes. Rendering mode per docs/business/rendering-strategy.md (short ISR — most dynamic content). See docs/business/features.md §3.",
+      "spec_path": "specs/012-promotions-page",
       "sdd": true,
       "status": "pending"
     },
     {
       "id": 13,
-      "name": "reservation-modal",
-      "title": "Reservation Modal (/reservaciones)",
-      "description": "Reservation modal UI on top of existing backend (features 002 + 003). Renders as an overlay on any page (no dedicated route). Form: branch → branch-dependent time slots from hours, date, party size, name, phone. Submit triggers POST /api/v1/reservations (always-dynamic Vercel function per docs/business/rendering-strategy.md) which sends Twilio WhatsApp to client + manager. See docs/business/features.md §5.",
-      "spec_path": "specs/013-reservation-modal",
+      "name": "branches-page",
+      "title": "Branches Page (/sucursales)",
+      "description": "Branch finder UI on top of existing backend (feature 004). Branch list cached via ISR per docs/business/rendering-strategy.md; geolocation, postal-code fallback, distance sort and Mapbox map all run client-side over the cached list. Pin colors: orange=AYCE, blue=Express. Card actions: Reserve, Directions, Call. See docs/business/features.md §4.",
+      "spec_path": "specs/013-branches-page",
       "sdd": true,
       "status": "pending"
     },
     {
       "id": 14,
+      "name": "reservation-modal",
+      "title": "Reservation Modal (/reservaciones)",
+      "description": "Reservation modal UI on top of existing backend (features 002 + 003). Renders as an overlay on any page (no dedicated route). Form: branch → branch-dependent time slots from hours, date, party size, name, phone. Submit triggers POST /api/v1/reservations (always-dynamic Vercel function per docs/business/rendering-strategy.md) which sends Twilio WhatsApp to client + manager. See docs/business/features.md §5.",
+      "spec_path": "specs/014-reservation-modal",
+      "sdd": true,
+      "status": "pending"
+    },
+    {
+      "id": 15,
       "name": "loyalty-portal",
       "title": "Loyalty User Portal (/lealtad)",
       "description": "User-facing loyalty portal UI on top of existing backend (feature 005). Registration, login, points balance, transaction history, reward redemption. Rendered SSR (per-user, never cached) per docs/business/rendering-strategy.md. WhatsApp notifications on point/reward events already wired via Twilio. See docs/business/features.md §6.",
-      "spec_path": "specs/014-loyalty-portal",
+      "spec_path": "specs/015-loyalty-portal",
       "sdd": true,
       "status": "pending"
     }
