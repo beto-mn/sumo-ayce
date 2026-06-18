@@ -1,4 +1,16 @@
 <!--
+  ⚠️ PR Title: must follow `<gitmoji> <type>(<scope>): <description>` —
+     same convention as commit messages (see .husky/commit-msg).
+     The repo is configured so the squash-merge subject = this title,
+     so a valid title produces a valid commit automatically. A workflow
+     (`.github/workflows/pr-title.yml`) blocks the PR if the title fails.
+
+     Examples:
+       ✨ feat(homepage): add hero section
+       🐛 fix(api): handle missing phone in reservations
+       🔖 release: v0.1.2
+       🔧 chore(deps): bump pnpm to 10.27.0
+
   PR template. Delete the sections that don't apply. Keep the structure
   so reviewers can scan the PR in 30 seconds.
 -->

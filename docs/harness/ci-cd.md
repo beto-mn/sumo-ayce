@@ -186,6 +186,68 @@ Recommended protection for `develop` (lower stakes):
 
 ---
 
+## 4.1 Pull-request title → commit subject (manual repo setting)
+
+> This is a repo-settings configuration that lives in GitHub Dashboard
+> (not committable). Apply it once after enabling the workflows; the
+> setting persists with the repo.
+
+When a PR is squashed or merged via the GitHub UI, GitHub proposes a
+default commit message. By default it uses an auto-generated message
+like `Merge pull request #N from <branch>`. We override this so the
+**PR title becomes the commit subject**, which keeps the master log
+consistent with the project's commit convention (gitmoji + type +
+scope, validated by `.husky/commit-msg`).
+
+### Setting to apply
+
+Navigate to:
+
+```
+Repo → Settings → General → Pull Requests
+```
+
+For each merge button you allow, set:
+
+| Merge button       | Default commit message              |
+|--------------------|--------------------------------------|
+| Squash merging     | **Pull request title**               |
+| Merge commits      | **Pull request title**               |
+| Rebase merging     | (no commit message produced)         |
+
+### Enforcement
+
+A new workflow `.github/workflows/pr-title.yml` validates every PR
+title against the same convention `.husky/commit-msg` uses for
+commits. Required status check on `master`. Fails if:
+
+- The title doesn't match `<type>(<scope>): <description>`.
+- A gitmoji prefix is present but doesn't match the type mapping
+  (`feat`→✨, `fix`→🐛, `chore`→🔧, `release`→🔖, etc.).
+
+This means: a PR with a non-compliant title is unmergeable. By the
+time the maintainer clicks "Squash and merge", the title is
+guaranteed valid → the proposed commit subject is guaranteed valid →
+the convention propagates automatically with zero manual editing.
+
+### Convention reminder
+
+```
+<gitmoji> <type>(<scope>): <description>
+
+Examples:
+  ✨ feat(homepage): add hero section
+  🐛 fix(api): handle missing phone in reservations
+  🔖 release: v0.1.2
+  🔧 chore(deps): bump pnpm to 10.27.0
+```
+
+The full type → gitmoji mapping is in `.husky/commit-msg`. The PR
+template (`.github/PULL_REQUEST_TEMPLATE.md`) also includes a
+reminder at the top.
+
+---
+
 ## 5. How to ship to production
 
 The release ceremony is a five-click flow in the GitHub UI:
