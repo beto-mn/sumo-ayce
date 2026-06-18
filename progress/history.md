@@ -62,3 +62,48 @@
 - `docs/business/maps-strategy.md` created (new — provider abstraction rule).
 - `docs/business/features.md`, `overview.md`, `rendering-strategy.md` updated with cross-references to maps-strategy.
 - `.claude/agents/reviewer.md` updated with "Design token enforcement" section.
+
+---
+
+## 2026-06-17 — Feature 008: `frontend-test-setup` (Vitest + happy-dom + Vue Test Utils)
+
+**Branch**: `feat/008-frontend-test-setup`
+**Status**: `done`
+**Spec**: `specs/008-frontend-test-setup/`
+**Agents**: `spec_author` → human review → `implementer` → `reviewer` → human close.
+
+### Decisions baked in (research.md)
+
+- **Vitest 4 env API**: `test.projects` (idiomatic v4; `environmentMatchGlobs` deprecated). Two named projects: `app` (happy-dom) and `server` (node).
+- **`happy-dom`** `^15.10.2` initial pin; ended at `^20.0.11` after the `@nuxt/test-utils` peer-dep was bumped during install.
+- **`@vue/test-utils`** `^2.4.6` (resolved to `2.4.11`).
+- **Test convention**: `Component.vue ↔ Component.spec.ts` co-located (not `.test.ts`).
+- **Composable tests legacy**: kept `vi.stubGlobal` shims as-is. Only added `vi.stubGlobal('navigateTo', vi.fn())` to fix the previously-broken `useStaffAuth` logout test.
+- **Error/danger token**: reused `--pink` for error states. NO new tokens added — door left open for a future `--danger` if feature 011 forces a semantic conflict.
+- **Coverage thresholds**: DEFERRED to feature 014 close-out.
+
+### Implementation summary
+
+- **27/27 tasks** `[x]` across 8 phases.
+- **18/18 Phase -1 gates** `[x]`.
+- **10 component specs** added under `app/components/ui/` (Button, Card, Chip, Sticker, Kicker, Input, Select, Textarea, Nav, Marquee) — behavior-driven, ≤ 60 lines each, Default + variant + accessibility/interaction assertion per file.
+- **2 dead composable tests revived** (`useStaffAuth.test.ts`, `useStaffCustomer.test.ts`) — both now run under `app` project.
+- **22 hex literals migrated** across 8 staff files to Mercado Pop tokens (`var(--ink)`, `rgb(var(--orange))`, etc.) — plus 1 extra (`#ef4444` in `TransactionTable.vue:190` → `rgb(var(--pink))`).
+- **`vitest.config.ts` rewritten** to use `defineConfig` from `vitest/config` with two `test.projects`. `defineVitestConfig` from `@nuxt/test-utils/config` was rejected after research §1 footnote — it throws when `test.projects` is set. Fix: merge `getVitestConfigFromNuxt()` into the `server` project only; `app` project loads `@vitejs/plugin-vue` directly; filter `ssr-styles`, `vite:vue`, `vite:vue-jsx` from server-project plugin list. Documented in `tasks.md` T002 acceptance.
+- **`@/utils` alias** added to vitest config to resolve `@/utils/cx` without Nuxt auto-import resolution.
+- **`docs/harness/verification.md` + `conventions.md`** extended with the Frontend tests / Testing subsections.
+- **`CHECKPOINTS.md` C4 extended** to require `pnpm test` coverage of `app/` (not only `server/`).
+- **`.claude/agents/reviewer.md`** gained a Frontend spec-presence rule.
+
+### Reviewer verification
+
+- **APPROVED** — all 3 implementer deviations accepted (vitest.config shape, `@/utils` alias, the +1 hex migration).
+- `./init.sh` exit 0; lint, typecheck OK.
+- `pnpm test`: **226 tests** across 44 files (baseline 188/32; delta +38 tests / +12 files — exact spec target).
+- T108a, T108b, T108c → zero matches across the full `app/` tree (T108c gate from feature 7 carryover satisfied).
+- Sensitive data scan: zero hits.
+- Full review: `progress/review_008-frontend-test-setup.md`.
+
+### Carryovers for future features
+
+- None blocking. From feature 009 onward, every new `app/components/ui/<Name>.vue` MUST ship with co-located `<Name>.spec.ts`. From feature 009+, **TDD applies forward-going** per Article IV.

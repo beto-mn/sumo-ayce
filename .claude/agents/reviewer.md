@@ -216,9 +216,30 @@ and mirrored in `tailwind.config.ts`). Reject any of the following:
   ```bash
   grep -rEn '(style=|: ?)#[0-9a-fA-F]{3,8}\b' app/components/ app/layouts/ app/pages/
   ```
-  Zero matches required (the only place hex values live is `app/assets/css/tokens.css`,
-  which is excluded from this scan). Use `var(--token)` for raw CSS,
-  utility classes elsewhere → otherwise REJECTED.
+  Zero matches required (the only place hex values live is
+  `app/assets/css/tokens.css`, which is excluded from this scan; the legacy
+  `app/assets/css/staff.css` is also excluded — it is the original Mercado
+  Pop migration carry-over and is OUT OF SCOPE until the staff portal is
+  restyled). Use `var(--token)` for raw CSS, utility classes elsewhere →
+  otherwise REJECTED. Error / danger states reuse `--pink`; do NOT introduce
+  a new `--danger` token unless the constitution or feature spec authorizes
+  it (per feature 008 research §5).
+
+- **Frontend spec presence.** Any PR adding a new `.vue` file under
+  `app/components/ui/` or `app/features/<feature>/components/` MUST include a
+  co-located `<Name>.spec.ts` in the same commit (`Component.vue ↔
+  Component.spec.ts` convention). Verify with:
+  ```bash
+  git diff --name-only master...HEAD | grep -E 'app/(components/ui|features/.+/components)/.+\.vue$' | while read vue; do
+    spec="${vue%.vue}.spec.ts"
+    test -f "$spec" || { echo "Missing spec: $spec"; exit 1; }
+  done
+  ```
+  Exit 1 → REJECTED with the list of missing specs. Each spec MUST contain
+  at minimum a default-render assertion (`mount()` + slot/prop check). The
+  reference shape is `app/components/ui/Button.spec.ts`. Suffix policy:
+  `.spec.ts` for new code, `.test.ts` legacy allowed (only the two
+  `app/composables/useStaff*.test.ts` files predate the convention).
 
 - **Adding a token without mirroring it.** If a PR adds a CSS custom property
   to `tokens.css` without also adding the corresponding entry to

@@ -159,16 +159,16 @@ async function submitVoid() {
 }
 
 .tx-detail__error {
-  color: #ef4444;
+  color: rgb(var(--pink));
   font-size: 0.875rem;
   margin: 0;
 }
 
 .tx-detail__void-btn {
-  background: #ef4444;
+  background: rgb(var(--pink));
   border: none;
   border-radius: 0.5rem;
-  color: #fff;
+  color: rgb(var(--panel));
   cursor: pointer;
   font-family: var(--font-lato);
   font-size: 0.9375rem;
@@ -183,7 +183,7 @@ async function submitVoid() {
 }
 
 .tx-detail__success {
-  color: #22c55e;
+  color: rgb(var(--green));
   font-size: 0.9375rem;
 }
 </style>

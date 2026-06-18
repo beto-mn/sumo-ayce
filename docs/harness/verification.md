@@ -12,6 +12,24 @@ pnpm typecheck     # nuxt typecheck
 
 All three must exit with code 0 before marking a task as `[x]`.
 
+### Frontend tests
+
+`pnpm test` runs two Vitest projects:
+
+- `app` — globs `app/**/*.spec.ts` and `app/**/*.test.ts`, executes under
+  `happy-dom` for component and composable assertions.
+- `server` — globs `tests/**/*.test.ts` and `server/**/*.test.ts`, executes
+  under `node` for server-route and integration tests.
+
+The convention is `Component.vue ↔ Component.spec.ts` co-located in the
+same directory with the same base name. New tests MUST use the `.spec.ts`
+suffix; the legacy `.test.ts` suffix is still matched so the two
+`app/composables/useStaff*.test.ts` files keep running unchanged.
+
+The canonical pattern uses `mount()` from `@vue/test-utils`. Reference example:
+`app/components/ui/Button.spec.ts`. Full how-to in
+`specs/008-frontend-test-setup/quickstart.md`.
+
 ## Full verification (session close and before `done`)
 
 ```bash

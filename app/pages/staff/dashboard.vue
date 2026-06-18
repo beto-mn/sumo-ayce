@@ -210,7 +210,7 @@ function reset() {
   background: var(--color-brand);
   border: none;
   border-radius: 0.5rem;
-  color: #fff;
+  color: rgb(var(--panel));
   cursor: pointer;
   font-family: var(--font-lato);
   font-weight: 700;
@@ -271,7 +271,7 @@ function reset() {
   background: var(--color-brand);
   border: none;
   border-radius: 0.5rem;
-  color: #fff;
+  color: rgb(var(--panel));
   cursor: pointer;
   font-family: var(--font-lato);
   font-weight: 700;

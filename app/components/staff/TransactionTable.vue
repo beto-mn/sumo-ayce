@@ -161,7 +161,7 @@ function formatDate(iso: string) {
 
 .tx-table__type--earn {
   background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  color: rgb(var(--green));
 }
 
 .tx-table__type--redeem {
@@ -177,19 +177,19 @@ function formatDate(iso: string) {
 
 .tx-table__status--active {
   background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  color: rgb(var(--green));
 }
 
 .tx-table__status--voided {
   background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  color: rgb(var(--pink));
 }
 
 .tx-table__void-btn {
   background: none;
-  border: 1px solid #ef4444;
+  border: 1px solid rgb(var(--pink));
   border-radius: 0.25rem;
-  color: #ef4444;
+  color: rgb(var(--pink));
   cursor: pointer;
   font-size: 0.8125rem;
   padding: 0.25rem 0.625rem;

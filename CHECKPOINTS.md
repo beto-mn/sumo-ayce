@@ -28,7 +28,8 @@
 
 - [ ] There is at least one test per acceptance criterion of the feature
 - [ ] Tests use real resources or consistent fixtures (no filesystem mocks)
-- [ ] `pnpm test` shows > 0 tests and all green
+- [ ] `pnpm test` runs and passes tests under BOTH `server/` AND `app/` — a
+      feature with frontend changes does NOT pass C4 if no `app/` tests run
 - [ ] `pnpm check` (biome) passes with `--error-on-warnings`
 - [ ] `pnpm typecheck` passes without errors
 
