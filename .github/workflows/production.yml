@@ -1,0 +1,102 @@
+# Production Deploy — Vercel production environment.
+# Triggered EXCLUSIVELY by:
+#   (a) workflow_call — invoked by create-release.yml's `deploy` job after the
+#       release ceremony writes the tag + GitHub Release.
+#   (b) workflow_dispatch — manual re-deploy of an existing tag from the
+#       GitHub UI (no new release ceremony, no new tag, no new package.json
+#       bump). Use this path to recover from a transient Vercel failure.
+#
+# This workflow has NO `push:` trigger. Pushing a tag directly to the repo
+# does NOT deploy. Pushing a commit to master does NOT deploy. The only paths
+# that reach this workflow are the two triggers above. (FR-010, FR-010-bis,
+# SC-012.)
+#
+# Vercel CLI major pinned (must match preview.yml — contract C7.3): vercel@34
+# Contract: specs/009-ci-cd-github-actions/contracts/workflows.md §C3.
+
+name: Production Deploy
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Git tag to deploy (e.g. v1.0.107)'
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to redeploy (e.g. v1.0.107)'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.tag }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    name: Build and deploy production
+    runs-on: ubuntu-latest
+    environment: prd
+    steps:
+      - name: Checkout tagged commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Pull Vercel production environment
+        run: npx vercel@34 pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build with Vercel (production)
+        run: npx vercel@34 build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy prebuilt artifact to Vercel production
+        id: deploy
+        run: |
+          npx vercel@34 deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} | tee /tmp/vercel_deploy.txt
+          echo "production_url=$(tail -n 1 /tmp/vercel_deploy.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Surface production deploy on commit (Deployments API)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const productionUrl = '${{ steps.deploy.outputs.production_url }}';
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: '${{ inputs.tag }}',
+              environment: 'production',
+              auto_merge: false,
+              required_contexts: [],
+              description: 'Vercel production deploy',
+            });
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'success',
+              environment_url: productionUrl,
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              description: 'Production deployed',
+            });

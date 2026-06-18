@@ -1,0 +1,54 @@
+/*
+ * Mercado Pop design tokens.
+ * Source of truth: docs/business/overview.md §2.
+ * Mirrored in tailwind.config.ts theme.colors / theme.extend.
+ *
+ * Color tokens are declared as RGB channels (space-separated, no commas, no
+ * parentheses) so they can be consumed by Tailwind's opacity-modifier syntax
+ * `rgb(var(--token) / <alpha-value>)`. See:
+ * https://v3.tailwindcss.com/docs/customizing-colors#using-css-variables
+ *
+ * Raw hex values live ONLY as comments next to each channel triple in this
+ * file. Components MUST consume colors via Tailwind utilities (`bg-orange`,
+ * `text-ink`, `bg-orange/50`, ...) or via `rgb(var(--token))` in raw CSS.
+ * Never use `var(--token)` directly for a color — the resulting value
+ * (`255 107 43`) is not a valid CSS color on its own.
+ */
+:root {
+  /* Colors — RGB channels */
+  --bg: 255 247 236; /* #fff7ec */
+  --bg2: 255 233 210; /* #ffe9d2 */
+  --panel: 255 255 255; /* #ffffff */
+  --ink: 26 18 9; /* #1a1209 */
+  --soft: 107 92 73; /* #6b5c49 */
+  --orange: 255 107 43; /* #ff6b2b */
+  --blue: 46 124 246; /* #2e7cf6 */
+  --pink: 255 45 111; /* #ff2d6f */
+  --yellow: 255 194 59; /* #ffc23b */
+  --green: 31 174 90; /* #1fae5a */
+  --line: 26 18 9; /* #1a1209 — same as --ink */
+
+  /* Per-type accent — defaults to AYCE orange, swapped to blue inside .scope-express */
+  --accent: var(--orange);
+
+  /* Radii */
+  --r: 22px;
+  --r-sm: 14px;
+
+  /* Shadows — solid offset, no blur (style signature).
+     --ink is now RGB channels, so we MUST wrap it in rgb() here. */
+  --shadow: 6px 6px 0 rgb(var(--ink));
+  --shadow-sm: 4px 4px 0 rgb(var(--ink));
+
+  /* Layout */
+  --maxw: 1200px;
+
+  /* Typography */
+  --disp: "Bricolage Grotesque", system-ui, sans-serif;
+  --body: "Hanken Grotesk", system-ui, sans-serif;
+}
+
+/* Single per-type accent swap — every Express-scoped subtree reads --blue. */
+.scope-express {
+  --accent: var(--blue);
+}

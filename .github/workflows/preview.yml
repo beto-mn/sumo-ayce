@@ -1,0 +1,82 @@
+# Preview Deploy — Vercel preview environment for the `develop` integration branch.
+# Triggered exclusively on push to `develop`. Authenticates to Vercel via the
+# three secrets scoped to the `dev` GitHub Environment. Surfaces the preview
+# URL on the corresponding GitHub commit via the Deployments API.
+#
+# Vercel CLI major pinned (must match production.yml — contract C7.3): vercel@34
+# Contract: specs/009-ci-cd-github-actions/contracts/workflows.md §C2.
+
+name: Preview Deploy
+
+on:
+  push:
+    branches: [develop]
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    name: Build and deploy preview
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Pull Vercel preview environment
+        run: npx vercel@34 pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build with Vercel
+        run: npx vercel@34 build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy prebuilt artifact to Vercel preview
+        id: deploy
+        run: |
+          npx vercel@34 deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} | tee /tmp/vercel_deploy.txt
+          echo "preview_url=$(tail -n 1 /tmp/vercel_deploy.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Surface preview URL on commit (Deployments API)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = '${{ steps.deploy.outputs.preview_url }}';
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'preview',
+              auto_merge: false,
+              required_contexts: [],
+              description: 'Vercel preview deploy',
+            });
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'success',
+              environment_url: previewUrl,
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              description: 'Preview deployed',
+            });

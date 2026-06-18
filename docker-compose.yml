@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sumo-db
+    environment:
+      POSTGRES_USER: sumo
+      POSTGRES_PASSWORD: sumo
+      POSTGRES_DB: sumo_ayce
+    ports:
+      - "5433:5432"
+    volumes:
+      - sumo_pg_data:/var/lib/postgresql/data
+
+volumes:
+  sumo_pg_data:

@@ -1,0 +1,62 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1779507512296,
+      "tag": "0000_ambiguous_thanos",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779507699161,
+      "tag": "0001_gorgeous_zarda",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779507715969,
+      "tag": "0002_rapid_zuras",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779603484145,
+      "tag": "0003_chubby_yellow_claw",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1779659831403,
+      "tag": "0004_giant_the_phantom",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1779683999144,
+      "tag": "0005_dapper_shotgun",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1779916354367,
+      "tag": "0006_furry_morlun",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1780007595785,
+      "tag": "0007_aberrant_hulk",
+      "breakpoints": true
+    }
+  ]
+}
