@@ -50,11 +50,10 @@ return only the reference. Never the full content in chat.
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/007-scaffold-and-design-system`
-**Plan**: `specs/007-scaffold-and-design-system/plan.md`
-**Spec**: `specs/007-scaffold-and-design-system/spec.md`
-**Data Model**: `specs/007-scaffold-and-design-system/data-model.md`
-**Quickstart**: `specs/007-scaffold-and-design-system/quickstart.md`
-**Contracts**: `specs/007-scaffold-and-design-system/contracts/README.md` (no API contracts — frontend chassis only)
-**Research**: `specs/007-scaffold-and-design-system/research.md`
+**Branch**: `feat/008-frontend-test-setup`
+**Plan**: `specs/008-frontend-test-setup/plan.md`
+**Spec**: `specs/008-frontend-test-setup/spec.md`
+**Data Model**: `specs/008-frontend-test-setup/data-model.md`
+**Quickstart**: `specs/008-frontend-test-setup/quickstart.md`
+**Research**: `specs/008-frontend-test-setup/research.md`
 <!-- SPECKIT END -->
