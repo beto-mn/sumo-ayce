@@ -1,0 +1,197 @@
+# Create Release — manual release ceremony triggered from the GitHub UI.
+# Runs the full quality gate, bumps package.json's version, commits with
+# `[skip ci]`, tags `v<X.Y.Z>`, pushes, creates a GitHub Release, and then
+# chains into production.yml via workflow_call to deploy the new tag — all in
+# the SAME workflow run.
+#
+# This workflow does NOT call the Vercel CLI directly. The Vercel deploy
+# happens in production.yml, invoked by the `deploy` job below.
+#
+# softprops/action-gh-release pinned to major v2: routine security patches
+# arrive within v2 automatically; any breaking change requires a manual
+# upgrade to v3 (and a contract revision).
+# Contract: specs/009-ci-cd-github-actions/contracts/workflows.md §C4.
+
+name: Create release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Semver bump position'
+        type: choice
+        required: true
+        options:
+          - patch
+          - minor
+          - major
+      release_description:
+        description: 'What changed in this release (markdown supported, becomes the GitHub Release body)'
+        type: string
+        required: true
+      additional_notes:
+        description: 'Breaking changes, migration guidance, or similar appendices (markdown supported; optional)'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release ceremony (bump + commit + tag + GitHub Release)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    outputs:
+      tag: ${{ steps.bump.outputs.new_tag }}
+    steps:
+      - name: Checkout master with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Biome lint + format check
+        run: pnpm check
+
+      - name: Type-check (vue-tsc)
+        run: pnpm typecheck
+
+      - name: Unit tests (Vitest)
+        run: pnpm test
+
+      - name: Application build (Nuxt)
+        run: pnpm build
+
+      - name: Configure git identity for github-actions[bot]
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump package.json version
+        id: bump
+        run: |
+          npm version ${{ inputs.version_bump }} --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "new_tag=v${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Commit, tag, and push
+        run: |
+          git add package.json pnpm-lock.yaml || git add package.json
+          git commit -m "🔖 chore(release): v${{ steps.bump.outputs.new_version }} [skip ci]"
+          git tag -a "v${{ steps.bump.outputs.new_version }}" -m "Release v${{ steps.bump.outputs.new_version }}"
+          git push origin master
+          git push origin "v${{ steps.bump.outputs.new_version }}"
+
+      - name: Build GitHub Release body and title
+        id: body
+        env:
+          VERSION_BUMP: ${{ inputs.version_bump }}
+          RELEASE_DESCRIPTION: ${{ inputs.release_description }}
+          ADDITIONAL_NOTES: ${{ inputs.additional_notes }}
+          NEW_VERSION: ${{ steps.bump.outputs.new_version }}
+          GH_SERVER_URL: ${{ github.server_url }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          NEW_TAG="v${NEW_VERSION}"
+
+          # Map version_bump → emoji / bump label / type text
+          case "$VERSION_BUMP" in
+            patch)
+              EMOJI="🐛"
+              BUMP_LABEL="Patch"
+              TYPE_TEXT="Bug fixes"
+              ;;
+            minor)
+              EMOJI="✨"
+              BUMP_LABEL="Minor"
+              TYPE_TEXT="Minor enhancements"
+              ;;
+            major)
+              EMOJI="🚨"
+              BUMP_LABEL="Major"
+              TYPE_TEXT="Major release / breaking changes"
+              ;;
+            *)
+              echo "Unknown version_bump value: $VERSION_BUMP" >&2
+              exit 1
+              ;;
+          esac
+
+          RELEASE_TITLE="🚀 ${NEW_TAG} - ${BUMP_LABEL} Release (Production)"
+
+          # Compute the commit history block. `HEAD^` strips the release commit
+          # itself (the [skip ci] version bump) from the listing.
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            COMMIT_HISTORY=$(git log "${PREV_TAG}..HEAD^" --pretty=format:'- %s (%h)')
+            CHANGELOG_URL="${GH_SERVER_URL}/${GH_REPOSITORY}/compare/${PREV_TAG}...${NEW_TAG}"
+          else
+            COMMIT_HISTORY=$(git log HEAD^ -n 50 --pretty=format:'- %s (%h)')
+            CHANGELOG_URL="${GH_SERVER_URL}/${GH_REPOSITORY}/commits/${NEW_TAG}"
+          fi
+
+          # Write the body. Use a heredoc so multi-line release_description /
+          # commit history preserve their newlines verbatim.
+          {
+            printf '## %s %s Release\n\n' "$EMOJI" "$BUMP_LABEL"
+            printf '**Version**: `%s`\n' "$NEW_TAG"
+            printf '**Type**: %s\n' "$TYPE_TEXT"
+            printf '**Environment**: 🚀 Production\n\n'
+            printf -- '---\n\n'
+            printf '## 📝 Changes\n\n'
+            printf '%s\n\n' "$RELEASE_DESCRIPTION"
+            printf '## 📋 Commit History\n\n'
+            printf '%s\n\n' "$COMMIT_HISTORY"
+            printf '**Full Changelog**: %s\n\n' "$CHANGELOG_URL"
+            printf -- '---\n\n'
+            printf '### 🚀 Deployment\n\n'
+            printf 'This release will be automatically deployed to **Production**.\n\n'
+            printf -- '- **Environment**: `prd`\n'
+            printf -- '- **Service**: `sumo-ayce`\n'
+            if [ -n "$ADDITIONAL_NOTES" ]; then
+              printf '\n'
+              printf -- '---\n\n'
+              printf '## 📌 Additional Notes\n\n'
+              printf '%s\n' "$ADDITIONAL_NOTES"
+            fi
+            printf '\n'
+            printf -- '---\n\n'
+            printf '🤖 *This release was created by @%s via GitHub Actions*\n' "$GH_ACTOR"
+          } > release_body.md
+
+          echo "release_title=${RELEASE_TITLE}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.new_version }}
+          name: ${{ steps.body.outputs.release_title }}
+          body_path: release_body.md
+          draft: false
+          prerelease: false
+
+  deploy:
+    name: Deploy tag to Vercel production
+    needs: release
+    uses: ./.github/workflows/production.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+    secrets: inherit
