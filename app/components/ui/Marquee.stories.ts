@@ -9,6 +9,7 @@ const meta = {
     speed: { control: 'select', options: ['slow', 'normal', 'fast'] },
     direction: { control: 'select', options: ['left', 'right'] },
     pauseOnHover: { control: 'boolean' },
+    tone: { control: 'select', options: ['yellow', 'ink'] },
   },
   render: args => ({
     components: { Marquee },
@@ -30,6 +31,24 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: { speed: 'normal', direction: 'left', pauseOnHover: true },
+}
+
+/** Dark band with light text — used as the global homepage marquee. */
+export const InkTone: Story = {
+  args: { speed: 'normal', direction: 'left', pauseOnHover: true, tone: 'ink' },
+  render: args => ({
+    components: { Marquee },
+    setup: () => ({ args }),
+    template: `
+      <Marquee v-bind="args">
+        <span class="font-disp font-extrabold uppercase text-kicker">Smash Burgers</span>
+        <span class="font-disp font-extrabold uppercase text-kicker text-orange">✳</span>
+        <span class="font-disp font-extrabold uppercase text-kicker">Sushi Ilimitado</span>
+        <span class="font-disp font-extrabold uppercase text-kicker text-orange">✳</span>
+        <span class="font-disp font-extrabold uppercase text-kicker">Ramen 12 h de Caldo</span>
+        <span class="font-disp font-extrabold uppercase text-kicker text-orange">✳</span>
+      </Marquee>`,
+  }),
 }
 export const Slow: Story = {
   args: { speed: 'slow', direction: 'left', pauseOnHover: true },

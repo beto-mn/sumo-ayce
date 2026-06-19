@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { cx } from '@/utils/cx'
 
 interface KickerProps {
-  tone?: 'ink' | 'accent'
+  tone?: 'ink' | 'accent' | 'orange' | 'pink' | 'blue' | 'yellow'
   rotate?: number
 }
 
@@ -12,11 +12,20 @@ const props = withDefaults(defineProps<KickerProps>(), {
   rotate: -2,
 })
 
+const toneClasses = {
+  ink: 'bg-ink text-bg',
+  accent: 'bg-accent text-bg',
+  orange: 'bg-orange text-bg',
+  pink: 'bg-pink text-bg',
+  blue: 'bg-blue text-bg',
+  yellow: 'bg-yellow text-ink',
+} as const
+
 const classes = computed(() =>
   cx(
-    'inline-flex items-center rounded-pop-full px-3 py-1',
-    'font-disp font-extrabold uppercase text-kicker',
-    props.tone === 'ink' ? 'bg-ink text-bg' : 'bg-accent text-bg'
+    'inline-flex items-center gap-2 rounded-pop-full px-[14px] py-[7px]',
+    'font-disp font-extrabold uppercase text-kicker tracking-[0.04em]',
+    toneClasses[props.tone]
   )
 )
 

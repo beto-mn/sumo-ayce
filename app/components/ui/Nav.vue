@@ -71,10 +71,13 @@ const rootClasses = computed(() =>
       </div>
     </div>
 
-    <!-- Mobile collapsed overlay -->
+    <!-- Mobile/tablet drawer overlay. Links are simple block links with a
+         COMPACT rounded highlight (reference `.drawer a`): `self-start` makes
+         each item — including the active orange pill — fit its own label instead
+         of stretching full-width across the drawer. -->
     <div
       v-if="open"
-      class="md:hidden border-t-pop border-ink bg-bg px-4 py-4 flex flex-col gap-3"
+      class="md:hidden border-t-pop border-ink bg-bg px-4 py-4 flex flex-col gap-2 [&_a]:self-start [&_a]:rotate-0 [&_a]:hover:rotate-0"
     >
       <slot name="links" />
     </div>

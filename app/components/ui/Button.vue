@@ -19,9 +19,9 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 })
 
 const sizeClasses = {
-  sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3 text-base',
-  lg: 'px-8 py-4 text-lg',
+  sm: 'px-4 py-[9px] text-sm min-h-[40px]',
+  md: 'px-6 py-[14px] text-base min-h-[50px]',
+  lg: 'px-8 py-[18px] text-lg min-h-[58px]',
 } as const
 
 const variantClasses = {
@@ -33,7 +33,7 @@ const variantClasses = {
 const classes = computed(() =>
   cx(
     'inline-flex items-center justify-center gap-2',
-    'rounded-pop-full border-pop border-ink font-disp font-extrabold uppercase tracking-wide',
+    'rounded-pop-full border-pop border-ink font-disp font-extrabold',
     'shadow-pop-sm transition-transform duration-200',
     'hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-pop',
     'active:translate-x-0 active:translate-y-0 active:shadow-pop-sm',
