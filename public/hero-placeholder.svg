@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="SUMO All You Can Eat">
+  <rect width="800" height="600" fill="#ffe9d2"/>
+  <rect x="40" y="40" width="720" height="520" rx="22" fill="#fff7ec" stroke="#1a1209" stroke-width="6"/>
+  <text x="400" y="300" font-family="'Bricolage Grotesque', system-ui, sans-serif" font-size="64" font-weight="800" fill="#ff6b2b" text-anchor="middle" dominant-baseline="middle">SUMO</text>
+  <text x="400" y="370" font-family="'Hanken Grotesk', system-ui, sans-serif" font-size="24" fill="#6b5c49" text-anchor="middle" dominant-baseline="middle">All You Can Eat</text>
+</svg>
