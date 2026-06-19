@@ -1,6 +1,8 @@
 {
   "nav": {
+    "inicio": "Home",
     "menu": "Menu",
+    "promos": "Promos",
     "promociones": "Promotions",
     "sucursales": "Branches",
     "lealtad": "Loyalty",
@@ -11,14 +13,97 @@
     "cta": {
       "reserve": "Reserve",
       "viewMenu": "View menu",
+      "viewBranches": "View branches",
       "findBranch": "Find a branch"
     },
     "lang": {
       "toggle": "ES"
-    }
+    },
+    "close": "Close"
   },
   "brand": {
     "tagline": "American-Japanese style",
     "ayceBadge": "All You Can Eat"
+  },
+  "footer": {
+    "brand": {
+      "tagline": "American-Japanese style · All You Can Eat",
+      "blurb": "Eat without limits, American-Japanese style. Come hungry, leave happy."
+    },
+    "nav": {
+      "title": "Navigation"
+    },
+    "social": {
+      "title": "Follow us",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok"
+    },
+    "contact": {
+      "title": "Contact",
+      "whatsapp": "WhatsApp"
+    },
+    "legal": {
+      "rights": "All rights reserved"
+    }
+  },
+  "home": {
+    "hero": {
+      "headline": "All You Can Eat",
+      "kicker": "Eat without limits · American-Japanese style",
+      "subtitle": "Rolls, ramen, teppanyaki and smash burgers — unlimited for one fixed price. Come hungry, leave happy.",
+      "priceLabel": "From",
+      "imageAlt": "SUMO All You Can Eat dish selection",
+      "marquee": "Eat without limits",
+      "stickerLabel": "All You Can Eat",
+      "stickerDays": "every day",
+      "logoAlt": "SUMO — All You Can Eat"
+    },
+    "marquee": [
+      "Unlimited sushi",
+      "12-hour ramen broth",
+      "Live teppanyaki",
+      "Smash burgers",
+      "$269 every day"
+    ],
+    "typeSelector": {
+      "kicker": "Pick your SUMO",
+      "title": "Two formats, the same SUMO guarantee.",
+      "cta": "See menu",
+      "ayce": {
+        "name": "SUMO AYCE",
+        "badge": "All You Can Eat",
+        "desc": "All You Can Eat + à la carte. The full SUMO experience — sit down and refill.",
+        "chips": ["All You Can Eat", "À la carte"]
+      },
+      "express": {
+        "name": "SUMO Express",
+        "badge": "Compact format",
+        "desc": "The same unlimited SUMO all-you-can-eat in a smaller, nimbler format. Same flavor, compact space.",
+        "chips": ["All You Can Eat"]
+      }
+    },
+    "featured": {
+      "title": "Cravings right now",
+      "subtitle": "A taste of what's waiting at the all you can eat."
+    },
+    "promotions": {
+      "kicker": "This week at SUMO",
+      "title": "Deals",
+      "cta": "See all",
+      "openLabel": "View promotion"
+    },
+    "reviews": {
+      "kicker": "Loved on Google",
+      "title": "Real reviews from people who already have their favorite SUMO.",
+      "ratingLabel": "{rating} of 5 stars"
+    },
+    "branches": {
+      "kicker": "Locations",
+      "title": "10 locations across Mexico City",
+      "desc": "Find your nearest branch or reserve with no queues.",
+      "findBranch": "Find yours",
+      "reserve": "Reserve"
+    }
   }
 }
