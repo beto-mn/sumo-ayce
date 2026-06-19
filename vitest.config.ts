@@ -6,6 +6,9 @@ import { defineConfig } from 'vitest/config'
 const typesAlias = {
   '@/types': fileURLToPath(new URL('./types', import.meta.url)),
   '@/utils': fileURLToPath(new URL('./app/utils', import.meta.url)),
+  '@/components': fileURLToPath(new URL('./app/components', import.meta.url)),
+  '@/composables': fileURLToPath(new URL('./app/composables', import.meta.url)),
+  '@/features': fileURLToPath(new URL('./app/features', import.meta.url)),
 }
 
 const excludedNuxtPlugins = new Set([
