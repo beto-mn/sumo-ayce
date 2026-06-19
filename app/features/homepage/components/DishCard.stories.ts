@@ -1,0 +1,41 @@
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { FeaturedDish } from '@/types/content'
+import DishCard from './DishCard.vue'
+
+const base: FeaturedDish = {
+  id: 'd1',
+  name: 'Salmón Nigiri',
+  description: {
+    es: 'Salmón fresco sobre arroz avinagrado.',
+    en: 'Fresh salmon over vinegared rice.',
+  },
+  imageUrl: '/hero-placeholder.svg',
+  badge: null,
+  category: 'frio',
+}
+
+const meta = {
+  title: 'Homepage/DishCard',
+  component: DishCard,
+  tags: ['autodocs'],
+} satisfies Meta<typeof DishCard>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: { dish: base },
+}
+
+export const WithBadge: Story = {
+  args: { dish: { ...base, badge: 'Top' } },
+}
+
+export const NoImage: Story = {
+  args: { dish: { ...base, imageUrl: null } },
+}
+
+export const Mobile: Story = {
+  args: { dish: base },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+}
