@@ -24,3 +24,23 @@ body {
   margin-inline: auto;
   padding-inline: clamp(16px, 4vw, 32px);
 }
+
+/*
+ * Subtle diagonal cream-on-cream stripe texture for hero/section backgrounds.
+ * Built from the --bg2 token (no inline hex). Very low contrast so it reads as
+ * a soft texture over the cream page, never as hard lines.
+ */
+.bg-stripes {
+  background-color: rgb(var(--bg));
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(var(--bg2) / 0.6) 0,
+    rgb(var(--bg2) / 0.6) 2px,
+    transparent 2px,
+    transparent 22px
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* no motion on the texture — kept static for all users */
+}
