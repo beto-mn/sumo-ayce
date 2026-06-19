@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'staff-auth' })
+definePageMeta({ middleware: 'staff-auth', layout: 'staff' })
 
 const route = useRoute()
 const phone = computed(() => decodeURIComponent(route.params.phone as string))

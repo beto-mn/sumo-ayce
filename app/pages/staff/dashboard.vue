@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'staff-auth' })
+definePageMeta({ middleware: 'staff-auth', layout: 'staff' })
 
 const { user, logout } = useStaffAuth()
 const {
