@@ -72,6 +72,10 @@ app/
   composables/           # cross-feature only (useAuth, useToast)
 ```
 
+> The canonical, file-level expansion of this structure (with the per-file decision
+> table and the `app/components/layout/` shell rule) lives in `docs/harness/structure.md`.
+> It is enforced by the reviewer and by `CHECKPOINTS.md` C3.1.
+
 **Hard rules — folder boundaries:**
 
 - A feature MUST NOT import from another feature directly. If shared logic is needed,
