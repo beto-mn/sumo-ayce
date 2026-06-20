@@ -8,7 +8,7 @@ import type {
   MenuCategoryKey,
   MenuModality,
 } from '@/types/menu'
-import { menuCategories, menuItems, sauces } from '../db/schema'
+import { drinkGroups, menuCategories, menuItems, sauces } from '../db/schema'
 import { db } from './db'
 
 // ─── Featured dishes (homepage rail) ────────────────────────────────────────────
@@ -20,7 +20,8 @@ interface FeaturedQueryRow {
   descriptionEs: string
   descriptionEn: string
   fileName: string | null
-  badge: string | null
+  badgeEs: string | null
+  badgeEn: string | null
   category: string
 }
 
@@ -30,7 +31,10 @@ function toFeaturedDishRow(row: FeaturedQueryRow): FeaturedDishRow {
     name: { es: row.nameEs, en: row.nameEn },
     description: { es: row.descriptionEs, en: row.descriptionEn },
     imageUrl: row.fileName,
-    badge: row.badge,
+    badge:
+      row.badgeEs != null || row.badgeEn != null
+        ? { es: row.badgeEs ?? '', en: row.badgeEn ?? '' }
+        : null,
     category: row.category as MenuCategoryKey,
   }
 }
@@ -49,11 +53,13 @@ export async function getFeaturedDishes(): Promise<FeaturedDishRow[]> {
       descriptionEs: menuItems.descriptionEs,
       descriptionEn: menuItems.descriptionEn,
       fileName: menuItems.fileName,
-      badge: menuItems.badge,
+      badgeEs: menuItems.badgeEs,
+      badgeEn: menuItems.badgeEn,
       category: menuCategories.key,
     })
     .from(menuItems)
     .innerJoin(menuCategories, eq(menuItems.categoryId, menuCategories.id))
+    .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
     .where(
       and(
         eq(menuItems.featured, true),
@@ -79,7 +85,8 @@ interface MenuQueryRow {
   descriptionEs: string
   descriptionEn: string
   fileName: string | null
-  badge: string | null
+  badgeEs: string | null
+  badgeEn: string | null
   price: string | null
   includedInAyce: boolean
   drinkGroup: string | null
@@ -90,7 +97,7 @@ interface SauceQueryRow {
   id: string
   nameEs: string
   nameEn: string
-  displayOrder: number
+  spiceLevel: number
 }
 
 /** À-la-carte (`carta`) is AYCE-only; Express is always coerced to the buffet view. */
@@ -111,7 +118,10 @@ function toFullMenuDish(
     name: { es: row.nameEs, en: row.nameEn },
     description: { es: row.descriptionEs, en: row.descriptionEn },
     imageUrl: row.fileName,
-    badge: row.badge,
+    badge:
+      row.badgeEs != null || row.badgeEn != null
+        ? { es: row.badgeEs ?? '', en: row.badgeEn ?? '' }
+        : null,
     price: isCarta ? row.price : null,
     incluido: isCarta ? false : row.includedInAyce,
     drinkGroup: row.drinkGroup as FullMenuDish['drinkGroup'],
@@ -141,7 +151,8 @@ function groupByCategory(
 }
 
 async function queryMenuRows(
-  locationType: 'ayce' | 'express'
+  locationType: 'ayce' | 'express',
+  modality: MenuModality
 ): Promise<MenuQueryRow[]> {
   return db
     .select({
@@ -155,19 +166,22 @@ async function queryMenuRows(
       descriptionEs: menuItems.descriptionEs,
       descriptionEn: menuItems.descriptionEn,
       fileName: menuItems.fileName,
-      badge: menuItems.badge,
+      badgeEs: menuItems.badgeEs,
+      badgeEn: menuItems.badgeEn,
       price: menuItems.price,
       includedInAyce: menuItems.includedInAyce,
-      drinkGroup: menuItems.drinkGroup,
+      drinkGroup: drinkGroups.groupKey,
       requiresSauce: menuItems.requiresSauce,
     })
     .from(menuItems)
     .innerJoin(menuCategories, eq(menuItems.categoryId, menuCategories.id))
+    .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
     .where(
       and(
         eq(menuItems.isActive, true),
         eq(menuCategories.isActive, true),
-        locationScope(locationType)
+        locationScope(locationType),
+        ayceModalityFilter(locationType, modality)
       )
     )
     .orderBy(asc(menuCategories.displayOrder), asc(menuItems.displayOrder))
@@ -178,22 +192,35 @@ function locationScope(locationType: 'ayce' | 'express') {
   return inArray(menuItems.locationType, [locationType, 'both'])
 }
 
+/**
+ * For Express: no filter (Express has no à-la-carte concept).
+ * For AYCE buffet: only included items (`includedInAyce = true`).
+ * For AYCE carta: only à-la-carte items (`includedInAyce = false`).
+ */
+function ayceModalityFilter(
+  locationType: 'ayce' | 'express',
+  modality: MenuModality
+) {
+  if (locationType === 'express') return undefined
+  return eq(menuItems.includedInAyce, modality !== 'carta')
+}
+
 async function querySauces(): Promise<FullMenuSauce[]> {
   const rows: SauceQueryRow[] = await db
     .select({
       id: sauces.id,
       nameEs: sauces.nameEs,
       nameEn: sauces.nameEn,
-      displayOrder: sauces.displayOrder,
+      spiceLevel: sauces.spiceLevel,
     })
     .from(sauces)
     .where(eq(sauces.isActive, true))
-    .orderBy(asc(sauces.displayOrder))
+    .orderBy(asc(sauces.spiceLevel))
 
   return rows.map(row => ({
     id: row.id,
     name: { es: row.nameEs, en: row.nameEn },
-    displayOrder: row.displayOrder,
+    spiceLevel: row.spiceLevel,
   }))
 }
 
@@ -207,7 +234,7 @@ export async function getFullMenu(params: {
   modality: MenuModality
 }): Promise<FullMenuResult> {
   const modality = resolveModality(params.locationType, params.modality)
-  const rows = await queryMenuRows(params.locationType)
+  const rows = await queryMenuRows(params.locationType, modality)
   const sauceCatalog = await querySauces()
   return {
     locationType: params.locationType,

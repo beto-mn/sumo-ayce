@@ -1,6 +1,6 @@
 import { and, eq, inArray } from 'drizzle-orm'
 import { db } from '../../utils/db'
-import { menuCategories, menuItems } from '../schema'
+import { drinkGroups, menuCategories, menuItems } from '../schema'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -34,9 +34,10 @@ export async function getFeaturedDishes(): Promise<MenuItemWithCategory[]> {
       price: menuItems.price,
       includedInAyce: menuItems.includedInAyce,
       fileName: menuItems.fileName,
-      badge: menuItems.badge,
+      badgeEs: menuItems.badgeEs,
+      badgeEn: menuItems.badgeEn,
       featured: menuItems.featured,
-      drinkGroup: menuItems.drinkGroup,
+      drinkGroup: drinkGroups.groupKey,
       requiresSauce: menuItems.requiresSauce,
       isActive: menuItems.isActive,
       displayOrder: menuItems.displayOrder,
@@ -50,6 +51,7 @@ export async function getFeaturedDishes(): Promise<MenuItemWithCategory[]> {
     })
     .from(menuItems)
     .innerJoin(menuCategories, eq(menuItems.categoryId, menuCategories.id))
+    .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
     .where(and(eq(menuItems.featured, true), eq(menuItems.isActive, true)))
 
   return rows
@@ -77,9 +79,10 @@ export async function getFullMenu(
       price: menuItems.price,
       includedInAyce: menuItems.includedInAyce,
       fileName: menuItems.fileName,
-      badge: menuItems.badge,
+      badgeEs: menuItems.badgeEs,
+      badgeEn: menuItems.badgeEn,
       featured: menuItems.featured,
-      drinkGroup: menuItems.drinkGroup,
+      drinkGroup: drinkGroups.groupKey,
       requiresSauce: menuItems.requiresSauce,
       isActive: menuItems.isActive,
       displayOrder: menuItems.displayOrder,
@@ -93,6 +96,7 @@ export async function getFullMenu(
     })
     .from(menuItems)
     .innerJoin(menuCategories, eq(menuItems.categoryId, menuCategories.id))
+    .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
     .where(locationFilter)
 
   return rows

@@ -19,7 +19,8 @@ type FeaturedQueryRow = {
   descriptionEs: string
   descriptionEn: string
   fileName: string | null
-  badge: string | null
+  badgeEs: string | null
+  badgeEn: string | null
   category: string
 }
 
@@ -45,7 +46,8 @@ const featuredRow = (
   descriptionEs: 'Vainas de soya',
   descriptionEn: 'Soybean pods',
   fileName: 'edamame.jpg',
-  badge: 'Nuevo',
+  badgeEs: 'Nuevo',
+  badgeEn: 'New',
   category: 'entradas',
   ...over,
 })
@@ -63,13 +65,15 @@ describe('getFeaturedDishes', () => {
       name: { es: 'Edamame', en: 'Edamame' },
       description: { es: 'Vainas de soya', en: 'Soybean pods' },
       imageUrl: 'edamame.jpg',
-      badge: 'Nuevo',
+      badge: { es: 'Nuevo', en: 'New' },
       category: 'entradas',
     })
   })
 
   it('passes a null image and null badge through unchanged', async () => {
-    mockFeaturedChain([featuredRow({ fileName: null, badge: null })])
+    mockFeaturedChain([
+      featuredRow({ fileName: null, badgeEs: null, badgeEn: null }),
+    ])
     const [dish] = await getFeaturedDishes()
     expect(dish?.imageUrl).toBeNull()
     expect(dish?.badge).toBeNull()
@@ -125,7 +129,8 @@ type MenuQueryRow = {
   descriptionEs: string
   descriptionEn: string
   fileName: string | null
-  badge: string | null
+  badgeEs: string | null
+  badgeEn: string | null
   price: string | null
   includedInAyce: boolean
   drinkGroup: string | null
@@ -171,7 +176,8 @@ const menuRow = (over: Partial<MenuQueryRow> = {}): MenuQueryRow => ({
   descriptionEs: '',
   descriptionEn: '',
   fileName: null,
-  badge: null,
+  badgeEs: null,
+  badgeEn: null,
   price: '120.00',
   includedInAyce: true,
   drinkGroup: null,
