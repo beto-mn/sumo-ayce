@@ -468,6 +468,37 @@ deploy errors are typically in the last 30 lines of the relevant step.
 
 ---
 
+## Database migration secret (feature 016)
+
+Both `preview.yml` (`dev` environment) and `production.yml` (`prd` environment) run
+`pnpm db:migrate` before each Vercel deploy to apply any pending Drizzle migrations.
+Because both workflows are environment-scoped, `DATABASE_URL` must be added as an
+**Environment secret** in each GitHub Environment — NOT as a repository-level secret.
+
+**To add the secret (must be done twice — once per environment):**
+
+1. Navigate to `Settings → Environments → dev → Environment secrets → Add secret`.
+   - Name: `DATABASE_URL`
+   - Value: the Neon PostgreSQL connection string for the preview/staging database
+2. Navigate to `Settings → Environments → prd → Environment secrets → Add secret`.
+   - Name: `DATABASE_URL`
+   - Value: the Neon PostgreSQL connection string for the production database
+
+If you use a single Neon database for both environments, paste the same connection
+string in both. If you use separate databases per tier (recommended for production
+isolation), each environment gets its own value.
+
+If `DATABASE_URL` is absent from an environment, the "Run DB migrations" step fails
+with a missing-variable error (from `server/utils/env.ts`) and the entire workflow is
+cancelled before Vercel is contacted. This is intentional — it prevents a deploy from
+landing code that expects schema changes not yet applied to the database (SC-007).
+
+> **CRITICAL**: adding `DATABASE_URL` as a *repository* secret will NOT work. Jobs
+> that declare `environment: dev` or `environment: prd` read only the secrets scoped
+> to that environment; a same-named repository secret is shadowed and ignored.
+
+---
+
 ## Cross-references
 
 - Article VI (Sensitive Data): `.specify/memory/constitution.md` — the
