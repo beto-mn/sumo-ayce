@@ -57,6 +57,34 @@
       "when": 1780007595785,
       "tag": "0007_aberrant_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1781914712990,
+      "tag": "0008_flat_blindfold",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1782009657071,
+      "tag": "0009_rename_dishes_to_menu_items",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1782009831646,
+      "tag": "0010_aromatic_thanos",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1782012327320,
+      "tag": "0011_milky_ink",
+      "breakpoints": true
     }
   ]
 }
