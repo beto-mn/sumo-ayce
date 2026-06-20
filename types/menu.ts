@@ -13,19 +13,23 @@ export type MenuLocationType = 'ayce' | 'express' | 'both'
 export type MenuModality = 'buffet' | 'carta'
 
 export type MenuCategoryKey =
-  | 'entradas'
+  | 'appetizers'
+  | 'salads'
+  | 'rice'
+  | 'ramen'
   | 'burgers'
-  | 'sandwich'
+  | 'sandwiches'
   | 'burritos'
-  | 'hotdogs'
-  | 'frio'
-  | 'caliente'
-  | 'dulce'
-  | 'postres'
-  | 'alitas'
-  | 'salsas'
+  | 'hot_dogs'
+  | 'cold_rolls'
+  | 'hot_rolls'
+  | 'sweet_rolls'
+  | 'desserts'
+  | 'wings'
+  | 'sauces'
   | 'extras'
-  | 'bebidas'
+  | 'drinks'
+  | 'kids'
 
 export type DrinkGroup =
   | 'jumbo_cocktails'
@@ -33,7 +37,8 @@ export type DrinkGroup =
   | 'non_alcoholic'
   | 'sodas'
   | 'coffee_digestifs'
-  | 'beers_spirits'
+  | 'beers'
+  | 'spirits'
 
 /**
  * A featured dish/drink row, ready for the homepage rail. The route resolves
@@ -45,7 +50,7 @@ export interface FeaturedDishRow {
   name: Bilingual
   description: Bilingual
   imageUrl: string | null
-  badge: string | null
+  badge: Bilingual | null
   category: MenuCategoryKey
 }
 
@@ -54,7 +59,7 @@ export interface FullMenuDish {
   name: Bilingual
   description: Bilingual
   imageUrl: string | null
-  badge: string | null
+  badge: Bilingual | null
   /** Decimal as string; present ONLY when modality === 'carta' and the dish has a price. */
   price: string | null
   /** True when the dish is shown as "incluido" (buffet) instead of a price. */
@@ -73,7 +78,7 @@ export interface FullMenuCategory {
 export interface FullMenuSauce {
   id: string
   name: Bilingual
-  displayOrder: number
+  spiceLevel: number
 }
 
 export interface FullMenuResult {

@@ -6,6 +6,7 @@ import {
   decimal,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -15,6 +16,19 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
+
+// ─── Branch schedule type ─────────────────────────────────────────────────────
+
+type DayHours = { open: string; close: string }
+export type BranchSchedule = {
+  mon: DayHours | null
+  tue: DayHours | null
+  wed: DayHours | null
+  thu: DayHours | null
+  fri: DayHours | null
+  sat: DayHours | null
+  sun: DayHours | null
+}
 
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
@@ -40,6 +54,9 @@ export const redemptionStatus = pgEnum('redemption_status', [
 
 export const staffRole = pgEnum('staff_role', ['staff', 'admin', 'owner'])
 
+// branch location type — whether the branch operates as AYCE or Express
+export const branchType = pgEnum('branch_type', ['ayce', 'express'])
+
 // location-type applicability of a dish (AYCE-only, Express-only, or both)
 export const menuLocationType = pgEnum('menu_location_type', [
   'ayce',
@@ -47,31 +64,25 @@ export const menuLocationType = pgEnum('menu_location_type', [
   'both',
 ])
 
-// fixed, code-referenced category keys (13)
+// fixed, code-referenced category keys (17) — English identifiers
 export const menuCategoryKey = pgEnum('menu_category_key', [
-  'entradas',
+  'appetizers',
+  'salads',
+  'rice',
+  'ramen',
   'burgers',
-  'sandwich',
+  'sandwiches',
   'burritos',
-  'hotdogs',
-  'frio',
-  'caliente',
-  'dulce',
-  'postres',
-  'alitas',
-  'salsas',
+  'hot_dogs',
+  'cold_rolls',
+  'hot_rolls',
+  'sweet_rolls',
+  'desserts',
+  'wings',
+  'sauces',
   'extras',
-  'bebidas',
-])
-
-// drink sub-groups (non-null only for dishes in the bebidas category)
-export const drinkGroup = pgEnum('drink_group', [
-  'jumbo_cocktails',
-  'cantaritos_sumo_cups',
-  'non_alcoholic',
-  'sodas',
-  'coffee_digestifs',
-  'beers_spirits',
+  'drinks',
+  'kids',
 ])
 
 // ─── Tables ──────────────────────────────────────────────────────────────────
@@ -89,6 +100,10 @@ export const branches = pgTable(
       length: 20,
     }),
     managerPhone: varchar('manager_phone', { length: 20 }),
+    code: varchar('code', { length: 60 }).unique(),
+    state: varchar('state', { length: 100 }),
+    schedule: jsonb('schedule').$type<BranchSchedule>(),
+    type: branchType('type').notNull().default('ayce'),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -96,6 +111,7 @@ export const branches = pgTable(
   t => [
     index('branches_active_idx').on(t.isActive).where(sql`is_active = true`),
     index('branches_coords_idx').on(t.lat, t.lng),
+    index('branches_type_idx').on(t.type),
   ]
 )
 
@@ -272,9 +288,10 @@ export const menuItems = pgTable(
     price: decimal('price', { precision: 8, scale: 2 }),
     includedInAyce: boolean('included_in_ayce').notNull().default(true),
     fileName: text('file_name'),
-    badge: varchar('badge', { length: 40 }),
+    badgeEs: varchar('badge_es', { length: 40 }),
+    badgeEn: varchar('badge_en', { length: 40 }),
     featured: boolean('featured').notNull().default(false),
-    drinkGroup: drinkGroup('drink_group'),
+    drinkGroupId: uuid('drink_group_id').references(() => drinkGroups.id),
     requiresSauce: boolean('requires_sauce').notNull().default(false),
     isActive: boolean('is_active').notNull().default(true),
     displayOrder: integer('display_order').notNull().default(0),
@@ -298,13 +315,23 @@ export const sauces = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     nameEs: varchar('name_es', { length: 60 }).notNull(),
     nameEn: varchar('name_en', { length: 60 }).notNull(),
+    // 0 = no heat, 1 = mild, 2 = medium, 3 = hot, 4 = extra hot
+    spiceLevel: integer('spice_level').notNull().default(0),
+    fileName: text('file_name'),
     isActive: boolean('is_active').notNull().default(true),
-    displayOrder: integer('display_order').notNull().default(0),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
-  t => [
-    index('sauces_order_idx').on(t.displayOrder),
-    check('sauces_order_nonnegative', sql`${t.displayOrder} >= 0`),
-  ]
+  t => [check('sauces_spice_level_nonnegative', sql`${t.spiceLevel} >= 0`)]
 )
+
+export const drinkGroups = pgTable('drink_group', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  groupKey: varchar('group_key', { length: 60 }).notNull().unique(),
+  subtitleEs: text('subtitle_es'),
+  subtitleEn: text('subtitle_en'),
+  promoEs: text('promo_es'),
+  promoEn: text('promo_en'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
