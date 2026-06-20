@@ -45,10 +45,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate migration files
+        run: pnpm exec drizzle-kit check
+
       - name: Run DB migrations
-        run: pnpm db:migrate
+        run: pnpm exec drizzle-kit migrate 2>&1
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NO_COLOR: '1'
 
       - name: Pull Vercel preview environment
         run: npx vercel@54 pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
