@@ -11,6 +11,7 @@
       "**",
       "!.specify",
       "!public",
+      "!docs/business/reference",
       "!server/db/migrations",
       "!coverage",
       "!storybook-static",

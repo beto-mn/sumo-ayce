@@ -134,9 +134,21 @@ before approving. They enforce Article I (Code Organization & Reusability) and
 Article VII (UX Consistency & Component Documentation) of the constitution, plus
 the design context in `docs/business/overview.md`.
 
-**Folder structure (per Article I):**
-- New feature code lives under `app/features/<name>/components/` and
-  `app/features/<name>/composables/`. If it doesn't, REJECTED.
+**Folder structure (per Article I — canonical map in `docs/harness/structure.md`):**
+- New feature code lives under `app/features/<name>/` (`components/`, `composables/`,
+  `data/`, `utils/`, `types.ts`). If it doesn't, REJECTED.
+- Shared primitives live in `app/components/ui/`. App shell components
+  (SiteHeader, SiteFooter, SiteLogo, SiteMarquee, and any header/footer/nav shell)
+  live in `app/components/layout/`. NOTHING belongs directly at the
+  `app/components/` root. Verify:
+  ```bash
+  find app/components -maxdepth 1 -name '*.vue'   # MUST be empty
+  ```
+  Any `*.vue` printed (i.e. directly under `app/components/`, not in `ui/` or
+  `layout/`) → REJECTED with the path.
+- Cross-feature composables live in `app/composables/`; feature-specific
+  composables live in `app/features/<name>/composables/`. A feature-specific
+  composable placed in the shared `app/composables/` (or vice versa) → REJECTED.
 - No components inlined inside `pages/*.vue`. Pages compose components,
   they don't contain them. If a page contains non-trivial inline markup,
   REJECTED.

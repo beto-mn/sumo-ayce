@@ -32,6 +32,7 @@ const config: StorybookConfig = {
       '@/layouts': fileURLToPath(new URL('../app/layouts', import.meta.url)),
       '@/utils': fileURLToPath(new URL('../app/utils', import.meta.url)),
       '@/types': fileURLToPath(new URL('../types', import.meta.url)),
+      '@/features': fileURLToPath(new URL('../app/features', import.meta.url)),
     }
     return config
   },

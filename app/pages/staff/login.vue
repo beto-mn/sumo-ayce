@@ -1,4 +1,8 @@
 <script setup lang="ts">
+// Layout-less full-screen page — load the dark staff theme directly so the
+// `--color-*` tokens and dark body are available without the global import.
+import '@/assets/css/staff.css'
+
 definePageMeta({ layout: false })
 
 const { login, loading, error } = useStaffAuth()

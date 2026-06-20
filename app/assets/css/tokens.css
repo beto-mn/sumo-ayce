@@ -27,6 +27,10 @@
   --yellow: 255 194 59; /* #ffc23b */
   --green: 31 174 90; /* #1fae5a */
   --line: 26 18 9; /* #1a1209 — same as --ink */
+  /* Pure black — used ONLY as the backing surface behind the SUMO logo lockups
+     so the logo SVG's own #000 sticker drop-shadow blends in (the warm --ink
+     is slightly lighter and reveals the shadow as a black box). */
+  --black: 0 0 0; /* #000000 */
 
   /* Per-type accent — defaults to AYCE orange, swapped to blue inside .scope-express */
   --accent: var(--orange);

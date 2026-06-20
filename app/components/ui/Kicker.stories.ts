@@ -6,7 +6,10 @@ const meta = {
   component: Kicker,
   tags: ['autodocs'],
   argTypes: {
-    tone: { control: 'select', options: ['ink', 'accent'] },
+    tone: {
+      control: 'select',
+      options: ['ink', 'accent', 'orange', 'pink', 'blue', 'yellow'],
+    },
     rotate: { control: { type: 'number', min: -180, max: 180, step: 1 } },
   },
   render: args => ({
@@ -22,6 +25,17 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = { args: { tone: 'ink', rotate: -2 } }
 export const AccentAyce: Story = { args: { tone: 'accent', rotate: -2 } }
+
+/**
+ * Section kickers: orange (featured/branches), pink (promos), yellow (reviews).
+ * Blue is reserved for Express-scoped sections only (Constitution Art. VII).
+ */
+export const Orange: Story = { args: { tone: 'orange', rotate: -2 } }
+export const Pink: Story = { args: { tone: 'pink', rotate: -2 } }
+export const Yellow: Story = { args: { tone: 'yellow', rotate: -2 } }
+
+/** Express-only: ink/dark text not required, light text on blue surface. */
+export const Blue: Story = { args: { tone: 'blue', rotate: -2 } }
 
 export const AccentExpress: Story = {
   args: { tone: 'accent', rotate: -2 },

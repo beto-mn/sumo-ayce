@@ -4,8 +4,57 @@ import { fileURLToPath } from 'node:url'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  app: {
+    head: {
+      link: [
+        // SVG favicon = the official vertical SUMO logo (modern browsers).
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          href: '/brand/sumo-vertical.svg',
+        },
+        // PNG fallback (generated from the same logo) for browsers without
+        // SVG-favicon support. The default Nuxt favicon.ico was removed.
+        {
+          rel: 'icon',
+          type: 'image/png',
+          sizes: '32x32',
+          href: '/favicon-32x32.png',
+        },
+        {
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
+          href: '/apple-touch-icon.png',
+        },
+      ],
+    },
+  },
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n', '@nuxt/fonts'],
-  css: ['~/assets/css/base.css', '~/assets/css/staff.css'],
+  components: [
+    // Shared primitives → `Ui` prefix (<UiButton>, <UiNav>, ...).
+    { path: '~/components/ui', prefix: 'Ui' },
+    // App shell → bare names (<SiteHeader>, <SiteFooter>, <SiteLogo>,
+    // <SiteMarquee>). The `Site*` prefix is part of the file name, not a
+    // directory prefix, so pathPrefix is disabled here.
+    { path: '~/components/layout', pathPrefix: false },
+    // Remaining app/components subdirs (e.g. staff/ → <StaffLoginForm>) keep
+    // the default directory-prefixed scan.
+    '~/components',
+    // Auto-import feature components by bare name (HomeHero, DishCard, ...) so
+    // vertical slices need no explicit imports in templates.
+    { path: '~/features', pathPrefix: false },
+  ],
+  // staff.css is intentionally NOT global — it ships a dark `body` theme that
+  // would override the public cream `--bg`. It is loaded only by the `staff`
+  // layout (and the layout-less login page) to scope the dark portal theme.
+  css: ['~/assets/css/base.css'],
+  runtimeConfig: {
+    public: {
+      // Hero price sticker — configurable without code change via
+      // NUXT_PUBLIC_HERO_PRICE. Default "$269" (FR-007).
+      heroPrice: '$269',
+    },
+  },
   fonts: {
     families: [
       { name: 'Bricolage Grotesque', weights: [800], provider: 'google' },
@@ -45,6 +94,7 @@ export default defineNuxtConfig({
     '@/composables': fileURLToPath(
       new URL('./app/composables', import.meta.url)
     ),
+    '@/features': fileURLToPath(new URL('./app/features', import.meta.url)),
     '@/layouts': fileURLToPath(new URL('./app/layouts', import.meta.url)),
     '@/server': fileURLToPath(new URL('./server', import.meta.url)),
     '@/types': fileURLToPath(new URL('./types', import.meta.url)),

@@ -107,3 +107,34 @@
 ### Carryovers for future features
 
 - None blocking. From feature 009 onward, every new `app/components/ui/<Name>.vue` MUST ship with co-located `<Name>.spec.ts`. From feature 009+, **TDD applies forward-going** per Article IV.
+
+---
+
+## Feature 010 — Homepage (`/`) — DONE (2026-06-20)
+
+Public homepage in the "Mercado Pop" visual language, ISR 3600. Branch `feat/010-homepage` (work uncommitted — human's call on commit/PR).
+
+### What shipped
+- **Sections**: hero (cream + 22px diagonal stripes + yellow radial "sun"; transparent logo frame with the official vertical SUMO SVG; orange `$269` sticker), type selector ("Dos formatos…" + AYCE/Express cards with badges/dots/chips/Ver-menú), featured-dishes rail, promotions, Google reviews, branches CTA. Global shell: `SiteHeader` (logo + nav + EN/ES + Reservar), ink `SiteMarquee` band, `SiteFooter`.
+- **Content sourcing**: promotions from WordPress `promociones` (server-side, ISR) with a **two-step selection** — PRIMARY `?activa=1&home=1` (active + home-flagged) capped to 3 newest, FALLBACK `?activa=1` (all active) capped to 3 if primary empty, else section hides; 4s/3s fetch timeouts + graceful degradation. Featured dishes and reviews are **static fixtures** (route-compatible shape, swappable later). Hero price from runtime config.
+- **PromoCard**: badge color from `acf.color`; small type bar (express→blue, ayce→orange, all→ink); the `acf.imagen` flyer opens large in a reusable **`UiLightbox`** on click (not inline).
+- **Marquee**: adaptive repetition (gap-free at any width via measured copies), ink band, orange ✺ separator, i18n phrases, `speed="slow"`.
+- **Favicon**: official vertical SUMO SVG + PNG fallback (Nuxt default favicon removed).
+- **Footer**: ink band, official social URLs (IG/FB/TikTok), WhatsApp removed from social, Contacto→`/contacto`, compacted link heights (28px).
+
+### Key decisions
+- Featured dishes = static fixture, NOT a Neon DB route (the earlier `016 menu-schema-drizzle` detour was created+approved then **removed**; its DB code is parked in `git stash@{0}`). The reviewer-approved 016 schema can be revived for features 011/012.
+- **Tailwind-only**: no `<style>` blocks in homepage/chrome; tokens only; no arbitrary color/inline-hex values. `hover:` is desktop-only (`hoverOnlyWhenSupported`).
+- **Structure codified**: created `docs/harness/structure.md` (canonical by-feature layout) + `CHECKPOINTS.md` C3.1 gate + reviewer structure check; moved shell components to `app/components/layout/`.
+- Fonts: Bricolage Grotesque (display) + Hanken Grotesk (body) via `@nuxt/fonts`.
+- `WORDPRESS_API_URL` = bare origin `https://cms.sumo.com.mx` (env-driven; queries documented in `docs/business/wordpress-endpoints.md`; raw shape typed in `types/wordpress.ts`).
+
+### Reviewer verification
+- First pass **REJECTED** — one blocking defect: Express-exclusive blue used on the non-Express Google-reviews kicker (Article VII / FR-011). Fixed (kicker → `yellow`; `UiKicker` gained a yellow tone). Re-review **APPROVED**, flipped id=10 → `done`.
+- `./init.sh` exit 0 — **352 tests** (65 files), biome, typecheck, build. `pnpm check` clean. All grep gates (default-palette / arbitrary-value / inline-hex / `<style>`) zero. Full record: `progress/review_010-homepage.md`.
+
+### Carryovers
+- **T042** (Lighthouse ≥90 / interactive <2s) deferred to post-deploy verification on the feature-009 CI preview.
+- **Feature 011 (menu page)** is still specced for the WordPress `menu_item` CPT — must be reconciled to DB sourcing (revive the `016` schema from `git stash@{0}`) before it is worked on.
+- `git stash@{0}` holds the reviewer-approved 016 menu-schema DB code (schema + migration + seed + `getFeaturedDishes`/`getFullMenu` helpers). Restore it for 011/012, or drop it if redoing.
+- Homepage branch `feat/010-homepage` is uncommitted — commit/PR per the CI flow when ready.

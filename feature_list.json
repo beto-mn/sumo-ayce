@@ -88,16 +88,16 @@
       "description": "Stand up CI/CD entirely from GitHub Actions (NOT the native Vercel↔GitHub integration) so the repository never has to grant Vercel direct access. Three workflows under .github/workflows/: (1) ci.yml — runs on every pull request: pnpm install with frozen lockfile, pnpm check, pnpm typecheck, pnpm test (must show ≥226 tests), pnpm build. Cache pnpm-store between runs. Node version pinned to 20 (Vercel runtime). Concurrency group per ref with cancel-in-progress. (2) preview.yml — runs on push to `develop`: pulls Vercel preview env, runs `vercel build`, `vercel deploy --prebuilt`, posts the preview URL as a check output / GitHub Deployments entry. (3) production.yml — runs on push to `master`: pulls Vercel production env, runs `vercel build --prod`, `vercel deploy --prebuilt --prod`. All three consume the three required GitHub secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID (document the exact dashboard paths to retrieve each). Document required secrets + branch-protection recommendations in docs/harness/ci-cd.md (new). MUST land BEFORE feature 010 (homepage) so every page PR from 010 onward ships with a working preview link. Excluded from scope: native Vercel↔GitHub integration (intentional — see context), DB migration runners, CDN-cache invalidation hooks (these may come later).",
       "spec_path": "specs/009-ci-cd-github-actions",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 10,
       "name": "homepage",
       "title": "Homepage (/)",
-      "description": "Public homepage with hero (ALL YOU CAN EAT headline, kicker, price sticker, hero photo), type selector (AYCE / Express cards routing to /menu), featured dishes rail, top 3 promotions, Google reviews, branches CTA band. Content from WordPress (featured dishes, promos, reviews) fetched server-side via useFetch. Rendering mode per docs/business/rendering-strategy.md. Reduced-motion disables marquee/bounce. See docs/business/features.md §1.",
+      "description": "Public homepage with hero (ALL YOU CAN EAT headline, kicker, price sticker, hero photo), type selector (AYCE / Express cards routing to /menu), featured dishes rail, top 3 promotions, Google reviews, branches CTA band. Content sourcing: top 3 promotions from the WordPress promociones endpoint (server-side); featured dishes and Google reviews from static/hardcoded fixtures committed in the repo (swappable for a real data source later). Rendering mode per docs/business/rendering-strategy.md. Reduced-motion disables marquee/bounce. See docs/business/features.md §1.",
       "spec_path": "specs/010-homepage",
       "sdd": true,
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 11,
@@ -112,7 +112,7 @@
       "id": 12,
       "name": "promotions-page",
       "title": "Promotions Page (/promociones)",
-      "description": "Grid of active promotions from WordPress CPT promociones. Bilingual fields (badge, title, desc, validity). Per-type color coding (Express promos use blue). Inactive promos hidden. Editable in WP admin without code changes. Rendering mode per docs/business/rendering-strategy.md (short ISR — most dynamic content). See docs/business/features.md §3.",
+      "description": "Grid of active promotions from WordPress CPT promociones. Uses the SAME endpoint as the homepage — `GET {WORDPRESS_API_URL}/wp-json/wp/v2/promociones` — with `?activa=1` to fetch ALL active promotions (no `home` filter, no 3-cap). The homepage instead uses `?activa=1&home=1` (home-flagged) with a fallback to `?activa=1`, capped at 3. Query params (activa/home) documented in docs/business/wordpress-endpoints.md. Endpoint + raw shape documented in docs/business/wordpress-endpoints.md; raw response typed in types/wordpress.ts; parsed via server/api/v1/content/validators.ts. Bilingual fields (badge, title, desc, validity). Per-type color coding (Express promos use blue). Inactive promos (acf.activa === false) hidden. The card shows text only; `acf.imagen` is the full promo flyer, opened large in the shared lightbox (app/components/ui/Lightbox.vue) on click — NOT shown inline. Editable in WP admin without code changes. Rendering mode per docs/business/rendering-strategy.md (short ISR — most dynamic content). See docs/business/features.md §3.",
       "spec_path": "specs/012-promotions-page",
       "sdd": true,
       "status": "pending"

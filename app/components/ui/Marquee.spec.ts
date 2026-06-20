@@ -23,13 +23,37 @@ describe('Marquee', () => {
     )
   })
 
-  it('marks the duplicated track copy as aria-hidden for screen readers', () => {
+  it('keeps the first slot copy visible and hides the rest from screen readers', () => {
     const wrapper = mount(Marquee, {
       slots: { default: 'aviso' },
     })
     const copies = wrapper.findAll('.marquee-content')
-    expect(copies).toHaveLength(2)
-    expect(copies[1]?.attributes('aria-hidden')).toBe('true')
+    // Renders the SSR-safe default of several copies so the band is gap-free
+    // before the client measures the exact count.
+    expect(copies.length).toBeGreaterThanOrEqual(2)
+    // The first copy is announced once; every duplicate is aria-hidden.
+    expect(copies[0]?.attributes('aria-hidden')).toBeUndefined()
+    for (const copy of copies.slice(1)) {
+      expect(copy.attributes('aria-hidden')).toBe('true')
+    }
+  })
+
+  it('defaults to the yellow tone', () => {
+    const wrapper = mount(Marquee, { slots: { default: 'amarillo' } })
+    const root = wrapper.get('.marquee')
+    expect(root.classes()).toContain('bg-yellow')
+    expect(root.classes()).toContain('text-ink')
+  })
+
+  it('renders the dark ink tone when tone="ink"', () => {
+    const wrapper = mount(Marquee, {
+      props: { tone: 'ink' },
+      slots: { default: 'oscuro' },
+    })
+    const root = wrapper.get('.marquee')
+    expect(root.classes()).toContain('bg-ink')
+    expect(root.classes()).toContain('text-bg')
+    expect(root.classes()).not.toContain('bg-yellow')
   })
 
   it('reverses direction when direction="right"', () => {
