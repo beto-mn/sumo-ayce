@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'staff-auth' })
+definePageMeta({ middleware: 'staff-auth', layout: 'staff' })
 
 const selectedDate = ref(new Date().toISOString().slice(0, 10))
 const voidError = ref<string | null>(null)

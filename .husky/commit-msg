@@ -2,7 +2,7 @@
 
 BRANCH=$(git branch --show-current)
 COMMIT_MSG=$(cat "$1")
-TYPES="feat|fix|chore|docs|refactor|test|ci|build|perf|style|revert|merge"
+TYPES="feat|fix|chore|docs|refactor|test|ci|build|perf|style|revert|merge|release"
 
 # Hotfix — skip everything
 if echo "$BRANCH" | grep -qE "^hotfix/"; then
@@ -25,6 +25,7 @@ expected_emoji() {
     style)    echo "💄" ;;
     revert)   echo "⏪" ;;
     merge)    echo "🔀" ;;
+    release)  echo "🔖" ;;
     *)        echo "" ;;
   esac
 }
@@ -47,12 +48,14 @@ print_help() {
   echo "  💄  style     → formatting, no logic change"
   echo "  ⏪  revert    → revert a previous commit"
   echo "  🔀  merge     → branch merge"
+  echo "  🔖  release   → version release (used by create-release.yml)"
   echo ""
   echo "  Examples:"
   echo "  feat(lealtad): add points calculation endpoint"
   echo "  ✨ feat(lealtad): add points calculation endpoint"
   echo "  🐛 fix(reservaciones): correct date validation"
   echo "  🔀 merge(feat/login): into master"
+  echo "  🔖 release: v0.1.1"
   echo ""
 }
 

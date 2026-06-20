@@ -22,6 +22,30 @@ describe('Kicker', () => {
     expect(classes).not.toContain('bg-ink')
   })
 
+  it.each([
+    ['orange', 'bg-orange'],
+    ['pink', 'bg-pink'],
+    ['blue', 'bg-blue'],
+    ['yellow', 'bg-yellow'],
+  ] as const)('supports the %s section tone', (tone, expected) => {
+    const wrapper = mount(Kicker, {
+      props: { tone },
+      slots: { default: 'TAG' },
+    })
+    expect(wrapper.classes()).toContain(expected)
+  })
+
+  it('uses ink text on the yellow tone for contrast (non-Express sections)', () => {
+    const wrapper = mount(Kicker, {
+      props: { tone: 'yellow' },
+      slots: { default: 'TAG' },
+    })
+    const classes = wrapper.classes()
+    expect(classes).toContain('bg-yellow')
+    expect(classes).toContain('text-ink')
+    expect(classes).not.toContain('text-bg')
+  })
+
   it('uses uppercase display typography and the kicker text size', () => {
     const wrapper = mount(Kicker, { slots: { default: 'tag' } })
     const classes = wrapper.classes()

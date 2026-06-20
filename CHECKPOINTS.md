@@ -24,6 +24,33 @@
 - [ ] No stray debug prints nor `TODO` without context in production code
 - [ ] Import conventions and barrel exports defined in the constitution are honored
 
+### C3.1 — File structure matches `docs/harness/structure.md` (Constitution Article I)
+
+The canonical structure is `docs/harness/structure.md` (vertical-slice / by-feature).
+Reject the feature if any of these fail:
+
+- [ ] Feature-owned code (components, composables, data, utils, types) lives under
+      `app/features/<feature>/`, NOT in `app/components/` root or `app/composables/`.
+- [ ] Shared primitives live in `app/components/ui/`; app shell (Header/Footer/Logo/Marquee)
+      lives in `app/components/layout/` — NOT in `app/components/` root.
+- [ ] Cross-feature composables live in `app/composables/`; feature-specific ones live in
+      `app/features/<feature>/composables/`.
+- [ ] Pages (`app/pages/*.vue`) are thin (≤100 lines template) and compose components — no
+      non-trivial inline markup.
+- [ ] No cross-feature imports (`app/features/<a>/` MUST NOT import from `app/features/<b>/`).
+- [ ] Server feature code lives under `server/api/v1/<feature>/`; cross-feature utils in
+      `server/utils/`.
+
+Quick check for misplaced shell/feature files at the `app/components/` root:
+
+```bash
+# Only ui/ and layout/ subdirs (plus their files) belong under app/components/.
+# Any *.vue directly in app/components/ (not in ui/ or layout/) is misplaced → REJECTED.
+find app/components -maxdepth 1 -name '*.vue'
+```
+
+Should return EMPTY.
+
 ## C4 — Verification is real
 
 - [ ] There is at least one test per acceptance criterion of the feature

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'staff-auth' })
+definePageMeta({ middleware: 'staff-auth', layout: 'staff' })
 
 const route = useRoute()
 const id = route.params.id as string

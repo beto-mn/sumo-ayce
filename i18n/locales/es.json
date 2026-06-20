@@ -1,6 +1,8 @@
 {
   "nav": {
+    "inicio": "Inicio",
     "menu": "Menú",
+    "promos": "Promos",
     "promociones": "Promociones",
     "sucursales": "Sucursales",
     "lealtad": "Lealtad",
@@ -11,14 +13,97 @@
     "cta": {
       "reserve": "Reservar",
       "viewMenu": "Ver menú",
+      "viewBranches": "Ver sucursales",
       "findBranch": "Buscar sucursal"
     },
     "lang": {
       "toggle": "EN"
-    }
+    },
+    "close": "Cerrar"
   },
   "brand": {
     "tagline": "Estilo americano-japonés",
     "ayceBadge": "All You Can Eat"
+  },
+  "footer": {
+    "brand": {
+      "tagline": "Estilo americano-japonés · All You Can Eat",
+      "blurb": "Come sin límites, estilo americano-japonés. Llega con hambre, vete feliz."
+    },
+    "nav": {
+      "title": "Navegación"
+    },
+    "social": {
+      "title": "Síguenos",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok"
+    },
+    "contact": {
+      "title": "Contacto",
+      "whatsapp": "WhatsApp"
+    },
+    "legal": {
+      "rights": "Todos los derechos reservados"
+    }
+  },
+  "home": {
+    "hero": {
+      "headline": "All You Can Eat",
+      "kicker": "Come sin límites · Estilo americano-japonés",
+      "subtitle": "Rolls, ramen, teppanyaki y smash burgers — ilimitados por un precio fijo. Llega con hambre, vete feliz.",
+      "priceLabel": "Desde",
+      "imageAlt": "Selección de platillos SUMO All You Can Eat",
+      "marquee": "Come sin límites",
+      "stickerLabel": "All You Can Eat",
+      "stickerDays": "todos los días",
+      "logoAlt": "SUMO — All You Can Eat"
+    },
+    "marquee": [
+      "Sushi ilimitado",
+      "Ramen 12 h de caldo",
+      "Teppanyaki en vivo",
+      "Smash burgers",
+      "$269 todos los días"
+    ],
+    "typeSelector": {
+      "kicker": "Elige tu SUMO",
+      "title": "Dos formatos, la misma garantía SUMO.",
+      "cta": "Ver menú",
+      "ayce": {
+        "name": "SUMO AYCE",
+        "badge": "All You Can Eat",
+        "desc": "Todo el All You Can Eat + menú a la carta. La experiencia SUMO completa, para sentarte y repetir.",
+        "chips": ["All You Can Eat", "A la carta"]
+      },
+      "express": {
+        "name": "SUMO Express",
+        "badge": "Formato compacto",
+        "desc": "El mismo All You Can Eat de SUMO en un formato más chico y ágil. Mismo sabor, espacio compacto.",
+        "chips": ["All You Can Eat"]
+      }
+    },
+    "featured": {
+      "title": "Antojos del momento",
+      "subtitle": "Una probadita de lo que te espera en el All You Can Eat."
+    },
+    "promotions": {
+      "kicker": "Esta semana en SUMO",
+      "title": "Promociones",
+      "cta": "Ver todas",
+      "openLabel": "Ver promoción"
+    },
+    "reviews": {
+      "kicker": "Nos aman en Google",
+      "title": "Reseñas reales de quienes ya tienen su SUMO favorito.",
+      "ratingLabel": "{rating} de 5 estrellas"
+    },
+    "branches": {
+      "kicker": "Sucursales",
+      "title": "10 sucursales en CDMX y Edomex",
+      "desc": "Encuentra la sucursal más cercana o reserva sin filas.",
+      "findBranch": "Encuentra la tuya",
+      "reserve": "Reservar"
+    }
   }
 }

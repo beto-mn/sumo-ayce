@@ -1,19 +1,12 @@
-<script setup lang="ts">
-const { t } = useI18n()
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-bg text-ink">
-    <UiNav />
-    <main class="container-pop flex-1 py-8">
+  <div class="min-h-screen flex flex-col bg-bg text-ink [&>*]:min-w-0">
+    <SiteHeader />
+    <SiteMarquee />
+    <main class="flex-1">
       <slot />
     </main>
-    <footer
-      class="mt-12 border-t-[3px] border-ink bg-bg2 py-6 text-center text-soft"
-    >
-      <p class="font-disp text-kicker uppercase">
-        SUMO · {{ t('brand.tagline') }}
-      </p>
-    </footer>
+    <SiteFooter />
   </div>
 </template>
