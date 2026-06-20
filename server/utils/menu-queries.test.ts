@@ -7,6 +7,7 @@ vi.mock('../db/schema', () => ({
   menuItems: {},
   menuCategories: {},
   sauces: {},
+  drinkGroups: {},
 }))
 
 import { getFeaturedDishes, getFullMenu } from './menu-queries'
@@ -24,13 +25,15 @@ type FeaturedQueryRow = {
   category: string
 }
 
-// Make `db.select(...).from(...).innerJoin(...).where(...).orderBy(...)` resolve to `rows`.
+// Make `db.select(...).from(...).innerJoin(...).leftJoin(...).where(...).orderBy(...)` resolve to `rows`.
 function mockFeaturedChain(rows: FeaturedQueryRow[]): void {
   mockDbSelect.mockReturnValue({
     from: vi.fn().mockReturnValue({
       innerJoin: vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          orderBy: vi.fn().mockResolvedValue(rows),
+        leftJoin: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            orderBy: vi.fn().mockResolvedValue(rows),
+          }),
         }),
       }),
     }),
@@ -106,8 +109,10 @@ describe('getFeaturedDishes', () => {
     mockDbSelect.mockReturnValue({
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
-          where: vi.fn().mockReturnValue({
-            orderBy: vi.fn().mockRejectedValue(new Error('db down')),
+          leftJoin: vi.fn().mockReturnValue({
+            where: vi.fn().mockReturnValue({
+              orderBy: vi.fn().mockRejectedValue(new Error('db down')),
+            }),
           }),
         }),
       }),
@@ -141,7 +146,7 @@ type SauceRow = {
   id: string
   nameEs: string
   nameEn: string
-  displayOrder: number
+  spiceLevel: number
 }
 
 // First select(...) → dishes-with-category; second select(...) → sauces.
@@ -150,8 +155,10 @@ function mockMenuChains(menuRows: MenuQueryRow[], sauceRows: SauceRow[]): void {
     .mockReturnValueOnce({
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
-          where: vi.fn().mockReturnValue({
-            orderBy: vi.fn().mockResolvedValue(menuRows),
+          leftJoin: vi.fn().mockReturnValue({
+            where: vi.fn().mockReturnValue({
+              orderBy: vi.fn().mockResolvedValue(menuRows),
+            }),
           }),
         }),
       }),
@@ -189,7 +196,7 @@ const sauceRow = (over: Partial<SauceRow> = {}): SauceRow => ({
   id: 'sauce-1',
   nameEs: 'BBQ',
   nameEn: 'BBQ',
-  displayOrder: 0,
+  spiceLevel: 0,
   ...over,
 })
 
@@ -295,12 +302,12 @@ describe('getFullMenu', () => {
     mockMenuChains(
       [],
       [
-        sauceRow({ id: 's1', nameEs: 'BBQ', displayOrder: 0 }),
+        sauceRow({ id: 's1', nameEs: 'BBQ', spiceLevel: 0 }),
         sauceRow({
           id: 's2',
           nameEs: 'Buffalo',
           nameEn: 'Buffalo',
-          displayOrder: 1,
+          spiceLevel: 1,
         }),
       ]
     )
@@ -309,8 +316,8 @@ describe('getFullMenu', () => {
       modality: 'buffet',
     })
     expect(result.sauces).toEqual([
-      { id: 's1', name: { es: 'BBQ', en: 'BBQ' }, displayOrder: 0 },
-      { id: 's2', name: { es: 'Buffalo', en: 'Buffalo' }, displayOrder: 1 },
+      { id: 's1', name: { es: 'BBQ', en: 'BBQ' }, spiceLevel: 0 },
+      { id: 's2', name: { es: 'Buffalo', en: 'Buffalo' }, spiceLevel: 1 },
     ])
   })
 
@@ -318,8 +325,10 @@ describe('getFullMenu', () => {
     mockDbSelect.mockReturnValueOnce({
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
-          where: vi.fn().mockReturnValue({
-            orderBy: vi.fn().mockRejectedValue(new Error('db down')),
+          leftJoin: vi.fn().mockReturnValue({
+            where: vi.fn().mockReturnValue({
+              orderBy: vi.fn().mockRejectedValue(new Error('db down')),
+            }),
           }),
         }),
       }),

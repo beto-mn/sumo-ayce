@@ -7,6 +7,7 @@ vi.mock('../../server/db/schema', () => ({
   menuItems: {},
   menuCategories: {},
   sauces: {},
+  drinkGroups: {},
 }))
 
 import { getFeaturedDishes, getFullMenu } from '../../server/db/queries/menu'
@@ -24,7 +25,8 @@ type FeaturedRow = {
   price: string | null
   includedInAyce: boolean
   fileName: string | null
-  badge: string | null
+  badgeEs: string | null
+  badgeEn: string | null
   featured: boolean
   drinkGroup: string | null
   requiresSauce: boolean
@@ -51,7 +53,8 @@ function makeFeaturedRow(over: Partial<FeaturedRow> = {}): FeaturedRow {
     price: null,
     includedInAyce: true,
     fileName: null,
-    badge: null,
+    badgeEs: null,
+    badgeEn: null,
     featured: true,
     drinkGroup: null,
     requiresSauce: false,
@@ -64,12 +67,14 @@ function makeFeaturedRow(over: Partial<FeaturedRow> = {}): FeaturedRow {
   }
 }
 
-// Mocks the `.select(...).from(...).innerJoin(...).where(...)` chain
+// Mocks the `.select(...).from(...).innerJoin(...).leftJoin(...).where(...)` chain
 function mockSelectChain(rows: FeaturedRow[]): void {
   mockDbSelect.mockReturnValue({
     from: vi.fn().mockReturnValue({
       innerJoin: vi.fn().mockReturnValue({
-        where: vi.fn().mockResolvedValue(rows),
+        leftJoin: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue(rows),
+        }),
       }),
     }),
   })
@@ -117,7 +122,9 @@ describe('getFeaturedDishes', () => {
     mockDbSelect.mockReturnValue({
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
-          where: vi.fn().mockRejectedValue(new Error('connection failed')),
+          leftJoin: vi.fn().mockReturnValue({
+            where: vi.fn().mockRejectedValue(new Error('connection failed')),
+          }),
         }),
       }),
     })
@@ -193,7 +200,9 @@ describe('getFullMenu', () => {
     mockDbSelect.mockReturnValue({
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
-          where: vi.fn().mockRejectedValue(new Error('db timeout')),
+          leftJoin: vi.fn().mockReturnValue({
+            where: vi.fn().mockRejectedValue(new Error('db timeout')),
+          }),
         }),
       }),
     })
