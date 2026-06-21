@@ -1,9 +1,8 @@
 -- Rename all menu_category_key enum values from Spanish to English.
 -- Approach: clear seeded data, rebuild enum, re-seed via pnpm db:seed.
 
--- 1. Clear menu items first (FK dep on menu_categories)
-TRUNCATE TABLE "public"."menu_items";
-TRUNCATE TABLE "public"."menu_categories";
+-- 1. Clear both tables (truncate together to satisfy FK constraint)
+TRUNCATE TABLE "public"."menu_items", "public"."menu_categories";
 
 -- 2. Drop unique index and constraint on menu_categories.key
 DROP INDEX IF EXISTS "public"."menu_categories_key_idx";

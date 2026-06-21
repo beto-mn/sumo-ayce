@@ -35,7 +35,7 @@ BEGIN
         UPDATE "menu_items" mi
         SET "drink_group_id" = dg.id
         FROM "drink_group_meta" dg
-        WHERE mi."drink_group"::text = dg."group_key"
+        WHERE mi."drink_group"::text = dg."group_key"::text
           AND mi."drink_group_id" IS NULL
       ';
     ELSIF dg_exists THEN
@@ -43,7 +43,7 @@ BEGIN
         UPDATE "menu_items" mi
         SET "drink_group_id" = dg.id
         FROM "drink_group" dg
-        WHERE mi."drink_group"::text = dg."group_key"
+        WHERE mi."drink_group"::text = dg."group_key"::text
           AND mi."drink_group_id" IS NULL
       ';
     END IF;
