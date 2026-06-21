@@ -70,8 +70,10 @@ jobs:
 
       - name: Run DB migrations
         run: |
-          set -o pipefail
-          pnpm exec drizzle-kit migrate 2>&1 | tr '\r' '\n'
+          pnpm exec drizzle-kit migrate > /tmp/drizzle.log 2>&1
+          EXIT_CODE=$?
+          sed 's/\r/\n/g' /tmp/drizzle.log
+          exit $EXIT_CODE
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
