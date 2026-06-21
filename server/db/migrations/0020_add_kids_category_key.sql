@@ -1,1 +1,1 @@
-ALTER TYPE "public"."menu_category_key" ADD VALUE 'kids';
+ALTER TYPE "public"."menu_category_key" ADD VALUE IF NOT EXISTS 'kids';

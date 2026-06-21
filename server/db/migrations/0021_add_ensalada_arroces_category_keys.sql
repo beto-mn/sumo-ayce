@@ -1,2 +1,3 @@
-ALTER TYPE "public"."menu_category_key" ADD VALUE 'ensalada';
-ALTER TYPE "public"."menu_category_key" ADD VALUE 'arroces';
+ALTER TYPE "public"."menu_category_key" ADD VALUE IF NOT EXISTS 'ensalada';
+--> statement-breakpoint
+ALTER TYPE "public"."menu_category_key" ADD VALUE IF NOT EXISTS 'arroces';
