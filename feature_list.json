@@ -143,6 +143,15 @@
       "spec_path": "specs/015-loyalty-portal",
       "sdd": true,
       "status": "pending"
+    },
+    {
+      "id": 16,
+      "name": "menu-schema-db",
+      "title": "Menu Database Schema & Migration",
+      "description": "Add menu tables (menuCategories, dishes, sauces) + enums (menuLocationType, menuCategoryKey, drinkGroup) to the Drizzle/Neon schema. Each table includes a file_name column (text nullable) for resolving local project image assets. Includes Drizzle migration applied to the production Neon PostgreSQL DB (no Docker), seed data for all 13 menu categories + initial dishes, and query helpers getFeaturedDishes and getFullMenu. A reviewer-approved schema draft already exists in git stash@{0} (branch chore/011-menu-schema-drizzle) — the spec must reconcile it with the file_name addition and confirm the final shape before implementation.",
+      "spec_path": "specs/016-menu-schema-db",
+      "sdd": true,
+      "status": "done"
     }
   ]
 }

@@ -1,15 +1,18 @@
 # Continuous Integration — cloud formalization of ./init.sh.
 # Runs on every pull request against any base branch. Reports the same five
 # checks the contributor sees locally: lint, typecheck, test, build, storybook.
+# Also validates (and auto-corrects) the PR title against Conventional Commits.
 # Contract: specs/009-ci-cd-github-actions/contracts/workflows.md §C1.
 
 name: CI
 
 on:
   pull_request:
+    types: [opened, edited, synchronize, reopened]
 
 permissions:
   contents: read
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -68,3 +71,43 @@ jobs:
 
       - name: Build Storybook
         run: pnpm storybook:build
+
+  pr-title:
+    name: Validate PR title (auto-fix from last commit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate and auto-fix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          TYPES="feat|fix|chore|docs|refactor|test|ci|build|perf|style|revert|merge|release"
+
+          is_valid() {
+            echo "$1" | grep -qE "^(✨|🐛|🔧|📝|♻️|✅|👷|🏗️|⚡️|💄|⏪|🔀|🔖) ($TYPES)(\(.+\))?: .+" \
+            || echo "$1" | grep -qE "^($TYPES)(\(.+\))?: .+"
+          }
+
+          if is_valid "$TITLE"; then
+            echo "✅ PR title is valid: $TITLE"
+            exit 0
+          fi
+
+          echo "⚠️  PR title is not valid: '$TITLE'"
+          echo "   Fetching last commit message from $HEAD_SHA ..."
+
+          LAST_COMMIT=$(gh api "repos/$REPO/commits/$HEAD_SHA" --jq '.commit.message' | head -1)
+          echo "   Last commit: $LAST_COMMIT"
+
+          if ! is_valid "$LAST_COMMIT"; then
+            echo "❌ Last commit message is also invalid — fix the PR title manually."
+            echo "   Format: <emoji> <type>(<scope>): <description>"
+            exit 1
+          fi
+
+          gh pr edit "$PR_NUMBER" --title "$LAST_COMMIT"
+          echo "✅ PR title updated to: $LAST_COMMIT"

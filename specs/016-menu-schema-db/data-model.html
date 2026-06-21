@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUMO AYCE — DB Schema: Feature 016</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f0f;
+    color: #e8e8e8;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+    color: #fff;
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 2.5rem;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #222;
+    padding-bottom: 0.5rem;
+  }
+  .tab {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+  .tab:hover { background: #1a1a1a; color: #bbb; }
+  .tab.active { background: #1e1e1e; color: #fff; }
+  .tab.after.active { color: #ff6b00; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .er-container {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  svg.er { font-size: 13px; }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: #888;
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .dot-existing { background: #3a6bc7; }
+  .dot-new      { background: #ff6b00; }
+  .dot-enum     { background: #8b5cf6; }
+
+  /* Migration summary table */
+  .section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #555;
+    margin: 2rem 0 0.75rem;
+  }
+  table.migration {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+  table.migration th {
+    text-align: left;
+    padding: 0.4rem 0.75rem;
+    background: #141414;
+    color: #666;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  table.migration td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #1a1a1a;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+  }
+  table.migration tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+  .badge-create { background: #1a3320; color: #4ade80; }
+  .badge-table  { background: #1c1c3a; color: #818cf8; }
+  .badge-enum   { background: #2d1b4e; color: #c084fc; }
+  .badge-index  { background: #1f1a10; color: #fbbf24; }
+
+  /* Schema box */
+  .schema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .schema-box {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .schema-box.new-table {
+    border-color: #ff6b00;
+    box-shadow: 0 0 0 1px rgba(255,107,0,0.15);
+  }
+  .schema-box-header {
+    background: #1a1a1a;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #222;
+  }
+  .schema-box.new-table .schema-box-header {
+    background: #1a1000;
+    border-bottom-color: rgba(255,107,0,0.2);
+  }
+  .schema-box-header h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: #fff;
+  }
+  .new-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    background: #ff6b00;
+    color: #fff;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+  .schema-cols { padding: 0.4rem 0; }
+  .schema-col {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.72rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .schema-col.pk  { color: #fbbf24; }
+  .schema-col.fk  { color: #60a5fa; }
+  .schema-col.new { color: #fb923c; }
+  .schema-col.normal { color: #9ca3af; }
+  .col-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .col-type { color: #6b7280; font-size: 0.65rem; flex-shrink: 0; }
+  .col-tag  { font-size: 0.6rem; color: #4b5563; flex-shrink: 0; }
+
+  /* Relations */
+  .relations-section { margin-top: 1.5rem; }
+  .rel-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .rel-chip {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.72rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .rel-chip.new { border-color: rgba(255,107,0,0.3); color: #fb923c; }
+  .rel-arrow { color: #4b5563; }
+
+  /* Enum section */
+  .enum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .enum-box {
+    background: #141414;
+    border: 1px solid #2d1b4e;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .enum-box.new-enum { border-color: #ff6b00; }
+  .enum-box-header {
+    background: #1a0d2e;
+    padding: 0.4rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #2d1b4e;
+  }
+  .enum-box.new-enum .enum-box-header { background: #1a1000; border-bottom-color: rgba(255,107,0,0.2); }
+  .enum-box-header h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: #c084fc;
+  }
+  .enum-box.new-enum .enum-box-header h3 { color: #fb923c; }
+  .enum-values {
+    padding: 0.4rem 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .enum-val {
+    background: #1d1030;
+    color: #a78bfa;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .enum-box.new-enum .enum-val { background: #1a1000; color: #fb923c; }
+</style>
+</head>
+<body>
+
+<h1>SUMO AYCE — Database Schema</h1>
+<p class="subtitle">Feature 016 · Menu Database Schema & Migration · 0008_flat_blindfold</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('before', this)">Antes (0000–0007)</button>
+  <button class="tab after" onclick="show('after', this)">Después (+ 0008)</button>
+  <button class="tab" onclick="show('migration', this)">Migración 0008</button>
+  <button class="tab" onclick="show('enums', this)">Enums</button>
+</div>
+
+<!-- ═══════════ PANEL: BEFORE ═══════════ -->
+<div id="before" class="panel active">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-existing"></div>Tablas existentes (8)</div>
+  </div>
+  <div class="schema-grid">
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>branches</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col normal"><span class="col-name">name</span><span class="col-type">varchar(100)</span></div>
+        <div class="schema-col normal"><span class="col-name">address</span><span class="col-type">text</span></div>
+        <div class="schema-col normal"><span class="col-name">lat / lng</span><span class="col-type">decimal</span></div>
+        <div class="schema-col normal"><span class="col-name">whatsapp_reservaciones</span><span class="col-type">varchar(20)</span></div>
+        <div class="schema-col normal"><span class="col-name">manager_phone</span><span class="col-type">varchar(20)</span></div>
+        <div class="schema-col normal"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+        <div class="schema-col normal"><span class="col-name">created_at / updated_at</span><span class="col-type">timestamp</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>customers</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col normal"><span class="col-name">name</span><span class="col-type">varchar(100)</span></div>
+        <div class="schema-col normal"><span class="col-name">phone</span><span class="col-type">varchar(20) UNIQUE</span></div>
+        <div class="schema-col normal"><span class="col-name">whatsapp_opt_in</span><span class="col-type">boolean</span></div>
+        <div class="schema-col normal"><span class="col-name">points_balance</span><span class="col-type">integer</span></div>
+        <div class="schema-col normal"><span class="col-name">deleted_at</span><span class="col-type">timestamp?</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>reservations</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col fk"><span class="col-name">branch_id</span><span class="col-type">uuid</span><span class="col-tag">→ branches</span></div>
+        <div class="schema-col normal"><span class="col-name">contact_name / phone</span><span class="col-type">varchar</span></div>
+        <div class="schema-col normal"><span class="col-name">party_size</span><span class="col-type">integer</span></div>
+        <div class="schema-col normal"><span class="col-name">reservation_date</span><span class="col-type">date</span></div>
+        <div class="schema-col normal"><span class="col-name">reservation_time</span><span class="col-type">time</span></div>
+        <div class="schema-col normal"><span class="col-name">status</span><span class="col-type">reservation_status</span></div>
+        <div class="schema-col normal"><span class="col-name">folio</span><span class="col-type">varchar(8) UNIQUE</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>loyalty_transactions</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col fk"><span class="col-name">customer_id</span><span class="col-type">uuid</span><span class="col-tag">→ customers</span></div>
+        <div class="schema-col fk"><span class="col-name">branch_id</span><span class="col-type">uuid</span><span class="col-tag">→ branches</span></div>
+        <div class="schema-col normal"><span class="col-name">points_delta</span><span class="col-type">integer ≠ 0</span></div>
+        <div class="schema-col normal"><span class="col-name">transaction_type</span><span class="col-type">loyalty_tx_type</span></div>
+        <div class="schema-col fk"><span class="col-name">created_by / voided_by</span><span class="col-type">uuid</span><span class="col-tag">→ staff_users</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>staff_users</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col normal"><span class="col-name">name</span><span class="col-type">varchar(100)</span></div>
+        <div class="schema-col normal"><span class="col-name">email</span><span class="col-type">varchar(255) UNIQUE</span></div>
+        <div class="schema-col normal"><span class="col-name">role</span><span class="col-type">staff_role</span></div>
+        <div class="schema-col fk"><span class="col-name">branch_id</span><span class="col-type">uuid?</span><span class="col-tag">→ branches</span></div>
+        <div class="schema-col normal"><span class="col-name">password_hash</span><span class="col-type">varchar(255)</span></div>
+        <div class="schema-col normal"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>rewards</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col normal"><span class="col-name">name</span><span class="col-type">varchar(100)</span></div>
+        <div class="schema-col normal"><span class="col-name">description</span><span class="col-type">text?</span></div>
+        <div class="schema-col normal"><span class="col-name">points_cost</span><span class="col-type">integer &gt; 0</span></div>
+        <div class="schema-col normal"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>redemptions</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col fk"><span class="col-name">customer_id</span><span class="col-type">uuid</span><span class="col-tag">→ customers</span></div>
+        <div class="schema-col fk"><span class="col-name">reward_id</span><span class="col-type">uuid</span><span class="col-tag">→ rewards</span></div>
+        <div class="schema-col fk"><span class="col-name">branch_id</span><span class="col-type">uuid</span><span class="col-tag">→ branches</span></div>
+        <div class="schema-col normal"><span class="col-name">ticket_id</span><span class="col-type">varchar UNIQUE</span></div>
+        <div class="schema-col fk"><span class="col-name">created_by / used_by</span><span class="col-type">uuid</span><span class="col-tag">→ staff_users</span></div>
+        <div class="schema-col normal"><span class="col-name">status</span><span class="col-type">redemption_status</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>staff_sessions</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col fk"><span class="col-name">staff_user_id</span><span class="col-type">uuid</span><span class="col-tag">→ staff_users</span></div>
+        <div class="schema-col normal"><span class="col-name">token</span><span class="col-type">varchar UNIQUE</span></div>
+        <div class="schema-col normal"><span class="col-name">expires_at</span><span class="col-type">timestamp</span></div>
+        <div class="schema-col normal"><span class="col-name">ip_address</span><span class="col-type">text?</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Relaciones</div>
+  <div class="rel-list">
+    <div class="rel-chip">reservations <span class="rel-arrow">→</span> branches</div>
+    <div class="rel-chip">loyalty_transactions <span class="rel-arrow">→</span> customers</div>
+    <div class="rel-chip">loyalty_transactions <span class="rel-arrow">→</span> branches</div>
+    <div class="rel-chip">loyalty_transactions <span class="rel-arrow">→</span> staff_users (×2)</div>
+    <div class="rel-chip">staff_users <span class="rel-arrow">→</span> branches</div>
+    <div class="rel-chip">redemptions <span class="rel-arrow">→</span> customers</div>
+    <div class="rel-chip">redemptions <span class="rel-arrow">→</span> rewards</div>
+    <div class="rel-chip">redemptions <span class="rel-arrow">→</span> branches</div>
+    <div class="rel-chip">redemptions <span class="rel-arrow">→</span> staff_users (×2)</div>
+    <div class="rel-chip">staff_sessions <span class="rel-arrow">→</span> staff_users</div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL: AFTER ═══════════ -->
+<div id="after" class="panel">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-existing"></div>Tablas existentes (8)</div>
+    <div class="legend-item"><div class="legend-dot dot-new"></div>Nuevas en feature 016 (3)</div>
+  </div>
+  <div class="schema-grid">
+
+    <!-- Existing tables (abbreviated) -->
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>branches</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid PK</span></div>
+        <div class="schema-col normal"><span class="col-name">name / address / lat / lng</span><span class="col-type">…</span></div>
+        <div class="schema-col normal"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+      </div>
+    </div>
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>customers</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid PK</span></div>
+        <div class="schema-col normal"><span class="col-name">phone</span><span class="col-type">varchar UNIQUE</span></div>
+        <div class="schema-col normal"><span class="col-name">points_balance</span><span class="col-type">integer</span></div>
+      </div>
+    </div>
+    <div class="schema-box">
+      <div class="schema-box-header"><h3>reservations / loyalty_transactions / staff_* / rewards / redemptions</h3></div>
+      <div class="schema-cols">
+        <div class="schema-col normal"><span class="col-name" style="color:#555;font-style:italic">sin cambios — ver tab "Antes"</span></div>
+      </div>
+    </div>
+
+    <!-- NEW TABLES -->
+    <div class="schema-box new-table">
+      <div class="schema-box-header"><h3>menu_categories</h3><span class="new-badge">NEW</span></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col new"><span class="col-name">key</span><span class="col-type">menu_category_key UNIQUE</span></div>
+        <div class="schema-col new"><span class="col-name">name_es / name_en</span><span class="col-type">varchar(80)</span></div>
+        <div class="schema-col new"><span class="col-name">display_order</span><span class="col-type">integer ≥ 0</span></div>
+        <div class="schema-col new"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+        <div class="schema-col new"><span class="col-name">file_name</span><span class="col-type">text NULL ★</span></div>
+        <div class="schema-col new"><span class="col-name">created_at / updated_at</span><span class="col-type">timestamp</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box new-table">
+      <div class="schema-box-header"><h3>dishes</h3><span class="new-badge">NEW</span></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col fk"><span class="col-name">category_id</span><span class="col-type">uuid</span><span class="col-tag">→ menu_categories</span></div>
+        <div class="schema-col new"><span class="col-name">name_es / name_en</span><span class="col-type">varchar(120)</span></div>
+        <div class="schema-col new"><span class="col-name">description_es / description_en</span><span class="col-type">text</span></div>
+        <div class="schema-col new"><span class="col-name">location_type</span><span class="col-type">menu_location_type</span></div>
+        <div class="schema-col new"><span class="col-name">price</span><span class="col-type">decimal(8,2) NULL</span></div>
+        <div class="schema-col new"><span class="col-name">included_in_ayce</span><span class="col-type">boolean</span></div>
+        <div class="schema-col new"><span class="col-name">image_url</span><span class="col-type">text NULL (externo)</span></div>
+        <div class="schema-col new"><span class="col-name">file_name</span><span class="col-type">text NULL ★</span></div>
+        <div class="schema-col new"><span class="col-name">badge</span><span class="col-type">varchar(40) NULL</span></div>
+        <div class="schema-col new"><span class="col-name">featured</span><span class="col-type">boolean</span></div>
+        <div class="schema-col new"><span class="col-name">drink_group</span><span class="col-type">drink_group NULL</span></div>
+        <div class="schema-col new"><span class="col-name">requires_sauce</span><span class="col-type">boolean</span></div>
+        <div class="schema-col new"><span class="col-name">is_active / display_order</span><span class="col-type">bool / int</span></div>
+      </div>
+    </div>
+
+    <div class="schema-box new-table">
+      <div class="schema-box-header"><h3>sauces</h3><span class="new-badge">NEW</span></div>
+      <div class="schema-cols">
+        <div class="schema-col pk"><span class="col-name">id</span><span class="col-type">uuid</span><span class="col-tag">PK</span></div>
+        <div class="schema-col new"><span class="col-name">name_es / name_en</span><span class="col-type">varchar(60)</span></div>
+        <div class="schema-col new"><span class="col-name">file_name</span><span class="col-type">text NULL ★</span></div>
+        <div class="schema-col new"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+        <div class="schema-col new"><span class="col-name">display_order</span><span class="col-type">integer ≥ 0</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="font-size:0.7rem;color:#555;margin-top:1rem">★ <code>file_name</code> almacena solo el nombre de archivo (ej: <code>alitas-bbq.jpg</code>). El frontend resuelve la ruta completa como <code>public/images/menu/&lt;file_name&gt;</code>. Distinto de <code>image_url</code> que es para imágenes externas/CDN.</p>
+
+  <div class="section-title">Relaciones nuevas (feature 016)</div>
+  <div class="rel-list">
+    <div class="rel-chip new">dishes <span class="rel-arrow">→</span> menu_categories</div>
+    <div class="rel-chip" style="color:#555">sauces — standalone (sin FK)</div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL: MIGRATION ═══════════ -->
+<div id="migration" class="panel">
+  <div class="section-title">Migración 0008_flat_blindfold — objetos creados</div>
+  <table class="migration">
+    <thead>
+      <tr><th>Objeto</th><th>Tipo</th><th>Acción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>menu_location_type</td><td><span class="badge badge-enum">ENUM</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>menu_category_key</td><td><span class="badge badge-enum">ENUM</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>drink_group</td><td><span class="badge badge-enum">ENUM</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>menu_categories</td><td><span class="badge badge-table">TABLE</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>dishes</td><td><span class="badge badge-table">TABLE</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>sauces</td><td><span class="badge badge-table">TABLE</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>dishes_category_id_menu_categories_id_fk</td><td><span class="badge badge-table">FK</span></td><td><span class="badge badge-create">ADD</span></td></tr>
+      <tr><td>menu_categories_key_idx</td><td><span class="badge badge-index">UNIQUE INDEX</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>menu_categories_order_idx</td><td><span class="badge badge-index">INDEX</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>dishes_featured_active_idx</td><td><span class="badge badge-index">INDEX (partial)</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>dishes_category_order_idx</td><td><span class="badge badge-index">INDEX</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>dishes_location_type_idx</td><td><span class="badge badge-index">INDEX</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+      <tr><td>sauces_order_idx</td><td><span class="badge badge-index">INDEX</span></td><td><span class="badge badge-create">CREATE</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:2rem">Tablas NO afectadas (sin cambios)</div>
+  <div class="rel-list">
+    <div class="rel-chip">branches</div>
+    <div class="rel-chip">customers</div>
+    <div class="rel-chip">reservations</div>
+    <div class="rel-chip">loyalty_transactions</div>
+    <div class="rel-chip">staff_users</div>
+    <div class="rel-chip">rewards</div>
+    <div class="rel-chip">redemptions</div>
+    <div class="rel-chip">staff_sessions</div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL: ENUMS ═══════════ -->
+<div id="enums" class="panel">
+  <div class="section-title">Enums existentes (0000–0007)</div>
+  <div class="enum-grid">
+    <div class="enum-box">
+      <div class="enum-box-header"><h3>reservation_status</h3></div>
+      <div class="enum-values">
+        <span class="enum-val">pending</span><span class="enum-val">confirmed</span><span class="enum-val">rejected</span><span class="enum-val">cancelled</span><span class="enum-val">escalated</span><span class="enum-val">cancelled_auto</span>
+      </div>
+    </div>
+    <div class="enum-box">
+      <div class="enum-box-header"><h3>loyalty_transaction_type</h3></div>
+      <div class="enum-values">
+        <span class="enum-val">earn</span><span class="enum-val">redeem</span>
+      </div>
+    </div>
+    <div class="enum-box">
+      <div class="enum-box-header"><h3>redemption_status</h3></div>
+      <div class="enum-values">
+        <span class="enum-val">pending</span><span class="enum-val">used</span><span class="enum-val">expired</span>
+      </div>
+    </div>
+    <div class="enum-box">
+      <div class="enum-box-header"><h3>staff_role</h3></div>
+      <div class="enum-values">
+        <span class="enum-val">staff</span><span class="enum-val">admin</span><span class="enum-val">owner</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:1.5rem">Enums nuevos — feature 016 (0008)</div>
+  <div class="enum-grid">
+    <div class="enum-box new-enum">
+      <div class="enum-box-header"><h3>menu_location_type</h3><span class="new-badge">NEW</span></div>
+      <div class="enum-values">
+        <span class="enum-val">ayce</span><span class="enum-val">express</span><span class="enum-val">both</span>
+      </div>
+    </div>
+    <div class="enum-box new-enum">
+      <div class="enum-box-header"><h3>menu_category_key</h3><span class="new-badge">NEW</span></div>
+      <div class="enum-values">
+        <span class="enum-val">entradas</span><span class="enum-val">burgers</span><span class="enum-val">sandwich</span><span class="enum-val">burritos</span><span class="enum-val">hotdogs</span><span class="enum-val">frio</span><span class="enum-val">caliente</span><span class="enum-val">dulce</span><span class="enum-val">postres</span><span class="enum-val">alitas</span><span class="enum-val">salsas</span><span class="enum-val">extras</span><span class="enum-val">bebidas</span>
+      </div>
+    </div>
+    <div class="enum-box new-enum">
+      <div class="enum-box-header"><h3>drink_group</h3><span class="new-badge">NEW</span></div>
+      <div class="enum-values">
+        <span class="enum-val">jumbo_cocktails</span><span class="enum-val">cantaritos_sumo_cups</span><span class="enum-val">non_alcoholic</span><span class="enum-val">sodas</span><span class="enum-val">coffee_digestifs</span><span class="enum-val">beers_spirits</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
