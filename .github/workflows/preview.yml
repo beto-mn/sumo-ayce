@@ -49,10 +49,11 @@ jobs:
         run: pnpm exec drizzle-kit check
 
       - name: Run DB migrations
-        run: pnpm exec drizzle-kit migrate 2>&1
+        run: |
+          set -o pipefail
+          pnpm exec drizzle-kit migrate 2>&1 | tr '\r' '\n'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NO_COLOR: '1'
 
       - name: Pull Vercel preview environment
         run: npx vercel@54 pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
