@@ -16,7 +16,8 @@
       "!coverage",
       "!storybook-static",
       "!.output",
-      "!.nuxt"
+      "!.nuxt",
+      "!specs"
     ]
   },
   "formatter": {

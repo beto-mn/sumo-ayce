@@ -1,0 +1,34 @@
+import { seedAlaCarta } from './seeds/alaCarta'
+import { seedAyceMenu } from './seeds/ayceMenu'
+import { seedBranches } from './seeds/branches'
+import { seedDesserts } from './seeds/desserts'
+import { seedDrinkGroups } from './seeds/drinkGroups'
+import { seedDrinks } from './seeds/drinks'
+import { seedExpressMenu } from './seeds/expressMenu'
+import { seedKidsMenu } from './seeds/kidsMenu'
+import { seedMenuCategories } from './seeds/menuCategories'
+import { seedSauces } from './seeds/sauces'
+
+async function main() {
+  console.log('▶ Running all seeds…\n')
+
+  await seedBranches()
+  await seedMenuCategories()
+  await seedDrinkGroups()
+  await seedDrinks()
+  await seedExpressMenu()
+  await seedAyceMenu()
+  await seedDesserts()
+  await seedKidsMenu()
+  await seedAlaCarta()
+  await seedSauces()
+
+  console.log('\n✓ All seeds complete')
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch(err => {
+    console.error(err)
+    process.exit(1)
+  })

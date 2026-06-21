@@ -6,6 +6,7 @@ import {
   decimal,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -15,6 +16,19 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
+
+// ─── Branch schedule type ─────────────────────────────────────────────────────
+
+type DayHours = { open: string; close: string }
+export type BranchSchedule = {
+  mon: DayHours | null
+  tue: DayHours | null
+  wed: DayHours | null
+  thu: DayHours | null
+  fri: DayHours | null
+  sat: DayHours | null
+  sun: DayHours | null
+}
 
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
@@ -40,6 +54,37 @@ export const redemptionStatus = pgEnum('redemption_status', [
 
 export const staffRole = pgEnum('staff_role', ['staff', 'admin', 'owner'])
 
+// branch location type — whether the branch operates as AYCE or Express
+export const branchType = pgEnum('branch_type', ['ayce', 'express'])
+
+// location-type applicability of a dish (AYCE-only, Express-only, or both)
+export const menuLocationType = pgEnum('menu_location_type', [
+  'ayce',
+  'express',
+  'both',
+])
+
+// fixed, code-referenced category keys (17) — English identifiers
+export const menuCategoryKey = pgEnum('menu_category_key', [
+  'appetizers',
+  'salads',
+  'rice',
+  'ramen',
+  'burgers',
+  'sandwiches',
+  'burritos',
+  'hot_dogs',
+  'cold_rolls',
+  'hot_rolls',
+  'sweet_rolls',
+  'desserts',
+  'wings',
+  'sauces',
+  'extras',
+  'drinks',
+  'kids',
+])
+
 // ─── Tables ──────────────────────────────────────────────────────────────────
 
 export const branches = pgTable(
@@ -55,6 +100,10 @@ export const branches = pgTable(
       length: 20,
     }),
     managerPhone: varchar('manager_phone', { length: 20 }),
+    code: varchar('code', { length: 60 }).unique(),
+    state: varchar('state', { length: 100 }),
+    schedule: jsonb('schedule').$type<BranchSchedule>(),
+    type: branchType('type').notNull().default('ayce'),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -62,6 +111,7 @@ export const branches = pgTable(
   t => [
     index('branches_active_idx').on(t.isActive).where(sql`is_active = true`),
     index('branches_coords_idx').on(t.lat, t.lng),
+    index('branches_type_idx').on(t.type),
   ]
 )
 
@@ -199,4 +249,89 @@ export const staffSessions = pgTable('staff_sessions', {
   expiresAt: timestamp('expires_at').notNull(),
   ipAddress: text('ip_address'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
+// ─── Menu tables (food + drinks) ───────────────────────────────────────────────
+
+export const menuCategories = pgTable(
+  'menu_categories',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    key: menuCategoryKey('key').notNull().unique(),
+    nameEs: varchar('name_es', { length: 80 }).notNull(),
+    nameEn: varchar('name_en', { length: 80 }).notNull(),
+    displayOrder: integer('display_order').notNull(),
+    isActive: boolean('is_active').notNull().default(true),
+    fileName: text('file_name'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [
+    uniqueIndex('menu_categories_key_idx').on(t.key),
+    index('menu_categories_order_idx').on(t.displayOrder),
+    check('menu_categories_order_nonnegative', sql`${t.displayOrder} >= 0`),
+  ]
+)
+
+export const menuItems = pgTable(
+  'menu_items',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    categoryId: uuid('category_id')
+      .notNull()
+      .references(() => menuCategories.id),
+    nameEs: varchar('name_es', { length: 120 }).notNull(),
+    nameEn: varchar('name_en', { length: 120 }).notNull(),
+    descriptionEs: text('description_es').notNull().default(''),
+    descriptionEn: text('description_en').notNull().default(''),
+    locationType: menuLocationType('location_type').notNull().default('both'),
+    price: decimal('price', { precision: 8, scale: 2 }),
+    includedInAyce: boolean('included_in_ayce').notNull().default(true),
+    fileName: text('file_name'),
+    badgeEs: varchar('badge_es', { length: 40 }),
+    badgeEn: varchar('badge_en', { length: 40 }),
+    featured: boolean('featured').notNull().default(false),
+    drinkGroupId: uuid('drink_group_id').references(() => drinkGroups.id),
+    requiresSauce: boolean('requires_sauce').notNull().default(false),
+    isActive: boolean('is_active').notNull().default(true),
+    displayOrder: integer('display_order').notNull().default(0),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [
+    index('menu_items_featured_active_idx')
+      .on(t.featured, t.isActive)
+      .where(sql`featured = true AND is_active = true`),
+    index('menu_items_category_order_idx').on(t.categoryId, t.displayOrder),
+    index('menu_items_location_type_idx').on(t.locationType),
+    check('menu_items_price_nonnegative', sql`price IS NULL OR price >= 0`),
+    check('menu_items_order_nonnegative', sql`${t.displayOrder} >= 0`),
+  ]
+)
+
+export const sauces = pgTable(
+  'sauces',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    nameEs: varchar('name_es', { length: 60 }).notNull(),
+    nameEn: varchar('name_en', { length: 60 }).notNull(),
+    // 0 = no heat, 1 = mild, 2 = medium, 3 = hot, 4 = extra hot
+    spiceLevel: integer('spice_level').notNull().default(0),
+    fileName: text('file_name'),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [check('sauces_spice_level_nonnegative', sql`${t.spiceLevel} >= 0`)]
+)
+
+export const drinkGroups = pgTable('drink_group', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  groupKey: varchar('group_key', { length: 60 }).notNull().unique(),
+  subtitleEs: text('subtitle_es'),
+  subtitleEn: text('subtitle_en'),
+  promoEs: text('promo_es'),
+  promoEn: text('promo_en'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })

@@ -65,6 +65,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate migration files
+        run: pnpm exec drizzle-kit check
+
+      - name: Run DB migrations
+        run: |
+          EXIT_CODE=0
+          pnpm exec drizzle-kit migrate > /tmp/drizzle.log 2>&1 || EXIT_CODE=$?
+          sed 's/\r/\n/g' /tmp/drizzle.log
+          exit $EXIT_CODE
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Pull Vercel production environment
         run: npx vercel@54 pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
