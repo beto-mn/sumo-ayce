@@ -18,7 +18,7 @@ const envSchema = z.object({
   GOOGLE_DRIVE_FOLDER_ID: z.string().min(1),
 
   // Mapbox
-  NUXT_PUBLIC_MAPBOX_TOKEN: z.string().min(1),
+  NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string().min(1),
 
   // Cron
   CRON_SECRET: z.string().min(1).optional(),

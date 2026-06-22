@@ -24,7 +24,13 @@ you generate them via the skills, but you give them the correct context.
 4. If the feature touches existing modules, read the relevant previous specs in
    `specs/<num>-<name>/` (especially `spec.md` and `data-model.md`).
 
-### 2. Invoke the spec-kit skills in order
+### 2. Create the feature branch
+
+Invoke `/speckit-git-feature <enriched description>` before any other skill.
+This creates and switches to the numbered branch (e.g. `feat/017-…`).
+Do not proceed to step 3 until this succeeds.
+
+### 3. Invoke the spec-kit skills in order
 
 a. `/speckit.specify <enriched description>` — generates `spec.md`
    - The description should include: what the feature does, domain (referencing
@@ -41,7 +47,7 @@ c. `/speckit.plan <technical considerations>` — generates `plan.md`
 d. `/speckit.tasks` — generates `tasks.md` with atomic tasks marked with `[P]`
    for parallelizable ones.
 
-### 3. Post-skill verification
+### 4. Post-skill verification
 
 - `spec.md`, `plan.md`, `tasks.md` exist in `specs/<num>-<name>/`
 - `spec.md` has no unresolved `[NEEDS CLARIFICATION]`
@@ -51,7 +57,7 @@ d. `/speckit.tasks` — generates `tasks.md` with atomic tasks marked with `[P]`
 If something is missing, re-invoke the corresponding skill. Don't edit the files
 by hand except for trivial typo fixes.
 
-### 4. State update
+### 5. State update
 
 1. Change the feature's status to `spec_ready` in `feature_list.json`.
 2. Write a summary in `progress/current.md` with:
@@ -61,7 +67,7 @@ by hand except for trivial typo fixes.
    - Any `[NEEDS CLARIFICATION]` that was resolved
    - Main Phase -1 gates
 
-### 5. Return to the leader
+### 6. Return to the leader
 
 Your response to the leader must be short and reference files:
 

@@ -1,13 +1,12 @@
 {
   "nav": {
-    "inicio": "Inicio",
+    "home": "Inicio",
     "menu": "Menú",
-    "promos": "Promos",
-    "promociones": "Promociones",
-    "sucursales": "Sucursales",
+    "promotions": "Promos",
+    "branches": "Sucursales",
     "lealtad": "Lealtad",
-    "contacto": "Contacto",
-    "reservar": "Reservar"
+    "contact": "Contacto",
+    "reserve": "Reservar"
   },
   "common": {
     "cta": {
@@ -45,6 +44,48 @@
     },
     "legal": {
       "rights": "Todos los derechos reservados"
+    }
+  },
+  "branches": {
+    "page": {
+      "title": "Sucursales",
+      "kicker": "Sucursales",
+      "heading": "Encuentra tu SUMO",
+      "description": "Encuentra la sucursal SUMO más cercana. All You Can Eat en todo CDMX y Edomex."
+    },
+    "filter": {
+      "all": "Todas",
+      "ayce": "AYCE",
+      "express": "Express"
+    },
+    "search": {
+      "geoButton": "Usar mi ubicación",
+      "geoLoading": "Buscando...",
+      "geoError": "Habilita la ubicación para ordenar por distancia",
+      "cpPlaceholder": "Código postal...",
+      "cpButton": "Buscar",
+      "cpClear": "Quitar búsqueda por código postal",
+      "geoClear": "Quitar búsqueda por ubicación",
+      "cpError": "Código postal no encontrado. Verifica e intenta de nuevo."
+    },
+    "card": {
+      "reserve": "Reservar",
+      "directions": "Cómo llegar",
+      "call": "Llamar",
+      "distance": "{km} km",
+      "weekdays": "Lun–Vie",
+      "weekends": "Sáb–Dom",
+      "hoursUnavailable": "Horarios no disponibles"
+    },
+    "list": {
+      "empty": "No encontramos sucursales activas en este momento."
+    },
+    "map": {
+      "unavailable": "Mapa no disponible"
+    },
+    "type": {
+      "ayce": "SUMO AYCE",
+      "express": "SUMO Express"
     }
   },
   "home": {

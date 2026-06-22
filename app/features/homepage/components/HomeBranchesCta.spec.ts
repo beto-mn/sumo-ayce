@@ -24,9 +24,9 @@ function mountCta() {
 }
 
 describe('HomeBranchesCta', () => {
-  it('links the branches control to /sucursales', () => {
+  it('links the branches control to /branches', () => {
     const links = mountCta().findAllComponents(RouterLinkStub)
-    expect(links.map(l => l.props('to'))).toContain('/sucursales')
+    expect(links.map(l => l.props('to'))).toContain('/branches')
   })
 
   it('calls openReservation when the reserve control is activated', async () => {

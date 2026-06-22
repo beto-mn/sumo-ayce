@@ -1,13 +1,12 @@
 {
   "nav": {
-    "inicio": "Home",
+    "home": "Home",
     "menu": "Menu",
-    "promos": "Promos",
-    "promociones": "Promotions",
-    "sucursales": "Branches",
+    "promotions": "Promotions",
+    "branches": "Branches",
     "lealtad": "Loyalty",
-    "contacto": "Contact",
-    "reservar": "Reserve"
+    "contact": "Contact",
+    "reserve": "Reserve"
   },
   "common": {
     "cta": {
@@ -45,6 +44,48 @@
     },
     "legal": {
       "rights": "All rights reserved"
+    }
+  },
+  "branches": {
+    "page": {
+      "title": "Branches",
+      "kicker": "Locations",
+      "heading": "Find your SUMO",
+      "description": "Find the nearest SUMO branch. All You Can Eat across Mexico City and Edomex."
+    },
+    "filter": {
+      "all": "All",
+      "ayce": "AYCE",
+      "express": "Express"
+    },
+    "search": {
+      "geoButton": "Use my location",
+      "geoLoading": "Searching...",
+      "geoError": "Enable location to sort by distance",
+      "cpPlaceholder": "Postal code...",
+      "cpButton": "Search",
+      "cpClear": "Remove postal code search",
+      "geoClear": "Remove location search",
+      "cpError": "Postal code not found. Please verify and try again."
+    },
+    "card": {
+      "reserve": "Reserve",
+      "directions": "Get directions",
+      "call": "Call",
+      "distance": "{km} km",
+      "weekdays": "Mon–Fri",
+      "weekends": "Sat–Sun",
+      "hoursUnavailable": "Hours not available"
+    },
+    "list": {
+      "empty": "No active branches found at this time."
+    },
+    "map": {
+      "unavailable": "Map unavailable"
+    },
+    "type": {
+      "ayce": "SUMO AYCE",
+      "express": "SUMO Express"
     }
   },
   "home": {

@@ -28,6 +28,7 @@ export default {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      white: '#ffffff',
       // Colors consume the tokens as RGB channels so Tailwind's opacity
       // modifier (`bg-orange/50`) compiles to `rgb(var(--orange) / 0.5)`.
       // Reference: https://v3.tailwindcss.com/docs/customizing-colors#using-css-variables

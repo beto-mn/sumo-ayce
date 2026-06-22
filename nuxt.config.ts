@@ -53,6 +53,9 @@ export default defineNuxtConfig({
       // Hero price sticker — configurable without code change via
       // NUXT_PUBLIC_HERO_PRICE. Default "$269" (FR-007).
       heroPrice: '$269',
+      // Mapbox public token — must start with pk. — set NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+      // in Vercel environment variables (Access tokens → Create a token).
+      mapboxAccessToken: '',
     },
   },
   fonts: {
@@ -78,8 +81,8 @@ export default defineNuxtConfig({
   routeRules: {
     '/': { isr: 3600 },
     '/menu': { isr: 3600 },
-    '/sucursales': { isr: 3600 },
-    '/promociones': { isr: 60 },
+    '/branches': { isr: 3600 },
+    '/promotions': { isr: 60 },
     '/lealtad': { ssr: true },
     '/staff/**': { ssr: true },
     '/api/**': {},
