@@ -1,4 +1,4 @@
-# Implementation Plan: Branches Page (`/sucursales`)
+# Implementation Plan: Branches Page (`/branches`)
 
 **Feature ID**: 013
 **Branch**: `feat/013-branches-page`
@@ -9,7 +9,7 @@
 
 ## Summary
 
-Build the public branch-finder page at `/sucursales` as an ISR-cached Nuxt 4 page.
+Build the public branch-finder page at `/branches` as an ISR-cached Nuxt 4 page.
 The HTML shell is populated at revalidation time (via `useAsyncData` → `GET /api/v1/branches`,
 no coordinates). All interactive behaviour — geolocation sort, haversine distance sort,
 postal-code geocoding via Mapbox, and the interactive map — runs **client-side over the cached
@@ -28,7 +28,7 @@ The feature has four main workstreams:
 3. **Feature slice** — `app/features/branches/` with `BranchCard`, `BranchList`,
    `BranchSearch`, and `useBranches` composable (geo state, haversine sort, CP geocoding).
 
-4. **Page** — `app/pages/sucursales.vue` as a thin orchestrator (≤ 100 lines template) wiring
+4. **Page** — `app/pages/branches.vue` as a thin orchestrator (≤ 100 lines template) wiring
    `<BranchSearch>` + `<BranchList>` + `<UiMapView>`.
 
 ---
@@ -53,104 +53,104 @@ The feature has four main workstreams:
 *GATE: All gates must be satisfied before implementation begins. A violation blocks merge.*
 
 ### Gate I — Code Organization & Reusability (NON-NEGOTIABLE)
-- [ ] **G-I.1** The feature is a vertical slice under `app/features/branches/` (components +
+- [x] **G-I.1** The feature is a vertical slice under `app/features/branches/` (components +
       composables + `types.ts`). It MUST NOT spread into other feature folders.
-- [ ] **G-I.2** No cross-feature import. The open-reservation trigger is reached via the
+- [x] **G-I.2** No cross-feature import. The open-reservation trigger is reached via the
       existing `app/composables/useReservationModal.ts`, NOT by importing from
       `app/features/reservations/` (feature 014).
-- [ ] **G-I.3** Map abstraction lives in `app/composables/maps/` (cross-feature location,
+- [x] **G-I.3** Map abstraction lives in `app/composables/maps/` (cross-feature location,
       because it is reusable). `app/components/ui/MapView.vue` is a shared primitive — the
       `Ui` prefix is used (`<UiMapView>` in templates per `nuxt.config.ts` component scan).
-- [ ] **G-I.4** `BranchCard` is parameterized via props for type-chip, distance visibility,
+- [x] **G-I.4** `BranchCard` is parameterized via props for type-chip, distance visibility,
       and disabled-Call state. No duplicate card files.
-- [ ] **G-I.5** `app/pages/sucursales.vue` template ≤ 100 lines.
-- [ ] **G-I.6** Every new component has a co-located `.stories.ts`.
+- [x] **G-I.5** `app/pages/branches.vue` template ≤ 100 lines.
+- [x] **G-I.6** Every new component has a co-located `.stories.ts`.
 
 ### Gate II — TypeScript & Framework Standards
-- [ ] **G-II.1** Strict TS, no `any`. Composition API only.
-- [ ] **G-II.2** `BranchSchedule`, `BranchPublicRow`, and `BranchWithDistance` view types
+- [x] **G-II.1** Strict TS, no `any`. Composition API only.
+- [x] **G-II.2** `BranchSchedule`, `BranchPublicRow`, and `BranchWithDistance` view types
       shared between front and server live in `types/branches.ts`. `MapMarker`, `MapAdapter`,
       `LngLat`, `MapViewProps` live in `app/composables/maps/types.ts` (frontend-only).
 
 ### Gate III — Architecture
-- [ ] **G-III.1** Branch data reaches `app/` only via `GET /api/v1/branches`. No Drizzle/Neon
+- [x] **G-III.1** Branch data reaches `app/` only via `GET /api/v1/branches`. No Drizzle/Neon
       import under `app/`.
-- [ ] **G-III.2** `useAsyncData` in `sucursales.vue` fetches the branch list server-side at
+- [x] **G-III.2** `useAsyncData` in `sucursales.vue` fetches the branch list server-side at
       ISR time. Client-side interactions operate on `ref` state derived from that fetch — no
       second `$fetch` or `useFetch` call triggered by user interaction.
 
 ### Gate IV — Testing
-- [ ] **G-IV.1** `useBranches.spec.ts`: haversine sort, CP geocoding, geo error handling,
+- [x] **G-IV.1** `useBranches.spec.ts`: haversine sort, CP geocoding, geo error handling,
       loading/error states (mock `navigator.geolocation` and Mapbox fetch).
-- [ ] **G-IV.2** `BranchCard.spec.ts`: type chip renders (ayce/express), distance shown only
+- [x] **G-IV.2** `BranchCard.spec.ts`: type chip renders (ayce/express), distance shown only
       when prop provided, Call hidden when `phone` is null, action emits.
-- [ ] **G-IV.3** `BranchSearch.spec.ts`: emits geo request, handles CP input, shows fallback
+- [x] **G-IV.3** `BranchSearch.spec.ts`: emits geo request, handles CP input, shows fallback
       on geo error.
-- [ ] **G-IV.4** `MapView.spec.ts`: mounts with mocked adapter (stub `mapbox-gl`), renders
+- [x] **G-IV.4** `MapView.spec.ts`: mounts with mocked adapter (stub `mapbox-gl`), renders
       correct marker count, emits `marker-click`.
-- [ ] **G-IV.5** Backend delta spec: `GET /api/v1/branches` response includes `type`,
+- [x] **G-IV.5** Backend delta spec: `GET /api/v1/branches` response includes `type`,
       `schedule`, and `phone`; `whatsappReservaciones` is NOT in the response.
-- [ ] **G-IV.6** No test depends on another's state. `mapbox-gl` mock centralized in
+- [x] **G-IV.6** No test depends on another's state. `mapbox-gl` mock centralized in
       `tests/mocks/mapbox.ts`.
 
 ### Gate V — Performance (rendering strategy)
-- [ ] **G-V.1** `routeRules['/sucursales'] = { isr: 3600 }` is already present — MUST NOT be
+- [x] **G-V.1** `routeRules['/branches'] = { isr: 3600 }` is already present — MUST NOT be
       modified.
-- [ ] **G-V.2** No Drizzle/Neon import under `app/` (zero grep match).
-- [ ] **G-V.3** `useBranches` composable calls `GET /api/v1/branches` only once (at ISR time
+- [x] **G-V.2** No Drizzle/Neon import under `app/` (zero grep match).
+- [x] **G-V.3** `useBranches` composable calls `GET /api/v1/branches` only once (at ISR time
       via `useAsyncData`); client-side interactions sort the `ref` in memory.
 
 ### Gate VI — Security
-- [ ] **G-VI.1** The backend delta MUST NOT expose `whatsappReservacionesBackup`, `createdAt`,
+- [x] **G-VI.1** The backend delta MUST NOT expose `whatsappReservacionesBackup`, `createdAt`,
       `updatedAt` in the public response.
-- [ ] **G-VI.2** The Mapbox public token (`pk.*`) is `runtimeConfig.public` — safe to expose
+- [x] **G-VI.2** The Mapbox public token (`pk.*`) is `runtimeConfig.public` — safe to expose
       in the client bundle. Never use a secret (`sk.*`) token in `runtimeConfig.public`.
-- [ ] **G-VI.3** Directions link MUST use `rel="noopener noreferrer"`.
+- [x] **G-VI.3** Directions link MUST use `rel="noopener noreferrer"`.
 
 ### Gate VII — UX Consistency & Component Documentation
-- [ ] **G-VII.1** Visual specifics follow `docs/business/overview.md` (tokens, type scale,
+- [x] **G-VII.1** Visual specifics follow `docs/business/overview.md` (tokens, type scale,
       component anatomy). No inline hex; Tailwind tokens only.
-- [ ] **G-VII.2** AYCE = orange (`--orange`) / Express = blue (`--blue`) via `--accent` swap.
+- [x] **G-VII.2** AYCE = orange (`--orange`) / Express = blue (`--blue`) via `--accent` swap.
       Blue is Express-exclusive — never appears on AYCE cards or non-Express elements.
-- [ ] **G-VII.3** Mobile-first; fully responsive at 880px / 520px; map hidden < 880px.
+- [x] **G-VII.3** Mobile-first; fully responsive at 880px / 520px; map hidden < 880px.
       Hit targets ≥ 44px.
-- [ ] **G-VII.4** Every new component ships Default + significant-variant + responsive
+- [x] **G-VII.4** Every new component ships Default + significant-variant + responsive
       Storybook stories.
-- [ ] **G-VII.5** `<UiMapView>` story uses a mocked adapter so Storybook does not require a
+- [x] **G-VII.5** `<UiMapView>` story uses a mocked adapter so Storybook does not require a
       live Mapbox token.
 
 ### Gate VIII — Clean Code Discipline
-- [ ] **G-VIII.1** Functions ≤ 30 lines; component files ≤ 200 lines; no dead code, no bare
+- [x] **G-VIII.1** Functions ≤ 30 lines; component files ≤ 200 lines; no dead code, no bare
       `console.log`.
-- [ ] **G-VIII.2** Composables: `use` prefix. Vue files: PascalCase. Server route: kebab-case.
+- [x] **G-VIII.2** Composables: `use` prefix. Vue files: PascalCase. Server route: kebab-case.
 
 ### Gate IX — Quality Gates
-- [ ] **G-IX.1** Biome lint + format pass; `vue-tsc --noEmit` passes; Conventional Commits;
+- [x] **G-IX.1** Biome lint + format pass; `vue-tsc --noEmit` passes; Conventional Commits;
       pre-push tests pass. No `--no-verify`.
 
 ### Gate X — KISS
-- [ ] **G-X.1** No new library beyond `mapbox-gl` (already installed). Haversine is
+- [x] **G-X.1** No new library beyond `mapbox-gl` (already installed). Haversine is
       implemented as a pure utility function (< 30 lines, already in
       `server/utils/haversine.ts`). A client-side copy MUST be placed in
       `app/features/branches/utils/haversine.ts` (same pure function, no import from
       `server/utils/`).
-- [ ] **G-X.2** The Mapbox Geocoding call is a plain `$fetch` in `useBranches` — no dedicated
+- [x] **G-X.2** The Mapbox Geocoding call is a plain `$fetch` in `useBranches` — no dedicated
       geocoding library.
 
 ### Gate XI — Absolute Imports
-- [ ] **G-XI.1** All imports use aliases (`@/components`, `@/composables`, `@/features`,
+- [x] **G-XI.1** All imports use aliases (`@/components`, `@/composables`, `@/features`,
       `@/types`, `@/utils`); no `../` except same-directory.
 
 ### Gate XII — Error Handling
-- [ ] **G-XII.1** Geolocation and Mapbox Geocoding errors MUST be caught in `useBranches` and
+- [x] **G-XII.1** Geolocation and Mapbox Geocoding errors MUST be caught in `useBranches` and
       exposed as user-facing state (no `console.error` only, no unhandled rejection).
-- [ ] **G-XII.2** A missing/invalid Mapbox token MUST be caught in `mapboxAdapter.ts`; the
+- [x] **G-XII.2** A missing/invalid Mapbox token MUST be caught in `mapboxAdapter.ts`; the
       `<UiMapView>` component MUST render a fallback slot/message.
 
 ### Gate XIII — Environment Validation
-- [ ] **G-XIII.1** `NUXT_PUBLIC_MAPBOX_TOKEN` is already in `.env.example`. It MUST be mapped
+- [x] **G-XIII.1** `NUXT_PUBLIC_MAPBOX_TOKEN` is already in `.env.example`. It MUST be mapped
       to `runtimeConfig.public.mapboxAccessToken` in `nuxt.config.ts`.
-- [ ] **G-XIII.2** The `mapboxAdapter` reads the token from `useRuntimeConfig().public.mapboxAccessToken`.
+- [x] **G-XIII.2** The `mapboxAdapter` reads the token from `useRuntimeConfig().public.mapboxAccessToken`.
       A missing or empty token MUST produce a clear error (adapter throws; `<UiMapView>`
       catches and shows fallback).
 

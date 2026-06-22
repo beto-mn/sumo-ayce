@@ -72,7 +72,10 @@
       "reserve": "Reserve",
       "directions": "Get directions",
       "call": "Call",
-      "distance": "{km} km"
+      "distance": "{km} km",
+      "weekdays": "Mon–Fri",
+      "weekends": "Sat–Sun",
+      "hoursUnavailable": "Hours not available"
     },
     "list": {
       "empty": "No active branches found at this time."

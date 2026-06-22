@@ -72,7 +72,10 @@
       "reserve": "Reservar",
       "directions": "Cómo llegar",
       "call": "Llamar",
-      "distance": "{km} km"
+      "distance": "{km} km",
+      "weekdays": "Lun–Vie",
+      "weekends": "Sáb–Dom",
+      "hoursUnavailable": "Horarios no disponibles"
     },
     "list": {
       "empty": "No encontramos sucursales activas en este momento."

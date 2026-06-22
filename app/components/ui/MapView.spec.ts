@@ -9,7 +9,7 @@ import type { MapMarker } from '../../composables/maps/types'
 
 // Stub Nuxt globals needed by MapView
 vi.stubGlobal('useRuntimeConfig', () => ({
-  public: { mapboxToken: 'pk.test-token' },
+  public: { mapboxAccessToken: 'pk.test-token' },
 }))
 
 // Mock useMapProvider to return our stub adapter
@@ -137,6 +137,24 @@ describe('MapView', () => {
     const mapContainer = wrapper.find('[aria-label]')
     expect(mapContainer.exists()).toBe(true)
     expect(mapContainer.attributes('aria-label')).toBeTruthy()
+  })
+
+  it('calls fitBounds after markers are synced on mount', async () => {
+    const markers: MapMarker[] = [
+      makeTestMarker({ id: 'b1', color: 'orange' }),
+      makeTestMarker({ id: 'b2', color: 'blue' }),
+    ]
+
+    mount(MapView, {
+      props: {
+        center: [-99.1332, 19.4326] as [number, number],
+        zoom: 12,
+        markers,
+      },
+    })
+    await new Promise(r => setTimeout(r, 0))
+
+    expect(mockMapboxAdapter.fitBounds).toHaveBeenCalledOnce()
   })
 
   it('calls destroy on unmount', async () => {

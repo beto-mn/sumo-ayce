@@ -25,7 +25,7 @@ async function initMap() {
       center: props.center,
       zoom: props.zoom,
       style: props.mapStyle ?? 'streets',
-      accessToken: runtimeConfig.public.mapboxToken as string,
+      accessToken: runtimeConfig.public.mapboxAccessToken as string,
     })
     syncMarkers()
   } catch {

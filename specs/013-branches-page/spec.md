@@ -1,4 +1,4 @@
-# Feature Specification: Branches Page (`/sucursales`)
+# Feature Specification: Branches Page (`/branches`)
 
 **Feature ID**: 013
 **Feature Branch**: `feat/013-branches-page`
@@ -11,12 +11,19 @@
 
 ## Overview
 
-The Branches Page (`/sucursales`) is the public branch-finder UI. It surfaces the full list of
+The Branches Page (`/branches`) is the public branch-finder UI. It surfaces the full list of
 SUMO locations — AYCE (orange) and Express (blue) — on an interactive map and a sortable card
 list. The page is served as an ISR-cached HTML shell (revalidated every 3600 s per
-`docs/business/rendering-strategy.md`). All interactive behaviour — geolocation, haversine
-sorting, postal-code geocoding, and the Mapbox map — runs **client-side over that cached list**
-with no additional API call triggered by user interaction.
+`docs/business/rendering-strategy.md`). The initial branch list is fetched at revalidation time
+(no coordinates). When the user provides coordinates via geolocation or postal code, a **new API
+call is made to `GET /api/v1/branches?lat=…&lng=…`** so the server returns the list sorted by
+distance. Client-side haversine sorting MUST NOT be used — the server is the source of truth
+for distance order.
+
+> **Implementation note (2026-06-22)**: An earlier version of this spec and the reviewer
+> enforced client-side sort to avoid extra API calls. That approach was reverted because it did
+> not work reliably in practice. The API-call approach is the canonical implementation and MUST
+> NOT be changed back to client-side sort.
 
 This feature also:
 1. Materializes the **provider-agnostic map abstraction** specified in
@@ -44,8 +51,9 @@ This feature also:
 - **Q: How does postal-code geocoding work?**
   A: The user types a 5-digit Mexican postal code (CP). The client calls the Mapbox Geocoding
   API (`https://api.mapbox.com/geocoding/v5/mapbox.places/{CP}.json?country=MX&types=postcode&access_token=...`)
-  to resolve lat/lng. The returned coordinates are then used for haversine sort on the cached
-  branch list. No server round-trip.
+  to resolve lat/lng. The resolved coordinates are then passed to `GET /api/v1/branches?lat=…&lng=…`
+  to get a server-sorted branch list. There is NO client-side haversine sort — two sequential
+  API calls are made: Mapbox geocoding, then the branches endpoint with coordinates.
 
 - **Q: What happens on mobile where the map is not shown?**
   A: On viewports < 880px the map panel is hidden (CSS `hidden`). The list is the primary
@@ -56,8 +64,8 @@ This feature also:
   `<MapView>` component is wrapped in `<ClientOnly>` (Nuxt convention) or uses
   `onMounted` / dynamic import to prevent SSR.
 
-- **Q: Is `routeRules['/sucursales']` already present?**
-  A: Yes — verified in `nuxt.config.ts` line 81: `'/sucursales': { isr: 3600 }`. No change
+- **Q: Is `routeRules['/branches']` already present?**
+  A: Yes — verified in `nuxt.config.ts` line 81: `'/branches': { isr: 3600 }`. No change
   needed.
 
 - **Q: Is `NUXT_PUBLIC_MAPBOX_TOKEN` already declared?**
@@ -70,7 +78,7 @@ This feature also:
 
 ### User Story 1 — Browse branches (default state) (Priority: P1)
 
-A visitor arrives at `/sucursales` on any device. Without doing anything, they see a list of all
+A visitor arrives at `/branches` on any device. Without doing anything, they see a list of all
 active branches sorted alphabetically, each with its type chip (AYCE/Express), address, and
 action buttons. On a desktop viewport (≥ 880px) a map with all pins is visible beside the list.
 
@@ -78,13 +86,13 @@ action buttons. On a desktop viewport (≥ 880px) a map with all pins is visible
 granted and the map never loads. The cached HTML shell alone must be a complete, usable branch
 directory.
 
-**Independent Test**: Load `/sucursales` in a browser with JavaScript disabled. Confirm all
+**Independent Test**: Load `/branches` in a browser with JavaScript disabled. Confirm all
 branch cards render with name, type chip, address, and action buttons. No map, no geolocation
 prompt — just the static list from the ISR shell.
 
 **Acceptance Scenarios**:
 
-1. **Given** a visitor loads `/sucursales` without interacting, **When** the page renders,
+1. **Given** a visitor loads `/branches` without interacting, **When** the page renders,
    **Then** all active branches are listed alphabetically, each card showing name, type chip
    (orange "AYCE" or blue "Express"), and address.
 2. **Given** a ≥ 880px viewport, **When** the page renders, **Then** an interactive Mapbox map
@@ -219,15 +227,17 @@ opens `tel:{phone}`.
 
 **Page composition & rendering**
 
-- **FR-001**: The system MUST serve the branch-finder page at the route `/sucursales` requiring
+- **FR-001**: The system MUST serve the branch-finder page at the route `/branches` requiring
   no authentication.
 - **FR-002**: The page MUST be rendered with ISR at a 3600-second revalidation interval.
-  `routeRules['/sucursales'] = { isr: 3600 }` is already present in `nuxt.config.ts` — it
+  `routeRules['/branches'] = { isr: 3600 }` is already present in `nuxt.config.ts` — it
   MUST NOT be modified.
 - **FR-003**: The ISR HTML shell MUST include the full branch list (all active branches fetched
   at revalidation time via `useAsyncData` calling `GET /api/v1/branches` with no coordinates).
-  Client-side distance sorting MUST operate on this cached list — no additional API call is
-  triggered by user geolocation or CP input.
+  When the user provides geolocation or postal-code coordinates, `useBranches` MUST call
+  `GET /api/v1/branches?lat=…&lng=…` to obtain a server-sorted list. Client-side haversine
+  distance sorting is FORBIDDEN — do not implement a `sortedBranches` computed or a
+  `haversineKm`-based sort inside `useBranches`. The API call with coordinates IS the sort.
 - **FR-004**: NO Drizzle/Neon client may be imported anywhere under `app/`. The branch data
   reaches the page exclusively via `GET /api/v1/branches`.
 
@@ -270,9 +280,10 @@ opens `tel:{phone}`.
 **Branch list & geolocation**
 
 - **FR-016**: The default state (no coordinates) MUST display branches alphabetically.
-- **FR-017**: After geolocation permission is granted, `useBranches` MUST sort the cached list
-  by haversine distance (closest first) without making a new API call. Each card MUST show
-  the computed distance.
+- **FR-017**: After geolocation permission is granted, `useBranches` MUST call
+  `GET /api/v1/branches?lat=…&lng=…` and replace `branches.value` with the server-sorted
+  response (closest first). Do NOT sort client-side — no haversine, no computed, no
+  `userCoords` ref. Each card MUST show the distance returned by the server.
 - **FR-018**: If geolocation is denied, errors, or times out, the page MUST show a graceful
   inline message and reveal the postal code input. The list MUST remain fully usable.
 - **FR-019**: If `navigator.geolocation` is not available, the geolocation button MUST be
@@ -282,8 +293,9 @@ opens `tel:{phone}`.
 
 - **FR-020**: The user MAY type a 5-digit Mexican postal code. The client MUST call the Mapbox
   Geocoding API (`/geocoding/v5/mapbox.places/{CP}.json?country=MX&types=postcode`) using the
-  public token. On success, lat/lng from the first feature result are used to sort the cached
-  list via haversine. No server round-trip.
+  public token. On success, the resolved lat/lng MUST be passed to
+  `GET /api/v1/branches?lat=…&lng=…` to get the server-sorted list. Client-side haversine sort
+  after geocoding is FORBIDDEN — the second API call is mandatory.
 - **FR-021**: An invalid or unrecognized CP MUST show an inline validation message; the list
   stays in its prior order.
 - **FR-022**: A Mapbox Geocoding API failure (network error, 4xx/5xx) MUST show an inline error
@@ -355,7 +367,7 @@ opens `tel:{phone}`.
 
 - **SC-001**: The page HTML shell is served from the ISR cache (no DB query on visitor
   requests). The `GET /api/v1/branches` call happens only at revalidation time.
-- **SC-002**: The Lighthouse score on `/sucursales` is ≥ 90 on all four metrics (Performance,
+- **SC-002**: The Lighthouse score on `/branches` is ≥ 90 on all four metrics (Performance,
   Accessibility, Best Practices, SEO).
 - **SC-003**: The branch list renders correctly at 360px with no horizontal overflow.
 - **SC-004**: Geolocation distance sort re-orders the list within 200 ms of coordinates
@@ -376,7 +388,7 @@ opens `tel:{phone}`.
   feature extends it (adds `type`, `schedule`, `phone`) but does not re-implement it.
 - **`mapbox-gl` is already installed**: Feature 007 (scaffold) installed it as a dependency
   (install-only, no usage). This feature builds the abstraction layer on top.
-- **`routeRules['/sucursales'] = { isr: 3600 }` is present**: Verified in `nuxt.config.ts`.
+- **`routeRules['/branches'] = { isr: 3600 }` is present**: Verified in `nuxt.config.ts`.
 - **`NUXT_PUBLIC_MAPBOX_TOKEN` is declared**: Present in `.env.example`. Still needs to be
   added to `nuxt.config.ts > runtimeConfig.public.mapboxAccessToken` and Vercel.
 - **`useReservationModal` composable exists**: Created in feature 010. The Reserve button

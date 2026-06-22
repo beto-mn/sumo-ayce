@@ -27,7 +27,7 @@ export function useBranches(): UseBranchesReturn {
   const isLoading = ref(false)
   const highlightedBranchId = ref<string | null>(null)
 
-  // Persisted geo coords — survives a CP search so we can revert to geo on badge clear
+  // Persisted geo coords — survives a CP search so we can revert to geo sort on badge clear
   const geoCoords = ref<{ lat: number; lng: number } | null>(null)
 
   const geoState = ref<GeoState>({
@@ -64,39 +64,66 @@ export function useBranches(): UseBranchesReturn {
     }
   }
 
+  // ── Private helpers ────────────────────────────────────────────────────────
+
+  function applyGeoSuccess(lat: number, lng: number): void {
+    geoCoords.value = { lat, lng }
+    activeCpBadge.value = null
+    cpState.value = { value: '', status: 'idle', errorMessage: null }
+    geoState.value = {
+      status: 'success',
+      errorMessage: null,
+      userLat: lat,
+      userLng: lng,
+    }
+  }
+
+  function applyGeoError(): void {
+    geoState.value = {
+      ...geoState.value,
+      status: 'error',
+      errorMessage: 'branches.search.geoError',
+    }
+  }
+
+  function buildGeocodingUrl(cp: string, token: string): string {
+    return `${GEOCODING_BASE}/${encodeURIComponent(cp)}.json?country=MX&types=postcode&access_token=${token}`
+  }
+
+  function applyCpSuccess(cp: string): void {
+    activeCpBadge.value = cp
+    cpState.value = { value: '', status: 'idle', errorMessage: null }
+  }
+
+  function applyCpError(cp: string): void {
+    cpState.value = {
+      value: cp,
+      status: 'error',
+      errorMessage: 'branches.search.cpError',
+    }
+  }
+
+  // ── Public functions ───────────────────────────────────────────────────────
+
   async function requestGeolocation(): Promise<void> {
     if (geoState.value.status === 'unsupported') return
-
+    // CP has priority — geo cannot override an active postal-code search
+    if (activeCpBadge.value) return
     geoState.value = {
       ...geoState.value,
       status: 'loading',
       errorMessage: null,
     }
-
     return new Promise<void>(resolve => {
       navigator.geolocation.getCurrentPosition(
         async position => {
-          const lat = position.coords.latitude
-          const lng = position.coords.longitude
-          geoCoords.value = { lat, lng }
-          // Geo activation clears any active CP
-          activeCpBadge.value = null
-          cpState.value = { value: '', status: 'idle', errorMessage: null }
-          geoState.value = {
-            status: 'success',
-            errorMessage: null,
-            userLat: lat,
-            userLng: lng,
-          }
+          const { latitude: lat, longitude: lng } = position.coords
+          applyGeoSuccess(lat, lng)
           await fetchBranches(lat, lng)
           resolve()
         },
         _error => {
-          geoState.value = {
-            ...geoState.value,
-            status: 'error',
-            errorMessage: 'branches.search.geoError',
-          }
+          applyGeoError()
           resolve()
         },
         { timeout: 10000 }
@@ -106,45 +133,31 @@ export function useBranches(): UseBranchesReturn {
 
   async function geocodePostalCode(cp: string): Promise<void> {
     cpState.value = { value: cp, status: 'loading', errorMessage: null }
-
     const token =
       (typeof useRuntimeConfig !== 'undefined'
-        ? useRuntimeConfig().public?.mapboxToken
+        ? useRuntimeConfig().public?.mapboxAccessToken
         : '') ?? ''
-    const url = `${GEOCODING_BASE}/${encodeURIComponent(cp)}.json?country=MX&types=postcode&access_token=${token}`
-
+    const url = buildGeocodingUrl(cp, token as string)
     try {
       const data = await $fetch<{
         features: Array<{ center: [number, number] }>
       }>(url)
       const firstFeature = data.features[0]
       if (!firstFeature) {
-        cpState.value = {
-          value: cp,
-          status: 'error',
-          errorMessage: 'branches.search.cpError',
-        }
+        applyCpError(cp)
         return
       }
       const [lng, lat] = firstFeature.center
-      // CP takes over — clear geo badge (keep geoCoords for revert on clear)
       geoState.value = {
         status: detectGeoSupport(),
         errorMessage: null,
         userLat: null,
         userLng: null,
       }
-      // Fetch sorted results, then set badge and clear input
       await fetchBranches(lat, lng)
-      activeCpBadge.value = cp
-      cpState.value = { value: '', status: 'idle', errorMessage: null }
-    } catch (err) {
-      console.error('[useBranches] geocodePostalCode error:', err)
-      cpState.value = {
-        value: cp,
-        status: 'error',
-        errorMessage: 'branches.search.cpError',
-      }
+      applyCpSuccess(cp)
+    } catch {
+      applyCpError(cp)
     }
   }
 
@@ -152,7 +165,6 @@ export function useBranches(): UseBranchesReturn {
     activeCpBadge.value = null
     cpState.value = { value: '', status: 'idle', errorMessage: null }
     if (geoCoords.value) {
-      // Restore geo badge so the UI reflects what's being searched
       geoState.value = {
         status: 'success',
         errorMessage: null,
@@ -173,9 +185,7 @@ export function useBranches(): UseBranchesReturn {
       userLat: null,
       userLng: null,
     }
-    if (!activeCpBadge.value) {
-      await fetchBranches()
-    }
+    await fetchBranches()
   }
 
   return {

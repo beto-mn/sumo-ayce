@@ -87,7 +87,7 @@ export const mapboxAdapter: MapAdapter = {
     const token = options.accessToken ?? ''
     if (!token) {
       throw new Error(
-        'Mapbox access token is missing. Set NUXT_PUBLIC_MAPBOX_TOKEN.'
+        'Mapbox access token is missing. Set NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN.'
       )
     }
     mapboxgl.accessToken = token

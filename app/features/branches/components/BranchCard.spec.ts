@@ -160,4 +160,29 @@ describe('BranchCard', () => {
     const root = wrapper.find('[data-testid="branch-card"]')
     expect(root.attributes('aria-label')).toContain('SUMO Polanco')
   })
+
+  it('shows schedule when provided', () => {
+    const branchWithSchedule: SortedBranch = {
+      ...AYCE_BRANCH,
+      schedule: {
+        weekdays: { open: '12:00', close: '22:00' },
+      },
+    }
+    const wrapper = mount(BranchCard, {
+      props: { branch: branchWithSchedule },
+    })
+    expect(wrapper.text()).toContain('12:00')
+    expect(wrapper.text()).toContain('22:00')
+  })
+
+  it('shows hoursUnavailable when schedule is null', () => {
+    const branchNoSchedule: SortedBranch = {
+      ...AYCE_BRANCH,
+      schedule: null,
+    }
+    const wrapper = mount(BranchCard, {
+      props: { branch: branchNoSchedule },
+    })
+    expect(wrapper.text()).toContain('branches.card.hoursUnavailable')
+  })
 })

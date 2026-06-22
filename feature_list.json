@@ -124,7 +124,7 @@
       "description": "Branch finder UI on top of existing backend (feature 004). Branch list cached via ISR per docs/business/rendering-strategy.md; geolocation, postal-code fallback, distance sort and Mapbox map all run client-side over the cached list. Pin colors: orange=AYCE, blue=Express. Card actions: Reserve, Directions, Call. See docs/business/features.md §4.",
       "spec_path": "specs/013-branches-page",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 14,
