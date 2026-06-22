@@ -1,8 +1,8 @@
 ---
-description: "Task list for feature 013 — Branches Page (/sucursales)"
+description: "Task list for feature 013 — Branches Page (/branches)"
 ---
 
-# Tasks: Branches Page (`/sucursales`)
+# Tasks: Branches Page (`/branches`)
 
 **Feature ID**: 013
 **Input**: Design documents from `specs/013-branches-page/`
@@ -23,28 +23,28 @@ logic is TDD (tests written first, implementation makes them pass).
 
 ## Phase 1: Setup
 
-- [ ] T001 [BACKEND] Verify `routeRules['/sucursales'] = { isr: 3600 }` is unchanged in
+- [x] T001 [BACKEND] Verify `routeRules['/branches'] = { isr: 3600 }` is unchanged in
       `nuxt.config.ts` (Gate V.1). Do NOT modify it.
-- [ ] T002 [P] [MAP] Add `runtimeConfig.public.mapboxAccessToken: ''` to `nuxt.config.ts`
+- [x] T002 [P] [MAP] Add `runtimeConfig.public.mapboxAccessToken: ''` to `nuxt.config.ts`
       (reads from `NUXT_PUBLIC_MAPBOX_TOKEN`). Document in `.env.example` comment that this
       token must start with `pk.` and be obtained from Mapbox dashboard → Access tokens.
       (Gate XIII.1, FR-015)
-- [ ] T003 [P] [FEAT] Create feature slice folders: `app/features/branches/components/`,
+- [x] T003 [P] [FEAT] Create feature slice folders: `app/features/branches/components/`,
       `app/features/branches/composables/`, `app/features/branches/utils/`. (Article I)
-- [ ] T004 [P] [MAP] Create map composable folders: `app/composables/maps/adapters/`.
+- [x] T004 [P] [MAP] Create map composable folders: `app/composables/maps/adapters/`.
       (Article I)
 
 ---
 
 ## Phase 2: Shared Types (blocks all workstreams)
 
-- [ ] T005 [BACKEND] Define `BranchScheduleSlot`, `BranchSchedule`, `BranchPublicRow`,
+- [x] T005 [BACKEND] Define `BranchScheduleSlot`, `BranchSchedule`, `BranchPublicRow`,
       `BranchWithDistance`, `SearchContext`, `BranchesResponse`, `BranchesWithDistanceResponse`
       in `types/branches.ts` (per data-model.md §3). Strict TS, no `any`. (Gate II.2)
-- [ ] T006 [P] [MAP] Define `LngLat`, `MapMarker`, `MapViewProps`, `MapAdapter` interfaces
+- [x] T006 [P] [MAP] Define `LngLat`, `MapMarker`, `MapViewProps`, `MapAdapter` interfaces
       in `app/composables/maps/types.ts` (per data-model.md §4 and maps-strategy.md).
       (FR-010)
-- [ ] T007 [P] [FEAT] Define `SortedBranch`, `GeoState`, `CpState` in
+- [x] T007 [P] [FEAT] Define `SortedBranch`, `GeoState`, `CpState` in
       `app/features/branches/types.ts` (per data-model.md §5). Re-export
       `BranchPublicRow` from `@/types/branches`. (Gate II.2)
 
@@ -54,44 +54,44 @@ logic is TDD (tests written first, implementation makes them pass).
 
 ## Phase 3: Backend Delta (workstream BACKEND — TDD)
 
-- [ ] T008 Write failing test cases in the existing branches API spec (or a new
+- [x] T008 Write failing test cases in the existing branches API spec (or a new
       `server/api/v1/branches/index.spec.ts` delta section): response includes `type`,
       `schedule`, `phone`; `whatsappReservaciones` and `whatsappReservacionesBackup` are
       NOT present. (Gate IV.5, contracts/api.md test table)
-- [ ] T009 Update `PUBLIC_FIELDS` in `server/api/v1/branches/index.get.ts` to add
+- [x] T009 Update `PUBLIC_FIELDS` in `server/api/v1/branches/index.get.ts` to add
       `type: branches.type`, `schedule: branches.schedule`, and
       `phone: branches.whatsappReservaciones`. Update `BranchRow` type to match
       `BranchPublicRow` from `types/branches.ts`. Remove `stripInternalFields` (superseded
       by explicit whitelist). Make T008 pass. (FR-005, FR-006, Gate VI.1)
-- [ ] T010 Confirm all pre-existing feature 004 tests still pass. No regressions.
+- [x] T010 Confirm all pre-existing feature 004 tests still pass. No regressions.
 
 ---
 
 ## Phase 4: Map Abstraction (workstream MAP — can proceed after T005/T006)
 
-- [ ] T011 [P] Write failing `app/components/ui/MapView.spec.ts` (happy-dom + mocked
+- [x] T011 [P] Write failing `app/components/ui/MapView.spec.ts` (happy-dom + mocked
       `mapboxAdapter`): mounts with props, renders correct marker count, emits
       `marker-click` when a marker's `onClick` fires, shows fallback slot when adapter
       throws on `createMap`. Tests MUST fail first. (Gate IV.4, FR-013)
-- [ ] T012 Implement `app/composables/maps/adapters/mapboxAdapter.ts` implementing
+- [x] T012 Implement `app/composables/maps/adapters/mapboxAdapter.ts` implementing
       `MapAdapter` using `mapbox-gl`. Reads token from
       `useRuntimeConfig().public.mapboxAccessToken`. Maps semantic styles to Mapbox style
       URLs (`streets-v12`, `light-v11`, `dark-v11`). Implements `createMap`, `addMarker`,
       `removeMarker`, `setCenter`, `setZoom`, `flyTo`, `destroy`. File ≤ 200 lines,
       functions ≤ 30 lines. (FR-012, Gate X.1)
-- [ ] T013 Implement `app/composables/maps/useMapProvider.ts` exporting `useMapProvider()`
+- [x] T013 Implement `app/composables/maps/useMapProvider.ts` exporting `useMapProvider()`
       returning `mapboxAdapter`. (FR-011)
-- [ ] T014 Implement `app/components/ui/MapView.vue` — provider-agnostic component accepting
+- [x] T014 Implement `app/components/ui/MapView.vue` — provider-agnostic component accepting
       `MapViewProps`. Uses `useMapProvider()` internally. Rendered client-side only
       (`<ClientOnly>` wrapper or `onMounted` dynamic mount). Emits `marker-click(id: string)`.
       Exposes a `#fallback` slot shown when the adapter fails or the map container is
       not ready. NO `mapbox-gl` import in this file (Gate VI of maps abstraction, FR-013,
       FR-014). File ≤ 200 lines.
-- [ ] T015 Make T011 tests pass.
-- [ ] T016 [P] Add `app/components/ui/MapView.stories.ts`: Default (mocked adapter,
+- [x] T015 Make T011 tests pass.
+- [x] T016 [P] Add `app/components/ui/MapView.stories.ts`: Default (mocked adapter,
       3 markers), AYCE-only pins, Express-only pins, mixed pins, fallback state,
       Responsive (mobile hides map, desktop shows). (Gate VII.5)
-- [ ] T017 Run the mapbox-gl import grep:
+- [x] T017 Run the mapbox-gl import grep:
       `grep -rEn "from ['\"]mapbox-gl['\"]" app/ --include='*.vue' --include='*.ts' | grep -v 'composables/maps/adapters/'`
       Result MUST be zero matches. (SC-008, FR-014)
 
@@ -101,22 +101,22 @@ logic is TDD (tests written first, implementation makes them pass).
 
 ### Client-side haversine utility
 
-- [ ] T018 [P] Write failing `app/features/branches/utils/haversine.spec.ts`: known
+- [x] T018 [P] Write failing `app/features/branches/utils/haversine.spec.ts`: known
       coordinate pairs with expected distances (< ±100 m tolerance). Tests MUST fail first.
-- [ ] T019 Implement `app/features/branches/utils/haversine.ts` — pure function
+- [x] T019 Implement `app/features/branches/utils/haversine.ts` — pure function
       `haversineKm(lat1, lng1, lat2, lng2): number`. ≤ 20 lines. Make T018 pass.
       (Gate X.1 — cannot import from `server/utils/haversine.ts`)
 
 ### `useBranches` composable
 
-- [ ] T020 [P] Write failing `app/features/branches/composables/useBranches.spec.ts`
+- [x] T020 [P] Write failing `app/features/branches/composables/useBranches.spec.ts`
       (happy-dom): haversine sort reorders branches correctly; CP geocoding calls Mapbox
       Geocoding API with correct URL and resolves to lat/lng; geolocation error → `GeoState`
       becomes `'error'` + `errorMessage`; geolocation unsupported → `'unsupported'`;
       `sortedBranches` is alphabetical before any sort; loading states are correct.
       Mock `navigator.geolocation` and Mapbox fetch via `tests/mocks/mapbox.ts`.
       Tests MUST fail first. (Gate IV.1)
-- [ ] T021 Implement `app/features/branches/composables/useBranches.ts`:
+- [x] T021 Implement `app/features/branches/composables/useBranches.ts`:
       - Accepts `branches: Ref<BranchPublicRow[]>` from `useAsyncData` in the page.
       - Manages `GeoState` and `CpState` as reactive refs.
       - `requestGeolocation()`: calls `navigator.geolocation.getCurrentPosition`, on success
@@ -129,16 +129,16 @@ logic is TDD (tests written first, implementation makes them pass).
       - `sortedBranches: ComputedRef<SortedBranch[]>`: computed from current sort state.
       - `highlightedBranchId: Ref<string | null>`: selected branch for map↔list cross-link.
       Functions ≤ 30 lines; file ≤ 200 lines. (FR-017/018/019/020/021/022)
-- [ ] T022 Make T020 tests pass.
+- [x] T022 Make T020 tests pass.
 
 ### `BranchSearch` component
 
-- [ ] T023 [P] Write failing `app/features/branches/components/BranchSearch.spec.ts`:
+- [x] T023 [P] Write failing `app/features/branches/components/BranchSearch.spec.ts`:
       emits `request-geo` when the "Find nearest" button is clicked; shows CP input;
       emits `cp-submit` with the typed value when submitted; shows geo-error message
       when `geoState.status === 'error'`; hides geo button when `geoState.status ===
       'unsupported'`; shows CP error when `cpState.status === 'error'`. (Gate IV.3)
-- [ ] T024 Implement `app/features/branches/components/BranchSearch.vue`:
+- [x] T024 Implement `app/features/branches/components/BranchSearch.vue`:
       - Props: `geoState: GeoState`, `cpState: CpState`.
       - Emits: `request-geo`, `cp-submit(cp: string)`.
       - Shows "Find nearest" button (hidden when `geoState.status === 'unsupported'`).
@@ -147,19 +147,19 @@ logic is TDD (tests written first, implementation makes them pass).
       - CP input: 5-digit validation, submit on Enter or button click.
       - Uses `UiButton`, `UiInput` from design system. Tokens only, no inline hex.
       File ≤ 200 lines. (FR-018/019/020/021/022, FR-036/037)
-- [ ] T025 Make T023 tests pass.
-- [ ] T026 [P] Add `app/features/branches/components/BranchSearch.stories.ts`: Default
+- [x] T025 Make T023 tests pass.
+- [x] T026 [P] Add `app/features/branches/components/BranchSearch.stories.ts`: Default
       (idle), loading, geo-error-with-cp, cp-error, unsupported, responsive.
 
 ### `BranchCard` component
 
-- [ ] T027 [P] Write failing `app/features/branches/components/BranchCard.spec.ts`:
+- [x] T027 [P] Write failing `app/features/branches/components/BranchCard.spec.ts`:
       renders type chip with correct label and accent class (`ayce` → orange, `express` →
       blue); shows `distanceKm` formatted when provided, hidden when absent; renders
       hours summary from `schedule`; shows "Horarios no disponibles" when `schedule` is
       null; Call button hidden when `phone` is null; emits `reserve`, `directions`,
       `call` on button clicks; highlighted state applies a visible ring class. (Gate IV.2)
-- [ ] T028 Implement `app/features/branches/components/BranchCard.vue`:
+- [x] T028 Implement `app/features/branches/components/BranchCard.vue`:
       - Props: `branch: SortedBranch`, `highlighted?: boolean`.
       - Emits: `reserve`, `directions(url: string)`, `call(phone: string)`.
       - Type chip: orange for AYCE, blue for Express (`--accent` swap, Article VII).
@@ -168,24 +168,24 @@ logic is TDD (tests written first, implementation makes them pass).
       - Call button hidden when `branch.phone` is null/empty.
       - Highlighted: adds a visible focus-style ring (accessible, not just color).
       - Uses `UiButton`, `UiCard`, `UiChip`. Tokens only. File ≤ 200 lines. (FR-029–FR-032)
-- [ ] T029 Make T027 tests pass.
-- [ ] T030 [P] Add `app/features/branches/components/BranchCard.stories.ts`: AYCE card,
+- [x] T029 Make T027 tests pass.
+- [x] T030 [P] Add `app/features/branches/components/BranchCard.stories.ts`: AYCE card,
       Express card, with distance, without distance, with schedule, without schedule,
       phone null (Call hidden), highlighted state, responsive.
 
 ### `BranchList` component
 
-- [ ] T031 [P] Write failing `app/features/branches/components/BranchList.spec.ts`:
+- [x] T031 [P] Write failing `app/features/branches/components/BranchList.spec.ts`:
       renders a `BranchCard` per branch; empty state message when `branches` is empty;
       forwards `highlight` prop correctly; emits `branch-select(id)`.
-- [ ] T032 Implement `app/features/branches/components/BranchList.vue`:
+- [x] T032 Implement `app/features/branches/components/BranchList.vue`:
       - Props: `branches: SortedBranch[]`, `highlightedId?: string`.
       - Emits: `branch-select(id: string)`.
       - Renders `BranchCard` per branch with `:highlighted="branch.id === highlightedId"`.
       - Empty state: "No encontramos sucursales" (i18n). Self-hides the card list.
       - File ≤ 200 lines. (FR-029)
-- [ ] T033 Make T031 tests pass.
-- [ ] T034 [P] Add `app/features/branches/components/BranchList.stories.ts`: Default
+- [x] T033 Make T031 tests pass.
+- [x] T034 [P] Add `app/features/branches/components/BranchList.stories.ts`: Default
       (full list), empty, highlighted card, responsive (mobile single-column, desktop
       two-column).
 
@@ -193,12 +193,12 @@ logic is TDD (tests written first, implementation makes them pass).
 
 ## Phase 6: Page Assembly (workstream PAGE — after Phase 3–5)
 
-- [ ] T035 Write failing `app/pages/sucursales.spec.ts` (happy-dom): page fetches branches
+- [x] T035 Write failing `app/pages/branches.spec.ts` (happy-dom): page fetches branches
       via `useAsyncData`; passes correct props to `BranchSearch`, `BranchList`, `UiMapView`;
       map↔list cross-link wiring (clicking list emits `branch-select` → `highlightedBranchId`
       updates; `UiMapView` emits `marker-click` → `highlightedBranchId` updates); map hidden
       on mobile (< 880px class check). Tests MUST fail first.
-- [ ] T036 Implement `app/pages/sucursales.vue`:
+- [x] T036 Implement `app/pages/branches.vue`:
       - `useAsyncData('branches', () => $fetch('/api/v1/branches'))` — server-side fetch at
         ISR time, no coordinates. Typed to `BranchesResponse`.
       - Passes `branches.data` into `useBranches()`.
@@ -211,40 +211,40 @@ logic is TDD (tests written first, implementation makes them pass).
         `UiMapView` exposed `highlightPin(id)` method.
       - SEO meta via `useSeoMeta` (bilingual title + description).
       - Template ≤ 100 lines. No inline hex. (FR-001–FR-004, FR-033–FR-035)
-- [ ] T037 Make T035 tests pass.
-- [ ] T038 Wire `Reserve` from `BranchCard` → `useReservationModal().openReservation()`.
+- [x] T037 Make T035 tests pass.
+- [x] T038 Wire `Reserve` from `BranchCard` → `useReservationModal().openReservation()`.
       Confirm no error when modal is not mounted (FR-030, Gate I.2).
 
 ---
 
 ## Phase 7: i18n (workstream FEAT — can start after T003)
 
-- [ ] T039 [P] Add `branches.*` keys to `i18n/locales/es.json`:
+- [x] T039 [P] Add `branches.*` keys to `i18n/locales/es.json`:
       `page.title`, `page.description`, `search.geoButton`, `search.geoLoading`,
       `search.geoError`, `search.cpPlaceholder`, `search.cpError`, `card.reserve`,
       `card.directions`, `card.call`, `card.distance`, `card.hoursUnavailable`,
       `list.empty`, `map.unavailable`, `type.ayce`, `type.express`.
-- [ ] T040 [P] Add the same keys to `i18n/locales/en.json` with English translations.
+- [x] T040 [P] Add the same keys to `i18n/locales/en.json` with English translations.
 
 ---
 
 ## Phase 8: Polish & Cross-Cutting
 
-- [ ] T041 [P] [POLISH] Reduced-motion pass: `MapView` calls `adapter.flyTo` only when
+- [x] T041 [P] [POLISH] Reduced-motion pass: `MapView` calls `adapter.flyTo` only when
       `!prefersReducedMotion`; falls back to `adapter.setCenter`. List transitions are
       instant. (FR-028, FR-036)
-- [ ] T042 [P] [POLISH] Accessibility pass: map `aria-label` = "Mapa de sucursales SUMO";
+- [x] T042 [P] [POLISH] Accessibility pass: map `aria-label` = "Mapa de sucursales SUMO";
       branch cards have `aria-label` with branch name; all buttons keyboard-operable;
       hit targets ≥ 44px. (FR-037/038)
-- [ ] T043 [P] [POLISH] No-inline-hex grep over new files:
-      `grep -rEn '(style=|: ?)#[0-9a-fA-F]{3,8}\b' app/features/branches/ app/pages/sucursales.vue app/components/ui/MapView.vue app/composables/maps/`
+- [x] T043 [P] [POLISH] No-inline-hex grep over new files:
+      `grep -rEn '(style=|: ?)#[0-9a-fA-F]{3,8}\b' app/features/branches/ app/pages/branches.vue app/components/ui/MapView.vue app/composables/maps/`
       Result MUST be zero.
-- [ ] T044 [P] [POLISH] Mapbox import guard grep (SC-008):
+- [x] T044 [P] [POLISH] Mapbox import guard grep (SC-008):
       `grep -rEn "from ['\"]mapbox-gl['\"]" app/ --include='*.vue' --include='*.ts' | grep -v 'composables/maps/adapters/'`
       Result MUST be zero.
-- [ ] T045 [POLISH] Run `pnpm check && pnpm typecheck && pnpm test && pnpm build`; all
+- [x] T045 [POLISH] Run `pnpm check && pnpm typecheck && pnpm test && pnpm build`; all
       green. New spec files counted. (Gate IX)
-- [ ] T046 [POLISH] Update `tests/mocks/mapbox.ts` to cover all adapter method stubs
+- [x] T046 [POLISH] Update `tests/mocks/mapbox.ts` to cover all adapter method stubs
       used by `MapView.spec.ts` and `useBranches.spec.ts`. Centralized mock — no
       ad-hoc `vi.mock('mapbox-gl')` scattered across test files. (Gate IV.6)
 

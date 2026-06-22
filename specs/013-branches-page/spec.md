@@ -1,4 +1,4 @@
-# Feature Specification: Branches Page (`/sucursales`)
+# Feature Specification: Branches Page (`/branches`)
 
 **Feature ID**: 013
 **Feature Branch**: `feat/013-branches-page`
@@ -11,7 +11,7 @@
 
 ## Overview
 
-The Branches Page (`/sucursales`) is the public branch-finder UI. It surfaces the full list of
+The Branches Page (`/branches`) is the public branch-finder UI. It surfaces the full list of
 SUMO locations — AYCE (orange) and Express (blue) — on an interactive map and a sortable card
 list. The page is served as an ISR-cached HTML shell (revalidated every 3600 s per
 `docs/business/rendering-strategy.md`). All interactive behaviour — geolocation, haversine
@@ -56,8 +56,8 @@ This feature also:
   `<MapView>` component is wrapped in `<ClientOnly>` (Nuxt convention) or uses
   `onMounted` / dynamic import to prevent SSR.
 
-- **Q: Is `routeRules['/sucursales']` already present?**
-  A: Yes — verified in `nuxt.config.ts` line 81: `'/sucursales': { isr: 3600 }`. No change
+- **Q: Is `routeRules['/branches']` already present?**
+  A: Yes — verified in `nuxt.config.ts` line 81: `'/branches': { isr: 3600 }`. No change
   needed.
 
 - **Q: Is `NUXT_PUBLIC_MAPBOX_TOKEN` already declared?**
@@ -70,7 +70,7 @@ This feature also:
 
 ### User Story 1 — Browse branches (default state) (Priority: P1)
 
-A visitor arrives at `/sucursales` on any device. Without doing anything, they see a list of all
+A visitor arrives at `/branches` on any device. Without doing anything, they see a list of all
 active branches sorted alphabetically, each with its type chip (AYCE/Express), address, and
 action buttons. On a desktop viewport (≥ 880px) a map with all pins is visible beside the list.
 
@@ -78,13 +78,13 @@ action buttons. On a desktop viewport (≥ 880px) a map with all pins is visible
 granted and the map never loads. The cached HTML shell alone must be a complete, usable branch
 directory.
 
-**Independent Test**: Load `/sucursales` in a browser with JavaScript disabled. Confirm all
+**Independent Test**: Load `/branches` in a browser with JavaScript disabled. Confirm all
 branch cards render with name, type chip, address, and action buttons. No map, no geolocation
 prompt — just the static list from the ISR shell.
 
 **Acceptance Scenarios**:
 
-1. **Given** a visitor loads `/sucursales` without interacting, **When** the page renders,
+1. **Given** a visitor loads `/branches` without interacting, **When** the page renders,
    **Then** all active branches are listed alphabetically, each card showing name, type chip
    (orange "AYCE" or blue "Express"), and address.
 2. **Given** a ≥ 880px viewport, **When** the page renders, **Then** an interactive Mapbox map
@@ -219,10 +219,10 @@ opens `tel:{phone}`.
 
 **Page composition & rendering**
 
-- **FR-001**: The system MUST serve the branch-finder page at the route `/sucursales` requiring
+- **FR-001**: The system MUST serve the branch-finder page at the route `/branches` requiring
   no authentication.
 - **FR-002**: The page MUST be rendered with ISR at a 3600-second revalidation interval.
-  `routeRules['/sucursales'] = { isr: 3600 }` is already present in `nuxt.config.ts` — it
+  `routeRules['/branches'] = { isr: 3600 }` is already present in `nuxt.config.ts` — it
   MUST NOT be modified.
 - **FR-003**: The ISR HTML shell MUST include the full branch list (all active branches fetched
   at revalidation time via `useAsyncData` calling `GET /api/v1/branches` with no coordinates).
@@ -355,7 +355,7 @@ opens `tel:{phone}`.
 
 - **SC-001**: The page HTML shell is served from the ISR cache (no DB query on visitor
   requests). The `GET /api/v1/branches` call happens only at revalidation time.
-- **SC-002**: The Lighthouse score on `/sucursales` is ≥ 90 on all four metrics (Performance,
+- **SC-002**: The Lighthouse score on `/branches` is ≥ 90 on all four metrics (Performance,
   Accessibility, Best Practices, SEO).
 - **SC-003**: The branch list renders correctly at 360px with no horizontal overflow.
 - **SC-004**: Geolocation distance sort re-orders the list within 200 ms of coordinates
@@ -376,7 +376,7 @@ opens `tel:{phone}`.
   feature extends it (adds `type`, `schedule`, `phone`) but does not re-implement it.
 - **`mapbox-gl` is already installed**: Feature 007 (scaffold) installed it as a dependency
   (install-only, no usage). This feature builds the abstraction layer on top.
-- **`routeRules['/sucursales'] = { isr: 3600 }` is present**: Verified in `nuxt.config.ts`.
+- **`routeRules['/branches'] = { isr: 3600 }` is present**: Verified in `nuxt.config.ts`.
 - **`NUXT_PUBLIC_MAPBOX_TOKEN` is declared**: Present in `.env.example`. Still needs to be
   added to `nuxt.config.ts > runtimeConfig.public.mapboxAccessToken` and Vercel.
 - **`useReservationModal` composable exists**: Created in feature 010. The Reserve button
