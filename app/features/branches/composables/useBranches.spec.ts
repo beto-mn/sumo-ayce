@@ -36,8 +36,14 @@ const BUENAVISTA_ROW = {
   phone: null,
 }
 
+// Default order: Polanco first, Buenavista second
 const BRANCHES_RESPONSE = { data: [POLANCO_ROW, BUENAVISTA_ROW] }
-const BRANCHES_RESPONSE_ALL = { data: [BUENAVISTA_ROW, POLANCO_ROW] }
+// Reversed order: Buenavista first (simulates server sort near Buenavista)
+const BRANCHES_NEAR_BUENAVISTA = { data: [BUENAVISTA_ROW, POLANCO_ROW] }
+// Polanco first (simulates server sort near Polanco / CP 11560)
+const BRANCHES_NEAR_POLANCO = { data: [POLANCO_ROW, BUENAVISTA_ROW] }
+
+const MAPBOX_NEAR_POLANCO = { features: [{ center: [-99.1924, 19.4326] }] }
 
 describe('useBranches', () => {
   beforeEach(() => {
@@ -52,7 +58,7 @@ describe('useBranches', () => {
 
   it('fetchBranches without coords calls API without query params', async () => {
     const { useBranches } = await import('./useBranches')
-    mockFetch.mockResolvedValueOnce(BRANCHES_RESPONSE_ALL)
+    mockFetch.mockResolvedValueOnce(BRANCHES_RESPONSE)
 
     const { fetchBranches, branches } = useBranches()
     await fetchBranches()
@@ -108,14 +114,14 @@ describe('useBranches', () => {
     expect(geoState.value.status).toBe('unsupported')
   })
 
-  it('requestGeolocation sorts branches by geo distance on success', async () => {
+  it('requestGeolocation fetches branches with coords and returns them sorted', async () => {
     const { useBranches } = await import('./useBranches')
 
     Object.defineProperty(global.navigator, 'geolocation', {
       value: {
         getCurrentPosition: (success: PositionCallback) => {
           success({
-            // Near Buenavista (19.4498, -99.1503), so Buenavista should come first
+            // Near Buenavista (19.4498, -99.1503)
             coords: { latitude: 19.4498, longitude: -99.1503, accuracy: 10 },
             timestamp: Date.now(),
           } as GeolocationPosition)
@@ -124,21 +130,29 @@ describe('useBranches', () => {
       configurable: true,
     })
 
-    const { fetchBranches, requestGeolocation, geoState, sortedBranches } =
-      useBranches()
-    // Pre-load branches without API call from geo
-    mockFetch.mockResolvedValueOnce(BRANCHES_RESPONSE)
-    await fetchBranches()
+    // Initial load + geo API call (server returns Buenavista first)
+    mockFetch
+      .mockResolvedValueOnce(BRANCHES_RESPONSE)
+      .mockResolvedValueOnce(BRANCHES_NEAR_BUENAVISTA)
 
+    const { fetchBranches, requestGeolocation, geoState, branches } =
+      useBranches()
+    await fetchBranches()
     await requestGeolocation()
 
     expect(geoState.value.status).toBe('success')
     expect(geoState.value.userLat).toBe(19.4498)
-    // sortedBranches should be sorted: Buenavista (nearer) first, Polanco second
-    expect(sortedBranches.value[0]?.id).toBe('b1')
-    expect(sortedBranches.value[1]?.id).toBe('p1')
-    // No extra API call — geo only sets userCoords, no fetchBranches call
-    expect(mockFetch).toHaveBeenCalledOnce()
+    // API returned Buenavista (nearer) first
+    expect(branches.value[0]?.id).toBe('b1')
+    expect(branches.value[1]?.id).toBe('p1')
+    // Initial load + geo fetchBranches(lat, lng)
+    expect(mockFetch).toHaveBeenCalledTimes(2)
+    // Second call passes coordinates
+    const [, opts] = mockFetch.mock.calls[1] as [
+      string,
+      { query: Record<string, unknown> },
+    ]
+    expect(opts.query).toEqual({ lat: 19.4498, lng: -99.1503 })
   })
 
   it('sets geoState to error when geolocation is denied', async () => {
@@ -185,6 +199,9 @@ describe('useBranches', () => {
       configurable: true,
     })
 
+    // Mock the fetchBranches call that happens after geo success
+    mockFetch.mockResolvedValueOnce(BRANCHES_NEAR_BUENAVISTA)
+
     const { requestGeolocation, geoState } = useBranches()
 
     const promise = requestGeolocation()
@@ -202,11 +219,6 @@ describe('useBranches', () => {
   it('does NOT re-fetch by geo if a CP badge is already active', async () => {
     const { useBranches } = await import('./useBranches')
 
-    // Only the Mapbox geocoding call (no branches API call for CP in new design)
-    mockFetch.mockResolvedValueOnce({
-      features: [{ center: [-99.1924, 19.4326] }],
-    })
-
     Object.defineProperty(global.navigator, 'geolocation', {
       value: {
         getCurrentPosition: (success: PositionCallback) => {
@@ -219,30 +231,35 @@ describe('useBranches', () => {
       configurable: true,
     })
 
+    // geocodePostalCode makes 2 calls: Mapbox geocode + branches API
+    mockFetch
+      .mockResolvedValueOnce(MAPBOX_NEAR_POLANCO)
+      .mockResolvedValueOnce(BRANCHES_NEAR_POLANCO)
+
     const { geocodePostalCode, requestGeolocation, activeCpBadge } =
       useBranches()
     await geocodePostalCode('11560')
     expect(activeCpBadge.value).toBe('11560')
 
-    // Trigger geo — should NOT override CP
+    // Trigger geo — should NOT override CP (early return)
     await requestGeolocation()
     expect(activeCpBadge.value).toBe('11560')
-    // Only the Mapbox geocoding call — no branches API call
-    expect(mockFetch).toHaveBeenCalledTimes(1)
+    // Exactly 2 calls: Mapbox geocode + branches with CP coords; geo made no calls
+    expect(mockFetch).toHaveBeenCalledTimes(2)
   })
 
   // ── geocodePostalCode ────────────────────────────────────────────────────────
 
   it('calls Mapbox Geocoding API with correct URL on CP submit', async () => {
     const { useBranches } = await import('./useBranches')
-    mockFetch.mockResolvedValueOnce({
-      features: [{ center: [-99.1924, 19.4326] }],
-    })
+    mockFetch
+      .mockResolvedValueOnce(MAPBOX_NEAR_POLANCO)
+      .mockResolvedValueOnce(BRANCHES_NEAR_POLANCO)
 
     const { geocodePostalCode } = useBranches()
     await geocodePostalCode('11560')
 
-    expect(mockFetch).toHaveBeenCalledOnce()
+    // First call is the Mapbox geocoding URL
     const url = mockFetch.mock.calls[0]?.[0] as string
     expect(url).toContain('11560')
     expect(url).toContain('country=MX')
@@ -251,9 +268,9 @@ describe('useBranches', () => {
 
   it('sets activeCpBadge and clears cpState.value after successful CP search', async () => {
     const { useBranches } = await import('./useBranches')
-    mockFetch.mockResolvedValueOnce({
-      features: [{ center: [-99.1924, 19.4326] }],
-    })
+    mockFetch
+      .mockResolvedValueOnce(MAPBOX_NEAR_POLANCO)
+      .mockResolvedValueOnce(BRANCHES_NEAR_POLANCO)
 
     const { geocodePostalCode, activeCpBadge, cpState } = useBranches()
     await geocodePostalCode('11560')
@@ -263,25 +280,25 @@ describe('useBranches', () => {
     expect(cpState.value.status).toBe('idle')
   })
 
-  it('geocodePostalCode sorts branches by CP distance', async () => {
+  it('geocodePostalCode fetches branches with coords and updates list', async () => {
     const { useBranches } = await import('./useBranches')
 
-    const { fetchBranches, geocodePostalCode, sortedBranches } = useBranches()
-    // Pre-load branches; Buenavista is first in the raw list
-    mockFetch.mockResolvedValueOnce(BRANCHES_RESPONSE_ALL)
+    const { fetchBranches, geocodePostalCode, branches } = useBranches()
+    // Initial load: Buenavista first (alphabetical)
+    mockFetch.mockResolvedValueOnce({ data: [BUENAVISTA_ROW, POLANCO_ROW] })
     await fetchBranches()
 
-    // Geocode to near Polanco (19.4326, -99.1924)
-    mockFetch.mockResolvedValueOnce({
-      features: [{ center: [-99.1924, 19.4326] }],
-    })
+    // Geocode CP 11560 (near Polanco) → server returns Polanco first
+    mockFetch
+      .mockResolvedValueOnce(MAPBOX_NEAR_POLANCO)
+      .mockResolvedValueOnce(BRANCHES_NEAR_POLANCO)
     await geocodePostalCode('11560')
 
-    // sortedBranches should put Polanco (nearer to 19.4326,-99.1924) first
-    expect(sortedBranches.value[0]?.id).toBe('p1')
-    expect(sortedBranches.value[1]?.id).toBe('b1')
-    // Only the fetchBranches call + Mapbox call — no extra branches API call
-    expect(mockFetch).toHaveBeenCalledTimes(2)
+    // branches.value reflects server-sorted response (Polanco nearer to 11560)
+    expect(branches.value[0]?.id).toBe('p1')
+    expect(branches.value[1]?.id).toBe('b1')
+    // 3 calls: initial fetchBranches + Mapbox geocode + fetchBranches with coords
+    expect(mockFetch).toHaveBeenCalledTimes(3)
   })
 
   it('sets cpState to error when geocoding returns no features', async () => {
@@ -307,7 +324,7 @@ describe('useBranches', () => {
 
   // ── clearCpSearch ────────────────────────────────────────────────────────────
 
-  it('clearCpSearch reverts to unsorted list when no geo active', async () => {
+  it('clearCpSearch re-fetches unsorted list when no geo active', async () => {
     const { useBranches } = await import('./useBranches')
 
     const {
@@ -316,26 +333,27 @@ describe('useBranches', () => {
       clearCpSearch,
       activeCpBadge,
       branches,
-      sortedBranches,
     } = useBranches()
-    // Pre-load branches
-    mockFetch.mockResolvedValueOnce(BRANCHES_RESPONSE_ALL)
+    // Pre-load
+    mockFetch.mockResolvedValueOnce({ data: [BUENAVISTA_ROW, POLANCO_ROW] })
     await fetchBranches()
 
-    // Setup: CP search (only Mapbox geocode, no branches call)
-    mockFetch.mockResolvedValueOnce({
-      features: [{ center: [-99.1924, 19.4326] }],
-    })
+    // CP search: Mapbox + branches with coords
+    mockFetch
+      .mockResolvedValueOnce(MAPBOX_NEAR_POLANCO)
+      .mockResolvedValueOnce(BRANCHES_NEAR_POLANCO)
     await geocodePostalCode('11560')
     expect(activeCpBadge.value).toBe('11560')
 
+    // Clear CP — no geo active → re-fetch without coords
+    mockFetch.mockResolvedValueOnce({ data: [BUENAVISTA_ROW, POLANCO_ROW] })
     await clearCpSearch()
     expect(activeCpBadge.value).toBeNull()
 
-    // With no geo active, sortedBranches returns the raw branches list
-    expect(sortedBranches.value).toBe(branches.value)
-    // No extra API call after clear
-    expect(mockFetch).toHaveBeenCalledTimes(2)
+    // Back to original unsorted order
+    expect(branches.value[0]?.id).toBe('b1')
+    // 4 calls: initial + geocode + branches(cp) + branches(unsorted)
+    expect(mockFetch).toHaveBeenCalledTimes(4)
   })
 
   it('clearCpSearch restores geo-based sort when geo was active', async () => {
@@ -354,32 +372,30 @@ describe('useBranches', () => {
       configurable: true,
     })
 
-    // fetchBranches call + Mapbox geocode call
-    mockFetch.mockResolvedValueOnce(BRANCHES_RESPONSE)
-    mockFetch.mockResolvedValueOnce({
-      features: [{ center: [-99.1924, 19.4326] }],
-    })
+    mockFetch
+      .mockResolvedValueOnce(BRANCHES_RESPONSE) // initial
+      .mockResolvedValueOnce(BRANCHES_NEAR_BUENAVISTA) // geo fetchBranches
+      .mockResolvedValueOnce(MAPBOX_NEAR_POLANCO) // CP geocode
+      .mockResolvedValueOnce(BRANCHES_NEAR_POLANCO) // CP fetchBranches
+      .mockResolvedValueOnce(BRANCHES_NEAR_BUENAVISTA) // clearCpSearch restores geo
 
     const {
       fetchBranches,
       requestGeolocation,
       geocodePostalCode,
       clearCpSearch,
-      sortedBranches,
+      branches,
     } = useBranches()
     await fetchBranches()
     await requestGeolocation()
-    // After geo, Buenavista should be first
-    expect(sortedBranches.value[0]?.id).toBe('b1')
+    expect(branches.value[0]?.id).toBe('b1') // geo: Buenavista first
 
     await geocodePostalCode('11560')
-    // After CP (near Polanco), Polanco should be first
-    expect(sortedBranches.value[0]?.id).toBe('p1')
+    expect(branches.value[0]?.id).toBe('p1') // CP: Polanco first
 
     await clearCpSearch()
-    // After clearing CP, geo sort is restored — Buenavista first again
-    expect(sortedBranches.value[0]?.id).toBe('b1')
-    // Only 2 API calls total: fetchBranches + Mapbox geocode
-    expect(mockFetch).toHaveBeenCalledTimes(2)
+    // Geo coords were persisted → re-fetches with geo coords → Buenavista first again
+    expect(branches.value[0]?.id).toBe('b1')
+    expect(mockFetch).toHaveBeenCalledTimes(5)
   })
 })

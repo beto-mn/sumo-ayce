@@ -15,7 +15,6 @@ useSeoMeta({
 
 const {
   branches,
-  sortedBranches,
   isLoading,
   geoState,
   cpState,
@@ -46,10 +45,8 @@ const filterOptions = [
 
 const filteredBranches = computed(() =>
   activeFilter.value === 'all'
-    ? sortedBranches.value
-    : sortedBranches.value.filter(
-        (b: SortedBranch) => b.type === activeFilter.value
-      )
+    ? branches.value
+    : branches.value.filter((b: SortedBranch) => b.type === activeFilter.value)
 )
 
 const mapRef = ref<{

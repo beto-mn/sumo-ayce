@@ -1,6 +1,5 @@
-import { computed, type Ref, ref } from 'vue'
+import { type Ref, ref } from 'vue'
 import type { CpState, GeoState, SortedBranch } from '../types'
-import { haversineKm } from '../utils/haversine'
 
 const GEOCODING_BASE = 'https://api.mapbox.com/geocoding/v5/mapbox.places'
 
@@ -11,7 +10,6 @@ function detectGeoSupport(): GeoState['status'] {
 
 export interface UseBranchesReturn {
   branches: Ref<SortedBranch[]>
-  sortedBranches: Ref<SortedBranch[]>
   isLoading: Ref<boolean>
   geoState: Ref<GeoState>
   cpState: Ref<CpState>
@@ -29,11 +27,8 @@ export function useBranches(): UseBranchesReturn {
   const isLoading = ref(false)
   const highlightedBranchId = ref<string | null>(null)
 
-  // Persisted geo coords — survives a CP search so we can revert to geo on badge clear
+  // Persisted geo coords — survives a CP search so we can revert to geo sort on badge clear
   const geoCoords = ref<{ lat: number; lng: number } | null>(null)
-
-  // Current user/CP coordinates for client-side distance sort
-  const userCoords = ref<{ lat: number; lng: number } | null>(null)
 
   const geoState = ref<GeoState>({
     status: detectGeoSupport(),
@@ -49,29 +44,6 @@ export function useBranches(): UseBranchesReturn {
   })
 
   const activeCpBadge = ref<string | null>(null)
-
-  const sortedBranches = computed<SortedBranch[]>(() => {
-    if (!userCoords.value) return branches.value
-    const { lat, lng } = userCoords.value
-    return [...branches.value]
-      .map(b => ({
-        ...b,
-        distanceKm:
-          b.lat != null && b.lng != null
-            ? haversineKm(
-                lat,
-                lng,
-                parseFloat(b.lat as string),
-                parseFloat(b.lng as string)
-              )
-            : undefined,
-      }))
-      .sort((a, b) => {
-        if (a.distanceKm == null) return 1
-        if (b.distanceKm == null) return -1
-        return a.distanceKm - b.distanceKm
-      })
-  })
 
   async function fetchBranches(lat?: number, lng?: number): Promise<void> {
     isLoading.value = true
@@ -96,7 +68,6 @@ export function useBranches(): UseBranchesReturn {
 
   function applyGeoSuccess(lat: number, lng: number): void {
     geoCoords.value = { lat, lng }
-    userCoords.value = { lat, lng }
     activeCpBadge.value = null
     cpState.value = { value: '', status: 'idle', errorMessage: null }
     geoState.value = {
@@ -145,9 +116,10 @@ export function useBranches(): UseBranchesReturn {
     }
     return new Promise<void>(resolve => {
       navigator.geolocation.getCurrentPosition(
-        position => {
+        async position => {
           const { latitude: lat, longitude: lng } = position.coords
           applyGeoSuccess(lat, lng)
+          await fetchBranches(lat, lng)
           resolve()
         },
         _error => {
@@ -182,7 +154,7 @@ export function useBranches(): UseBranchesReturn {
         userLat: null,
         userLng: null,
       }
-      userCoords.value = { lat, lng }
+      await fetchBranches(lat, lng)
       applyCpSuccess(cp)
     } catch {
       applyCpError(cp)
@@ -193,32 +165,31 @@ export function useBranches(): UseBranchesReturn {
     activeCpBadge.value = null
     cpState.value = { value: '', status: 'idle', errorMessage: null }
     if (geoCoords.value) {
-      userCoords.value = { lat: geoCoords.value.lat, lng: geoCoords.value.lng }
       geoState.value = {
         status: 'success',
         errorMessage: null,
         userLat: geoCoords.value.lat,
         userLng: geoCoords.value.lng,
       }
+      await fetchBranches(geoCoords.value.lat, geoCoords.value.lng)
     } else {
-      userCoords.value = null
+      await fetchBranches()
     }
   }
 
   async function clearGeoSearch(): Promise<void> {
     geoCoords.value = null
-    userCoords.value = null
     geoState.value = {
       status: 'idle',
       errorMessage: null,
       userLat: null,
       userLng: null,
     }
+    await fetchBranches()
   }
 
   return {
     branches,
-    sortedBranches,
     isLoading,
     geoState,
     cpState,
