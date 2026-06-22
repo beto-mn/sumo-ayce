@@ -7,6 +7,11 @@ import type { SortedBranch } from '../types'
 vi.stubGlobal('useI18n', () => ({ t: (k: string) => k }))
 vi.stubGlobal('useState', (_key: string, init: () => unknown) => ref(init()))
 
+const mockOpenReservation = vi.fn()
+vi.mock('@/composables/useReservationModal', () => ({
+  useReservationModal: () => ({ openReservation: mockOpenReservation }),
+}))
+
 import BranchCard from './BranchCard.vue'
 import BranchList from './BranchList.vue'
 
@@ -92,5 +97,14 @@ describe('BranchList', () => {
     await wrapper.find('[data-testid="reserve-button"]').trigger('click')
     expect(wrapper.emitted('branch-select')).toBeTruthy()
     expect(wrapper.emitted('branch-select')?.[0]).toEqual(['b1'])
+  })
+
+  it('calls openReservation when Reserve button is clicked (US5-AC1)', async () => {
+    const wrapper = mount(BranchList, {
+      ...globalConfig,
+      props: { branches: [BRANCH_1] },
+    })
+    await wrapper.find('[data-testid="reserve-button"]').trigger('click')
+    expect(mockOpenReservation).toHaveBeenCalledOnce()
   })
 })
