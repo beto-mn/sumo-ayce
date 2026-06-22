@@ -21,7 +21,7 @@ const { openReservation } = useReservationModal()
         <p class="m-0 font-body text-bg2">{{ t('home.branches.desc') }}</p>
       </div>
       <div class="flex flex-wrap gap-4">
-        <NuxtLink :to="localePath('/sucursales')" class="no-underline">
+        <NuxtLink :to="localePath('/branches')" class="no-underline">
           <UiButton variant="primary" size="lg">
             {{ t('home.branches.findBranch') }} →
           </UiButton>

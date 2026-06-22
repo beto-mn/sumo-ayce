@@ -1,13 +1,12 @@
 {
   "nav": {
-    "inicio": "Inicio",
+    "home": "Inicio",
     "menu": "Menú",
-    "promos": "Promos",
-    "promociones": "Promociones",
-    "sucursales": "Sucursales",
+    "promotions": "Promos",
+    "branches": "Sucursales",
     "lealtad": "Lealtad",
-    "contacto": "Contacto",
-    "reservar": "Reservar"
+    "contact": "Contacto",
+    "reserve": "Reservar"
   },
   "common": {
     "cta": {
