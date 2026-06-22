@@ -53,6 +53,9 @@ export default defineNuxtConfig({
       // Hero price sticker — configurable without code change via
       // NUXT_PUBLIC_HERO_PRICE. Default "$269" (FR-007).
       heroPrice: '$269',
+      // Mapbox public token — must start with pk. — set NUXT_PUBLIC_MAPBOX_TOKEN
+      // in Vercel environment variables (Access tokens → Create a token).
+      mapboxToken: '',
     },
   },
   fonts: {
