@@ -23,7 +23,7 @@ const toneClasses = {
 
 const classes = computed(() =>
   cx(
-    'inline-flex items-center gap-2 rounded-pop-full px-[14px] py-[7px]',
+    'inline-flex items-center gap-2 rounded-pop-full px-[16px] py-[8px]',
     'font-disp font-extrabold uppercase text-kicker tracking-[0.04em]',
     toneClasses[props.tone]
   )
