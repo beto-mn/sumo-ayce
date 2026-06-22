@@ -14,9 +14,16 @@
 The Branches Page (`/branches`) is the public branch-finder UI. It surfaces the full list of
 SUMO locations — AYCE (orange) and Express (blue) — on an interactive map and a sortable card
 list. The page is served as an ISR-cached HTML shell (revalidated every 3600 s per
-`docs/business/rendering-strategy.md`). All interactive behaviour — geolocation, haversine
-sorting, postal-code geocoding, and the Mapbox map — runs **client-side over that cached list**
-with no additional API call triggered by user interaction.
+`docs/business/rendering-strategy.md`). The initial branch list is fetched at revalidation time
+(no coordinates). When the user provides coordinates via geolocation or postal code, a **new API
+call is made to `GET /api/v1/branches?lat=…&lng=…`** so the server returns the list sorted by
+distance. Client-side haversine sorting MUST NOT be used — the server is the source of truth
+for distance order.
+
+> **Implementation note (2026-06-22)**: An earlier version of this spec and the reviewer
+> enforced client-side sort to avoid extra API calls. That approach was reverted because it did
+> not work reliably in practice. The API-call approach is the canonical implementation and MUST
+> NOT be changed back to client-side sort.
 
 This feature also:
 1. Materializes the **provider-agnostic map abstraction** specified in
@@ -44,8 +51,9 @@ This feature also:
 - **Q: How does postal-code geocoding work?**
   A: The user types a 5-digit Mexican postal code (CP). The client calls the Mapbox Geocoding
   API (`https://api.mapbox.com/geocoding/v5/mapbox.places/{CP}.json?country=MX&types=postcode&access_token=...`)
-  to resolve lat/lng. The returned coordinates are then used for haversine sort on the cached
-  branch list. No server round-trip.
+  to resolve lat/lng. The resolved coordinates are then passed to `GET /api/v1/branches?lat=…&lng=…`
+  to get a server-sorted branch list. There is NO client-side haversine sort — two sequential
+  API calls are made: Mapbox geocoding, then the branches endpoint with coordinates.
 
 - **Q: What happens on mobile where the map is not shown?**
   A: On viewports < 880px the map panel is hidden (CSS `hidden`). The list is the primary
@@ -226,8 +234,10 @@ opens `tel:{phone}`.
   MUST NOT be modified.
 - **FR-003**: The ISR HTML shell MUST include the full branch list (all active branches fetched
   at revalidation time via `useAsyncData` calling `GET /api/v1/branches` with no coordinates).
-  Client-side distance sorting MUST operate on this cached list — no additional API call is
-  triggered by user geolocation or CP input.
+  When the user provides geolocation or postal-code coordinates, `useBranches` MUST call
+  `GET /api/v1/branches?lat=…&lng=…` to obtain a server-sorted list. Client-side haversine
+  distance sorting is FORBIDDEN — do not implement a `sortedBranches` computed or a
+  `haversineKm`-based sort inside `useBranches`. The API call with coordinates IS the sort.
 - **FR-004**: NO Drizzle/Neon client may be imported anywhere under `app/`. The branch data
   reaches the page exclusively via `GET /api/v1/branches`.
 
@@ -270,9 +280,10 @@ opens `tel:{phone}`.
 **Branch list & geolocation**
 
 - **FR-016**: The default state (no coordinates) MUST display branches alphabetically.
-- **FR-017**: After geolocation permission is granted, `useBranches` MUST sort the cached list
-  by haversine distance (closest first) without making a new API call. Each card MUST show
-  the computed distance.
+- **FR-017**: After geolocation permission is granted, `useBranches` MUST call
+  `GET /api/v1/branches?lat=…&lng=…` and replace `branches.value` with the server-sorted
+  response (closest first). Do NOT sort client-side — no haversine, no computed, no
+  `userCoords` ref. Each card MUST show the distance returned by the server.
 - **FR-018**: If geolocation is denied, errors, or times out, the page MUST show a graceful
   inline message and reveal the postal code input. The list MUST remain fully usable.
 - **FR-019**: If `navigator.geolocation` is not available, the geolocation button MUST be
@@ -282,8 +293,9 @@ opens `tel:{phone}`.
 
 - **FR-020**: The user MAY type a 5-digit Mexican postal code. The client MUST call the Mapbox
   Geocoding API (`/geocoding/v5/mapbox.places/{CP}.json?country=MX&types=postcode`) using the
-  public token. On success, lat/lng from the first feature result are used to sort the cached
-  list via haversine. No server round-trip.
+  public token. On success, the resolved lat/lng MUST be passed to
+  `GET /api/v1/branches?lat=…&lng=…` to get the server-sorted list. Client-side haversine sort
+  after geocoding is FORBIDDEN — the second API call is mandatory.
 - **FR-021**: An invalid or unrecognized CP MUST show an inline validation message; the list
   stays in its prior order.
 - **FR-022**: A Mapbox Geocoding API failure (network error, 4xx/5xx) MUST show an inline error
