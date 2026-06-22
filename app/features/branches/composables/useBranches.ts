@@ -66,6 +66,8 @@ export function useBranches(): UseBranchesReturn {
 
   async function requestGeolocation(): Promise<void> {
     if (geoState.value.status === 'unsupported') return
+    // CP has priority — geo cannot override an active postal-code search
+    if (activeCpBadge.value) return
 
     geoState.value = {
       ...geoState.value,
