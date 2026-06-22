@@ -25,11 +25,11 @@ interface NavLink {
 }
 
 const links: NavLink[] = [
-  { key: 'inicio', to: '/' },
+  { key: 'home', to: '/' },
   { key: 'menu', to: '/menu' },
-  { key: 'promos', to: '/promociones' },
-  { key: 'sucursales', to: '/sucursales' },
-  { key: 'contacto', to: '/contacto' },
+  { key: 'promotions', to: '/promotions' },
+  { key: 'branches', to: '/branches' },
+  { key: 'contact', to: '/contact' },
 ]
 
 /** Resolve the localized path and compare against the current route. */
@@ -80,7 +80,7 @@ const otherLocale = computed(() => (locale.value === 'es' ? 'en' : 'es'))
         {{ t('common.lang.toggle') }}
       </NuxtLink>
       <UiButton size="sm" @click="openReservation">
-        {{ t('nav.reservar') }}
+        {{ t('nav.reserve') }}
       </UiButton>
     </template>
   </UiNav>

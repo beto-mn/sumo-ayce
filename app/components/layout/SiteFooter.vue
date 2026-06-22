@@ -35,11 +35,11 @@ interface FooterLink {
 }
 
 const navLinks: FooterLink[] = [
-  { key: 'inicio', to: '/' },
+  { key: 'home', to: '/' },
   { key: 'menu', to: '/menu' },
-  { key: 'promos', to: '/promociones' },
-  { key: 'sucursales', to: '/sucursales' },
-  { key: 'contacto', to: '/contacto' },
+  { key: 'promotions', to: '/promotions' },
+  { key: 'branches', to: '/branches' },
+  { key: 'contact', to: '/contact' },
 ]
 
 interface SocialLink {
@@ -119,7 +119,7 @@ const headingClass =
       <!-- Contacto -->
       <nav class="flex flex-col gap-3" :aria-label="t('footer.contact.title')">
         <h4 :class="headingClass">{{ t('footer.contact.title') }}</h4>
-        <NuxtLink :to="localePath('/contacto')" :class="linkClass">
+        <NuxtLink :to="localePath('/contact')" :class="linkClass">
           {{ t('footer.contact.whatsapp') }}
         </NuxtLink>
       </nav>

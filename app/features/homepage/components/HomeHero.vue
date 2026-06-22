@@ -32,7 +32,7 @@ const localePath = useLocalePath()
               t('common.cta.viewMenu')
             }}</UiButton>
           </NuxtLink>
-          <NuxtLink :to="localePath('/sucursales')" class="no-underline">
+          <NuxtLink :to="localePath('/branches')" class="no-underline">
             <UiButton variant="ghost" size="lg">{{
               t('common.cta.viewBranches')
             }}</UiButton>

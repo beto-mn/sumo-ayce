@@ -33,11 +33,11 @@ describe('SiteHeader', () => {
   it('renders the five public nav links', () => {
     const wrapper = mountHeader()
     const labels = wrapper.findAllComponents(RouterLinkStub).map(l => l.text())
-    expect(labels).toContain('nav.inicio')
+    expect(labels).toContain('nav.home')
     expect(labels).toContain('nav.menu')
-    expect(labels).toContain('nav.promos')
-    expect(labels).toContain('nav.sucursales')
-    expect(labels).toContain('nav.contacto')
+    expect(labels).toContain('nav.promotions')
+    expect(labels).toContain('nav.branches')
+    expect(labels).toContain('nav.contact')
   })
 
   it('points the nav links at the expected routes', () => {
@@ -46,9 +46,9 @@ describe('SiteHeader', () => {
       .map(l => l.props('to'))
     expect(targets).toContain('/')
     expect(targets).toContain('/menu')
-    expect(targets).toContain('/promociones')
-    expect(targets).toContain('/sucursales')
-    expect(targets).toContain('/contacto')
+    expect(targets).toContain('/promotions')
+    expect(targets).toContain('/branches')
+    expect(targets).toContain('/contact')
   })
 
   it('marks the active route (Inicio on /) with aria-current', () => {

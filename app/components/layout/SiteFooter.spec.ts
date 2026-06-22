@@ -33,9 +33,9 @@ describe('SiteFooter', () => {
       .map(l => l.props('to'))
     expect(targets).toContain('/')
     expect(targets).toContain('/menu')
-    expect(targets).toContain('/promociones')
-    expect(targets).toContain('/sucursales')
-    expect(targets).toContain('/contacto')
+    expect(targets).toContain('/promotions')
+    expect(targets).toContain('/branches')
+    expect(targets).toContain('/contact')
   })
 
   it('renders the three external social links with real hrefs (no placeholders)', () => {
@@ -56,7 +56,7 @@ describe('SiteFooter', () => {
       .findAllComponents(RouterLinkStub)
       .find(l => l.text() === 'footer.contact.whatsapp')
     expect(contactLink).toBeDefined()
-    expect(contactLink?.props('to')).toBe('/contacto')
+    expect(contactLink?.props('to')).toBe('/contact')
   })
 
   it('exposes three labelled nav landmarks (navegación + redes + contacto)', () => {

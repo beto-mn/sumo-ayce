@@ -36,9 +36,9 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     name: 'branch',
-    label: 'Sucursal',
+    label: 'Branch',
     options: branchOptions,
-    placeholder: 'Selecciona',
+    placeholder: 'Select',
     modelValue: '',
   },
 }
@@ -46,10 +46,10 @@ export const Default: Story = {
 export const Required: Story = {
   args: {
     name: 'branch',
-    label: 'Sucursal',
+    label: 'Branch',
     required: true,
     options: branchOptions,
-    placeholder: 'Selecciona',
+    placeholder: 'Select',
     modelValue: '',
   },
 }
@@ -57,8 +57,8 @@ export const Required: Story = {
 export const WithHint: Story = {
   args: {
     name: 'branch',
-    label: 'Sucursal',
-    hint: 'Solo sucursales abiertas hoy.',
+    label: 'Branch',
+    hint: 'Only open branches today.',
     options: branchOptions,
     modelValue: 'centro',
   },
@@ -67,8 +67,8 @@ export const WithHint: Story = {
 export const ErrorState: Story = {
   args: {
     name: 'branch',
-    label: 'Sucursal',
-    error: 'Selecciona una sucursal',
+    label: 'Branch',
+    error: 'Please select a branch',
     options: branchOptions,
     modelValue: '',
   },
@@ -77,7 +77,7 @@ export const ErrorState: Story = {
 export const Disabled: Story = {
   args: {
     name: 'branch',
-    label: 'Sucursal',
+    label: 'Branch',
     disabled: true,
     options: branchOptions,
     modelValue: 'polanco',
@@ -87,7 +87,7 @@ export const Disabled: Story = {
 export const Mobile: Story = {
   args: {
     name: 'branch',
-    label: 'Sucursal',
+    label: 'Branch',
     options: branchOptions,
     modelValue: '',
   },
@@ -97,7 +97,7 @@ export const Mobile: Story = {
 export const Desktop: Story = {
   args: {
     name: 'branch',
-    label: 'Sucursal',
+    label: 'Branch',
     options: branchOptions,
     modelValue: '',
   },

@@ -82,7 +82,7 @@ describe('HomeHero', () => {
       .findAll('a')
       .map(a => a.attributes('href'))
     expect(hrefs).toContain('/menu')
-    expect(hrefs).toContain('/sucursales')
+    expect(hrefs).toContain('/branches')
   })
 
   it('does NOT render its own marquee (now a global band)', () => {
