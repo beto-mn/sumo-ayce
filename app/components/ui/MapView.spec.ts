@@ -139,6 +139,24 @@ describe('MapView', () => {
     expect(mapContainer.attributes('aria-label')).toBeTruthy()
   })
 
+  it('calls fitBounds after markers are synced on mount', async () => {
+    const markers: MapMarker[] = [
+      makeTestMarker({ id: 'b1', color: 'orange' }),
+      makeTestMarker({ id: 'b2', color: 'blue' }),
+    ]
+
+    mount(MapView, {
+      props: {
+        center: [-99.1332, 19.4326] as [number, number],
+        zoom: 12,
+        markers,
+      },
+    })
+    await new Promise(r => setTimeout(r, 0))
+
+    expect(mockMapboxAdapter.fitBounds).toHaveBeenCalledOnce()
+  })
+
   it('calls destroy on unmount', async () => {
     const wrapper = mount(MapView, {
       props: {

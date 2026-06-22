@@ -13,6 +13,7 @@ export const mockMapboxAdapter = {
   createMap: vi.fn().mockResolvedValue({ __isMap: true }),
   addMarker: vi.fn(),
   removeMarker: vi.fn(),
+  fitBounds: vi.fn(),
   setCenter: vi.fn(),
   setZoom: vi.fn(),
   flyTo: vi.fn(),
