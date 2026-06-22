@@ -1,6 +1,10 @@
 import { asc, eq } from 'drizzle-orm'
 import { defineEventHandler, getQuery } from 'h3'
 import { z } from 'zod'
+import type {
+  BranchPublicRow,
+  BranchWithDistance,
+} from '../../../../types/branches'
 import { branches } from '../../../db/schema'
 import {
   branchFinderConfig,
@@ -21,6 +25,9 @@ const querySchema = z
     message: 'lat and lng must be provided together',
   })
 
+// Explicit whitelist — only these fields appear in the public response.
+// Internal fields (whatsappReservacionesBackup, postalCode, createdAt,
+// updatedAt) are excluded by not being listed here.
 const PUBLIC_FIELDS = {
   id: branches.id,
   name: branches.name,
@@ -28,33 +35,12 @@ const PUBLIC_FIELDS = {
   lat: branches.lat,
   lng: branches.lng,
   isActive: branches.isActive,
+  type: branches.type,
+  schedule: branches.schedule,
+  phone: branches.whatsappReservaciones,
 }
 
-type BranchRow = {
-  id: string
-  name: string
-  address: string
-  lat: string | null
-  lng: string | null
-  isActive: boolean
-}
-
-type BranchWithDistance = BranchRow & { distanceKm: number }
-
-function stripInternalFields(row: Record<string, unknown>): BranchRow {
-  const {
-    whatsappReservaciones,
-    whatsappReservacionesBackup,
-    createdAt,
-    updatedAt,
-    ...rest
-  } = row
-  void whatsappReservaciones
-  void whatsappReservacionesBackup
-  void createdAt
-  void updatedAt
-  return rest as BranchRow
-}
+type BranchDistanceRow = BranchWithDistance
 
 export default defineEventHandler(async event => {
   try {
@@ -67,11 +53,22 @@ export default defineEventHandler(async event => {
         .from(branches)
         .where(eq(branches.isActive, true))
 
-      const withDistance: BranchWithDistance[] = []
+      const withDistance: BranchDistanceRow[] = []
       for (const r of rows) {
         if (r.lat == null || r.lng == null) continue
+        const branch: BranchPublicRow = {
+          id: r.id,
+          name: r.name,
+          address: r.address,
+          lat: r.lat,
+          lng: r.lng,
+          isActive: r.isActive,
+          type: r.type as 'ayce' | 'express',
+          schedule: (r.schedule as BranchPublicRow['schedule']) ?? null,
+          phone: r.phone ?? null,
+        }
         withDistance.push({
-          ...stripInternalFields(r as Record<string, unknown>),
+          ...branch,
           distanceKm: haversineKm(
             lat,
             lng,
@@ -115,7 +112,20 @@ export default defineEventHandler(async event => {
       .where(eq(branches.isActive, true))
       .orderBy(asc(branches.name))
 
-    return ok(rows.map((r: Record<string, unknown>) => stripInternalFields(r)))
+    type PublicFieldRow = (typeof rows)[number]
+    const publicRows: BranchPublicRow[] = rows.map((r: PublicFieldRow) => ({
+      id: r.id,
+      name: r.name,
+      address: r.address,
+      lat: r.lat,
+      lng: r.lng,
+      isActive: r.isActive,
+      type: r.type as 'ayce' | 'express',
+      schedule: (r.schedule as BranchPublicRow['schedule']) ?? null,
+      phone: r.phone ?? null,
+    }))
+
+    return ok(publicRows)
   } catch (err) {
     throw handleError(err)
   }
