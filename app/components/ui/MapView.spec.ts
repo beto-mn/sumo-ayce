@@ -9,7 +9,7 @@ import type { MapMarker } from '../../composables/maps/types'
 
 // Stub Nuxt globals needed by MapView
 vi.stubGlobal('useRuntimeConfig', () => ({
-  public: { mapboxToken: 'pk.test-token' },
+  public: { mapboxAccessToken: 'pk.test-token' },
 }))
 
 // Mock useMapProvider to return our stub adapter

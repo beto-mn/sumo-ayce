@@ -6,13 +6,12 @@ import MapView from './MapView.vue'
 // Gate VII.5: <UiMapView> story uses a mocked adapter.
 const mockAdapter = {
   createMap: async (container: HTMLElement) => {
-    container.style.background =
-      'linear-gradient(135deg,#e8e0d8 25%,#d4c9bb 100%)'
+    container.style.background = 'var(--color-panel, #f5f0eb)'
     container.style.display = 'flex'
     container.style.alignItems = 'center'
     container.style.justifyContent = 'center'
     container.innerHTML =
-      '<span style="color:#666;font-family:sans-serif;font-size:14px">Map preview (mocked)</span>'
+      '<span style="color:var(--color-soft, currentColor);font-family:sans-serif;font-size:14px">Map preview (mocked)</span>'
     return {}
   },
   addMarker: vi.fn(),

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { LngLat, MapMarker } from '@/composables/maps/types'
 import { useBranches } from '@/features/branches/composables/useBranches'
 import type { SortedBranch } from '@/features/branches/types'
@@ -15,6 +15,7 @@ useSeoMeta({
 
 const {
   branches,
+  sortedBranches,
   isLoading,
   geoState,
   cpState,
@@ -27,10 +28,13 @@ const {
   clearGeoSearch,
 } = useBranches()
 
-// Load all branches on mount (no coords — full list, alphabetical)
-onMounted(() => {
-  fetchBranches()
-})
+// ISR: pre-render the full branch list at revalidation time
+const { data: initialData } = await useAsyncData('branches', () =>
+  $fetch<{ data: SortedBranch[] }>('/api/v1/branches')
+)
+if (initialData.value?.data) {
+  branches.value = initialData.value.data
+}
 
 // Type filter: all | ayce | express
 const activeFilter = ref<'all' | 'ayce' | 'express'>('all')
@@ -42,8 +46,10 @@ const filterOptions = [
 
 const filteredBranches = computed(() =>
   activeFilter.value === 'all'
-    ? branches.value
-    : branches.value.filter((b: SortedBranch) => b.type === activeFilter.value)
+    ? sortedBranches.value
+    : sortedBranches.value.filter(
+        (b: SortedBranch) => b.type === activeFilter.value
+      )
 )
 
 const mapRef = ref<{
@@ -105,7 +111,6 @@ async function onCpSubmit(cp: string) {
   if (cp !== activeCpBadge.value) {
     await geocodePostalCode(cp)
   }
-  await nextTick()
   mapRef.value?.fitMarkers(mapMarkers.value)
 }
 

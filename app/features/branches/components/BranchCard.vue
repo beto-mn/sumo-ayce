@@ -55,6 +55,20 @@ function onCall() {
     </h3>
     <p class="font-body text-sm text-soft">{{ branch.address }}</p>
 
+    <!-- Schedule summary -->
+    <div class="mt-1 font-body text-xs text-soft">
+      <template v-if="branch.schedule">
+        <span v-if="branch.schedule.weekdays">
+          {{ t('branches.card.weekdays') }} {{ branch.schedule.weekdays.open }}–{{ branch.schedule.weekdays.close }}
+        </span>
+        <span v-if="branch.schedule.weekdays && branch.schedule.weekends"> · </span>
+        <span v-if="branch.schedule.weekends">
+          {{ t('branches.card.weekends') }} {{ branch.schedule.weekends.open }}–{{ branch.schedule.weekends.close }}
+        </span>
+      </template>
+      <span v-else>{{ t('branches.card.hoursUnavailable') }}</span>
+    </div>
+
     <!-- Distance (only when available) -->
     <p
       v-if="branch.distanceKm !== undefined"
