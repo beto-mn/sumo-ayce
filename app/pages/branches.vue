@@ -117,11 +117,12 @@ const CDMX_CENTER: LngLat = [-99.1332, 19.4326]
 <template>
   <div class="min-h-screen bg-bg px-4 py-8 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
-      <!-- Kicker + heading -->
-      <UiKicker tone="ink" :rotate="-3">{{ t('branches.page.kicker') }}</UiKicker>
-      <h1 class="mt-3 font-disp text-h-lg font-extrabold text-ink">
-        {{ t('branches.page.heading') }}
-      </h1>
+      <!-- Page header -->
+      <UiPageHeader
+        :badge="t('branches.page.kicker')"
+        badge-tone="ink"
+        :title="t('branches.page.heading')"
+      />
 
       <!-- Search + filter controls -->
       <div class="mt-6 flex flex-col gap-3 lg:flex-row lg:items-center">
