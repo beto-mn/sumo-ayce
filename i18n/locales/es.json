@@ -105,6 +105,47 @@
       "description": "Descubre todas las promociones activas de SUMO All You Can Eat. Martes 2x1, cumpleañeros, jueves especiales y más."
     }
   },
+  "contact": {
+    "seo": {
+      "title": "Contacto | SUMO AYCE",
+      "description": "Escríbenos directamente por WhatsApp a cualquier sucursal SUMO. También encuéntranos en Instagram, Facebook y TikTok."
+    },
+    "page": {
+      "title": "Contáctanos",
+      "badge": "Contacto"
+    },
+    "form": {
+      "title": "Envíanos un mensaje",
+      "name": {
+        "label": "Nombre",
+        "placeholder": "Tu nombre"
+      },
+      "branch": {
+        "label": "Elige sucursal",
+        "placeholder": "Selecciona una sucursal"
+      },
+      "message": {
+        "label": "Mensaje",
+        "placeholder": "Escribe tu mensaje aquí..."
+      },
+      "cta": "Iniciar chat por WhatsApp",
+      "loading": "Cargando sucursales...",
+      "error": "No pudimos cargar las sucursales. Inténtalo de nuevo más tarde.",
+      "empty": "No hay sucursales disponibles en este momento."
+    },
+    "waMessage": "Hola, soy {name}.\n\n{message}",
+    "info": {
+      "title": "Información de contacto",
+      "whatsappPrompt": "Elige una sucursal para ver su número",
+      "whatsappLabel": "WhatsApp de la sucursal",
+      "emailLabel": "Correo electrónico",
+      "socialTitle": "Síguenos"
+    },
+    "email": "contacto{'@'}sumo.com.mx",
+    "socialInstagram": "https://www.instagram.com/sumo_allyoucaneat",
+    "socialFacebook": "https://www.facebook.com/sumoallyoucaneat",
+    "socialTiktok": "https://www.tiktok.com/{'@'}sumooficial"
+  },
   "home": {
     "hero": {
       "headline": "All You Can Eat",
