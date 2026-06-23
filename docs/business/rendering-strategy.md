@@ -27,6 +27,7 @@ The two data sources are **kept separate**: WordPress for content, Neon for tran
 | `/lealtad`      | `ssr: true`       | Loyalty user portal — per-user data (points balance, history). Never cache statically.|
 | `/staff/**`     | `ssr: true`       | Staff portal — per-user, role-gated, real-time validation. Never cache statically.    |
 | `/api/**`       | dynamic (default) | Backend endpoints — always live. No ISR, no prerender, no static cache.               |
+| `/contact`      | `prerender: true` | No CMS dependency. Shell is 100% static. Branch list fetched client-side.             |
 
 ### Canonical `nuxt.config.ts` shape
 
@@ -104,6 +105,7 @@ How the rendering rules apply to each feature in `feature_list.json`:
 | 013 Reservation modal              | (overlay)         | n/a                     | Renders on top of any page. Form posts to `/api/v1/reservations` (dynamic Vercel function). |
 | 014 Loyalty user portal            | `/lealtad`        | `ssr: true`             | Per-user balance + history. Always SSR for fresh data + SEO-safe shell.                    |
 | Staff portal (already shipped 006) | `/staff/**`       | `ssr: true`             | Role-gated, per-user. Never cache statically.                                              |
+| 017 Contact page                   | `/contact`        | `prerender: true`       | No CMS dependency. Shell is 100% static. Branch list fetched client-side after hydration. |
 
 If a new feature adds a route, this table MUST be updated at the same time as the spec.
 
