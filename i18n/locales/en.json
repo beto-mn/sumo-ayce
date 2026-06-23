@@ -88,6 +88,23 @@
       "express": "SUMO Express"
     }
   },
+  "promotions": {
+    "page": {
+      "title": "Promotions | SUMO AYCE",
+      "description": "Discover all active SUMO All You Can Eat promotions.",
+      "badge": "Promotions",
+      "heading": "Promotions"
+    },
+    "typeBadge": {
+      "express": "Sumo Express",
+      "ayce": "Sumo AYCE"
+    },
+    "empty": "No promotions available at the moment.",
+    "seo": {
+      "title": "Promotions | SUMO AYCE",
+      "description": "Discover all active SUMO All You Can Eat promotions. Tuesdays 2for1, birthdays, specials and more."
+    }
+  },
   "home": {
     "hero": {
       "headline": "All You Can Eat",
