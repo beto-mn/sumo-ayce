@@ -24,11 +24,27 @@ const envSchema = z.object({
   CRON_SECRET: z.string().min(1).optional(),
 })
 
-const parsed = envSchema.safeParse(process.env)
+export type Env = z.infer<typeof envSchema>
 
-if (!parsed.success) {
-  const missing = parsed.error.issues.map(i => i.path.join('.')).join(', ')
-  throw new Error(`Missing or invalid environment variables: ${missing}`)
+// Lazy singleton — validated on first access, not at import time.
+// Nitro initializes all server modules during prerender (e.g. for /contact which
+// is prerender:true). Validating at import time throws in CI where sensitive Vercel
+// env vars are only available at runtime, not during vercel build.
+let _env: Env | undefined
+
+function resolveEnv(): Env {
+  if (_env) return _env
+  const parsed = envSchema.safeParse(process.env)
+  if (!parsed.success) {
+    const missing = parsed.error.issues.map(i => i.path.join('.')).join(', ')
+    throw new Error(`Missing or invalid environment variables: ${missing}`)
+  }
+  _env = parsed.data
+  return _env
 }
 
-export const env = parsed.data
+export const env = new Proxy({} as Env, {
+  get(_, key: string) {
+    return resolveEnv()[key as keyof Env]
+  },
+})
