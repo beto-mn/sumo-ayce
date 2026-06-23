@@ -105,6 +105,47 @@
       "description": "Discover all active SUMO All You Can Eat promotions. Tuesdays 2for1, birthdays, specials and more."
     }
   },
+  "contact": {
+    "seo": {
+      "title": "Contact | SUMO AYCE",
+      "description": "Message us directly on WhatsApp at any SUMO branch. Also find us on Instagram, Facebook and TikTok."
+    },
+    "page": {
+      "title": "Contact us",
+      "badge": "Contact"
+    },
+    "form": {
+      "title": "Send us a message",
+      "name": {
+        "label": "Name",
+        "placeholder": "Your name"
+      },
+      "branch": {
+        "label": "Choose a branch",
+        "placeholder": "Select a branch"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Write your message here..."
+      },
+      "cta": "Start WhatsApp chat",
+      "loading": "Loading branches...",
+      "error": "Could not load branches. Please try again later.",
+      "empty": "No branches available at the moment."
+    },
+    "waMessage": "Hi, I'm {name}.\n\n{message}",
+    "info": {
+      "title": "Contact information",
+      "whatsappPrompt": "Select a branch to see its number",
+      "whatsappLabel": "Branch WhatsApp",
+      "emailLabel": "Email address",
+      "socialTitle": "Follow us"
+    },
+    "email": "contacto{'@'}sumo.com.mx",
+    "socialInstagram": "https://www.instagram.com/sumo_allyoucaneat",
+    "socialFacebook": "https://www.facebook.com/sumoallyoucaneat",
+    "socialTiktok": "https://www.tiktok.com/{'@'}sumooficial"
+  },
   "home": {
     "hero": {
       "headline": "All You Can Eat",
