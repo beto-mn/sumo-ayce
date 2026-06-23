@@ -145,6 +145,15 @@
       "status": "pending"
     },
     {
+      "id": 17,
+      "name": "contact-page",
+      "title": "Contact Page (/contact)",
+      "description": "Dedicated contact page at /contact. Left panel: form with Nombre, WhatsApp, Elige sucursal (dropdown populated from /api/v1/branches), and Mensaje fields. Submit opens a wa.me deep-link to the selected branch's WhatsApp number with the message pre-composed (no backend, no form submission). Right panel: static contact info (global WhatsApp, email, social network links). Bilingual (ES/EN). SSG rendering (content is static). Branch list fetched client-side so the dropdown is always up to date.",
+      "spec_path": "specs/017-contact-page",
+      "sdd": true,
+      "status": "in_progress"
+    },
+    {
       "id": 16,
       "name": "menu-schema-db",
       "title": "Menu Database Schema & Migration",
