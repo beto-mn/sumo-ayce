@@ -1,0 +1,143 @@
+{
+  "_instrucciones": [
+    "1. Sube cada imagen a WordPress → Media Library. Anota el ID numérico que WP le asigna.",
+    "2. Ve a CPT 'Promociones' → Añadir nueva.",
+    "3. Copia los campos ACF de cada entrada.",
+    "4. En el campo 'imagen' pon el ID del media que anotaste en el paso 1.",
+    "5. Activa la promoción y guarda.",
+    "El campo 'home' controla si aparece en el homepage (máx. 3 se muestran)."
+  ],
+  "_campos_acf": {
+    "badge_es / badge_en": "Etiqueta pequeña sobre el título (ej: 'Martes', 'Cumpleañeros')",
+    "titulo_es / titulo_en": "Título principal de la tarjeta — corto y directo",
+    "descripcion_es / descripcion_en": "Una oración con el beneficio clave. Sin listas largas.",
+    "vigencia_es / vigencia_en": "Cuándo aplica, en 5 palabras o menos. Vacío si no aplica.",
+    "color": "Color decorativo: orange | pink | blue | yellow",
+    "tipo": "Línea: ayce | express | all",
+    "activa": "true = visible en el sitio | false = oculta",
+    "home": "true = elegible para el homepage (WP selecciona las 3 más recientes con este flag)",
+    "imagen": "ID del media en WordPress (número entero; 0 = sin imagen)"
+  },
+  "promotions": [
+    {
+      "_imagen_archivo": "PROMO-CUMPLEAÑOS_1080X1080.png",
+      "post_title": "Promo Cumpleañero",
+      "post_name": "promo-cumpleanero",
+      "acf": {
+        "badge_es": "Cumpleañeros",
+        "badge_en": "Birthday",
+        "titulo_es": "Promo Cumpleañero",
+        "titulo_en": "Birthday Promo",
+        "descripcion_es": "¡Elige uno! Postre gratis, buffet gratis, 2 jarras de cerveza o una botella de Bacardí o Skyy.",
+        "descripcion_en": "Your pick! Free dessert, free buffet, 2 beer pitchers, or a bottle of Bacardí or Skyy.",
+        "vigencia_es": "",
+        "vigencia_en": "",
+        "color": "pink",
+        "tipo": "ayce",
+        "activa": true,
+        "home": true,
+        "imagen": 0
+      }
+    },
+    {
+      "_imagen_archivo": "PROMO-EAT&DRINK_1080X1080.png",
+      "post_title": "Eat & Drink",
+      "post_name": "eat-and-drink",
+      "acf": {
+        "badge_es": "Todos los días",
+        "badge_en": "Every Day",
+        "titulo_es": "Eat & Drink",
+        "titulo_en": "Eat & Drink",
+        "descripcion_es": "All You Can Eat + 5 bebidas (960 ml) × $589 por persona.",
+        "descripcion_en": "All You Can Eat + 5 drinks (960 ml) × $589 per person.",
+        "vigencia_es": "Todos los días · +18 años con INE",
+        "vigencia_en": "Every day · 18+ with valid ID",
+        "color": "orange",
+        "tipo": "ayce",
+        "activa": true,
+        "home": true,
+        "imagen": 0
+      }
+    },
+    {
+      "_imagen_archivo": "PROMO-JUEVES BURGERS_1080x1080.png",
+      "post_title": "Jueves Smash Burgers",
+      "post_name": "jueves-smash-burgers",
+      "acf": {
+        "badge_es": "Jueves",
+        "badge_en": "Thursday",
+        "titulo_es": "Todas las Smash Burgers × $229",
+        "titulo_en": "All-You-Can-Eat Smash Burgers × $229",
+        "descripcion_es": "Todas las smash burgers que quieras, sencillas, dobles o triples.",
+        "descripcion_en": "All the smash burgers you want — single, double or triple.",
+        "vigencia_es": "Solo los jueves",
+        "vigencia_en": "Thursdays only",
+        "color": "orange",
+        "tipo": "ayce",
+        "activa": true,
+        "home": true,
+        "imagen": 0
+      }
+    },
+    {
+      "_imagen_archivo": "PROMO-MARTES CHEVE_1080x1080.png",
+      "post_title": "Martes Tarro de Cerveza",
+      "post_name": "martes-tarro-cerveza",
+      "acf": {
+        "badge_es": "Martes",
+        "badge_en": "Tuesday",
+        "titulo_es": "Tarro de Cerveza × $79",
+        "titulo_en": "Beer Mug × $79",
+        "descripcion_es": "Cerveza clara u obscura en tarro de 850 ml.",
+        "descripcion_en": "Light or dark beer in an 850 ml mug.",
+        "vigencia_es": "Solo los martes",
+        "vigencia_en": "Tuesdays only",
+        "color": "orange",
+        "tipo": "all",
+        "activa": true,
+        "home": false,
+        "imagen": 0
+      }
+    },
+    {
+      "_imagen_archivo": "SPORT BOX_1080X1080.jpg",
+      "post_title": "Sumo Sport Box",
+      "post_name": "sumo-sport-box",
+      "acf": {
+        "badge_es": "Sport Box",
+        "badge_en": "Sport Box",
+        "titulo_es": "Sumo Sport Box",
+        "titulo_en": "Sumo Sport Box",
+        "descripcion_es": "Sport Box $569 · Japan Box $569 · American Box $669.",
+        "descripcion_en": "Sport Box $569 · Japan Box $569 · American Box $669.",
+        "vigencia_es": "Términos en la imagen",
+        "vigencia_en": "See image for terms",
+        "color": "blue",
+        "tipo": "all",
+        "activa": true,
+        "home": false,
+        "imagen": 0
+      }
+    },
+    {
+      "_imagen_archivo": "PROMO-MIÉRCOLES SUSHI_1080x1080.png",
+      "post_title": "Miércoles Sushi 2x1",
+      "post_name": "miercoles-sushi-2x1",
+      "acf": {
+        "badge_es": "Miércoles",
+        "badge_en": "Wednesday",
+        "titulo_es": "Todos los sushis 2x1",
+        "titulo_en": "All menu sushis 2-for-1",
+        "descripcion_es": "Dos presentaciones de 10 piezas con refresco y ensalada sweet kani.",
+        "descripcion_en": "Two 10-piece servings with soft drink and sweet kani salad.",
+        "vigencia_es": "Solo los miércoles",
+        "vigencia_en": "Wednesdays only",
+        "color": "orange",
+        "tipo": "all",
+        "activa": true,
+        "home": false,
+        "imagen": 0
+      }
+    }
+  ]
+}

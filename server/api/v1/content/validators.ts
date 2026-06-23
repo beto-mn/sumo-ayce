@@ -5,6 +5,7 @@ import type {
   WpPromotionAcf,
   WpPromotionsResponse,
 } from '@/types/wordpress'
+import { logger } from '../../../utils/logger'
 
 /**
  * Zod schema for a single raw WordPress `promociones` item.
@@ -23,19 +24,21 @@ const acfSchema = z.object({
   badge_en: z.string().optional(),
   titulo_es: z.string().min(1),
   titulo_en: z.string().optional(),
-  descripcion_es: z.string().min(1),
+  // Allow empty — a promo without description/validity still renders,
+  // rather than being silently dropped.
+  descripcion_es: z.string().default(''),
   descripcion_en: z.string().optional(),
-  vigencia_es: z.string().min(1),
+  vigencia_es: z.string().default(''),
   vigencia_en: z.string().optional(),
   // Accept any string for the editor-controlled badge color; unknown values
   // fall back to a default in `mapPromotion` rather than dropping the promo.
   color: z.string().min(1),
   tipo: z.enum(['all', 'ayce', 'express']),
-  activa: z.boolean(),
-  // "Show on homepage" flag. The live payload sends a boolean, but accept the
-  // common WP coercions (1/0/'1'/'0') too so the field never breaks parsing.
-  // Selection itself happens server-side via the `?home=1` query, so this is
-  // only tolerated here — it is not propagated to the `Promotion` view type.
+  // Accept the common WP coercions (1/0/'1'/'0'/true/false) for both flags so
+  // a misconfigured ACF field never silently drops a promotion.
+  activa: z
+    .union([z.boolean(), z.number(), z.string()])
+    .transform(v => v === true || v === 1 || v === '1'),
   home: z.union([z.boolean(), z.number(), z.string()]).optional(),
   // Media ID (number) or 0/false/'' when no image is attached.
   imagen: z.union([z.number(), z.string(), z.boolean()]).optional(),
@@ -137,7 +140,16 @@ export function parsePromotions(payload: unknown): ParsedPromotion[] {
   const items = payload as WpPromotionsResponse
   for (const item of items) {
     const result = rawPromotionSchema.safeParse(item)
-    if (result.success) promotions.push(mapPromotion(result.data))
+    if (result.success) {
+      promotions.push(mapPromotion(result.data))
+    } else {
+      const id = (item as unknown as Record<string, unknown>)?.id ?? '?'
+      const slug = (item as unknown as Record<string, unknown>)?.slug ?? ''
+      logger.warn(
+        { id, slug, issues: result.error.issues },
+        '[parsePromotions] dropped promo'
+      )
+    }
   }
   return promotions
 }
