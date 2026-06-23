@@ -10,9 +10,9 @@ vi.stubGlobal('useI18n', () => ({
 vi.stubGlobal('useLocalePath', () => (path: string) => path)
 
 const stubs = {
-  PromoCard: {
-    name: 'PromoCard',
-    props: ['promo'],
+  UiPromotionCard: {
+    name: 'UiPromotionCard',
+    props: ['promotion'],
     template: '<div class="promo-stub" />',
   },
   UiKicker: { template: '<span><slot /></span>' },
@@ -45,7 +45,7 @@ function mountSection(promotions: Promotion[]) {
 }
 
 describe('HomePromotions', () => {
-  it('renders one PromoCard per promotion', () => {
+  it('renders one PromotionCard per promotion', () => {
     const wrapper = mountSection([
       makePromo('1'),
       makePromo('2'),
@@ -66,14 +66,20 @@ describe('HomePromotions', () => {
     )
   })
 
-  it('keeps the lightbox closed until a card emits open, then opens it', async () => {
+  it('CTA link points to /promotions', () => {
+    const wrapper = mountSection([makePromo('1')])
+    const link = wrapper.findComponent(stubs.NuxtLink)
+    expect(link.props('to')).toBe('/promotions')
+  })
+
+  it('keeps the lightbox closed until a card emits open-lightbox, then opens it', async () => {
     const wrapper = mountSection([makePromo('1', { imageUrl: '/flyer.jpg' })])
     const lightbox = wrapper.find('.lightbox-stub')
     expect(lightbox.attributes('data-open')).toBe('false')
 
     wrapper
-      .findComponent({ name: 'PromoCard' })
-      .vm.$emit('open', { src: '/flyer.jpg', alt: 'Flyer' })
+      .findComponent({ name: 'UiPromotionCard' })
+      .vm.$emit('open-lightbox', '/flyer.jpg')
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.lightbox-stub').attributes('data-open')).toBe('true')
   })

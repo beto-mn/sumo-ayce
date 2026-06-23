@@ -14,7 +14,10 @@ vi.stubGlobal('useLocalePath', () => (path: string) => path)
 
 const stubs = {
   DishCard: { props: ['dish'], template: '<div class="dish-stub" />' },
-  PromoCard: { props: ['promo'], template: '<div class="promo-stub" />' },
+  UiPromotionCard: {
+    props: ['promotion'],
+    template: '<div class="promo-stub" />',
+  },
   ReviewCard: { props: ['review'], template: '<div class="review-stub" />' },
   UiLightbox: {
     props: ['open', 'src', 'alt'],

@@ -111,11 +111,11 @@
     {
       "id": 12,
       "name": "promotions-page",
-      "title": "Promotions Page (/promociones)",
+      "title": "Promotions Page (/promotions)",
       "description": "Grid of active promotions from WordPress CPT promociones. Uses the SAME endpoint as the homepage — `GET {WORDPRESS_API_URL}/wp-json/wp/v2/promociones` — with `?activa=1` to fetch ALL active promotions (no `home` filter, no 3-cap). The homepage instead uses `?activa=1&home=1` (home-flagged) with a fallback to `?activa=1`, capped at 3. Query params (activa/home) documented in docs/business/wordpress-endpoints.md. Endpoint + raw shape documented in docs/business/wordpress-endpoints.md; raw response typed in types/wordpress.ts; parsed via server/api/v1/content/validators.ts. Bilingual fields (badge, title, desc, validity). Per-type color coding (Express promos use blue). Inactive promos (acf.activa === false) hidden. The card shows text only; `acf.imagen` is the full promo flyer, opened large in the shared lightbox (app/components/ui/Lightbox.vue) on click — NOT shown inline. Editable in WP admin without code changes. Rendering mode per docs/business/rendering-strategy.md (short ISR — most dynamic content). See docs/business/features.md §3.",
       "spec_path": "specs/012-promotions-page",
       "sdd": true,
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 13,
