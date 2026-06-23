@@ -11,6 +11,7 @@ type BranchSeed = {
   lat: string
   lng: string
   schedule: BranchSchedule | null
+  whatsappReservaciones?: string | null
 }
 
 // Times use 24h format. "00:00" = midnight close (end of business day).
@@ -23,6 +24,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.5554381',
     lng: '-99.2128915',
+    whatsappReservaciones: '+525593400364',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -42,6 +44,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.5345853',
     lng: '-99.2265039',
+    whatsappReservaciones: '+525592584865',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -60,6 +63,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.6610952',
     lng: '-99.2080123',
+    whatsappReservaciones: '+525530499960',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -78,6 +82,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.5141177',
     lng: '-99.2309139',
+    whatsappReservaciones: '+525559475565',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -97,6 +102,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.6119437',
     lng: '-99.2422141',
+    whatsappReservaciones: '+525560329046',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -116,6 +122,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.6024463',
     lng: '-99.192938',
+    whatsappReservaciones: '+525635760831',
     schedule: {
       mon: { open: '13:00', close: '22:00' },
       tue: { open: '13:00', close: '22:00' },
@@ -135,6 +142,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.6264856',
     lng: '-99.0814342',
+    whatsappReservaciones: '+525648055891',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -154,6 +162,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.4916382',
     lng: '-99.2279431',
+    whatsappReservaciones: '+525535629638',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -173,6 +182,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.457046',
     lng: '-99.2156256',
+    whatsappReservaciones: '+522204397630',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -191,6 +201,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.2796792',
     lng: '-99.6615446',
+    whatsappReservaciones: '+527221792379',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -209,6 +220,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.2629286',
     lng: '-99.5772186',
+    whatsappReservaciones: '+527229726223',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -228,6 +240,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.2996692',
     lng: '-98.9533106',
+    whatsappReservaciones: '+525598146180',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -246,6 +259,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.477989',
     lng: '-99.1883868',
+    whatsappReservaciones: '+525638355563',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -264,6 +278,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3406381',
     lng: '-99.1333434',
+    whatsappReservaciones: '+525592461930',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -283,6 +298,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.4830228',
     lng: '-99.1330672',
+    whatsappReservaciones: '+525610342827',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -301,6 +317,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.4385356',
     lng: '-99.1509123',
+    whatsappReservaciones: '+525570489393',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -319,6 +336,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3975771',
     lng: '-99.1714461',
+    whatsappReservaciones: '+525532586216',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -338,6 +356,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.4684659',
     lng: '-99.0558699',
+    whatsappReservaciones: '+525568803654',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -356,6 +375,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3610568',
     lng: '-99.1828986',
+    whatsappReservaciones: '+525591333488',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -374,6 +394,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3370542',
     lng: '-99.1834638',
+    whatsappReservaciones: '+525636478927',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -393,6 +414,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3058589',
     lng: '-99.1247922',
+    whatsappReservaciones: '+525564844609',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -411,6 +433,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.2856371',
     lng: '-99.2181888',
+    whatsappReservaciones: '+525587804200',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -430,6 +453,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'express',
     lat: '19.4489255',
     lng: '-99.1519094',
+    whatsappReservaciones: '+522204380954',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -448,6 +472,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.4348474',
     lng: '-99.1466855',
+    whatsappReservaciones: '+525661969023',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -467,6 +492,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.6176473',
     lng: '-99.038595',
+    whatsappReservaciones: '+525540117080',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -485,6 +511,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3471019',
     lng: '-99.163545',
+    whatsappReservaciones: '+525537929846',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -503,6 +530,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3816576',
     lng: '-99.0837773',
+    whatsappReservaciones: '+525540788305',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -521,6 +549,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '18.9550507',
     lng: '-99.2372206',
+    whatsappReservaciones: '+525536440551',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -539,6 +568,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'express',
     lat: '19.4193939',
     lng: '-99.1300091',
+    whatsappReservaciones: '+525664249051',
     schedule: {
       mon: { open: '12:00', close: '22:00' },
       tue: { open: '12:00', close: '22:00' },
@@ -558,6 +588,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'ayce',
     lat: '19.3637515',
     lng: '-98.9893783',
+    whatsappReservaciones: '+525579917279',
     schedule: null,
   },
   {
@@ -568,6 +599,7 @@ const BRANCHES: BranchSeed[] = [
     type: 'express',
     lat: '19.2794845',
     lng: '-99.1371867',
+    whatsappReservaciones: null,
     schedule: null,
   },
 ]
@@ -599,6 +631,7 @@ export async function seedBranches() {
           lat: branch.lat,
           lng: branch.lng,
           schedule: branch.schedule,
+          whatsappReservaciones: branch.whatsappReservaciones ?? null,
           isActive: true,
         },
       })
