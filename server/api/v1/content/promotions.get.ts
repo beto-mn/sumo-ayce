@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, getQuery } from 'h3'
 import type { Promotion, PromotionsResult } from '@/types/content'
 import { env } from '../../../utils/env'
 import { ExternalServiceError, handleError } from '../../../utils/error-handler'
@@ -81,21 +81,42 @@ async function resolveImages(parsed: ParsedPromotion[]): Promise<Promotion[]> {
  * WordPress `promociones` endpoint (primary → fallback), validate the ACF shape,
  * resolve each `acf.imagen` media ID to an image URL, and return them.
  *
- * Selection logic (both queries capped to the 3 newest active in code):
+ * Selection logic when called WITHOUT `?all=1` (homepage path):
  *   1. PRIMARY — `?activa=1&home=1`: active promos flagged for the home.
  *   2. FALLBACK — `?activa=1`: if the primary yields ZERO promos, fall back to
  *      all active promos so the section still shows something.
- *   3. If the fallback is ALSO empty → `{ promotions: [], ok: false }` (section
- *      self-hides).
+ *   3. Both paths are capped to the {@link HOME_PROMOTIONS_LIMIT} newest active.
+ *   4. If the fallback is ALSO empty → `{ promotions: [], ok: false }`.
  *
- * The fallback fires only when the primary returns an EMPTY array. A thrown /
- * timed-out primary skips the fallback and hits the outer catch instead.
+ * When called WITH `?all=1` (promotions page path):
+ *   - Fetches `?activa=1` directly (no home filter, no cap).
+ *   - Returns ALL active promotions for the dedicated promotions page.
  *
  * Always HTTP 200: on any upstream failure it logs an `ExternalServiceError` and
- * returns `{ promotions: [], ok: false }` so the section degrades gracefully
- * without leaking the upstream error.
+ * returns `{ promotions: [], ok: false }` so the surface degrades gracefully.
  */
-export default defineEventHandler(async (): Promise<PromotionsResult> => {
+export default defineEventHandler(async (event): Promise<PromotionsResult> => {
+  const { all } = getQuery(event)
+
+  // ── Promotions page path: ?all=1 — no home filter, no cap ─────────────────
+  if (all === '1') {
+    try {
+      const payload = await $fetch<unknown>(activePromocionesUrl(), {
+        timeout: LIST_FETCH_TIMEOUT_MS,
+      })
+      const parsed = parsePromotions(payload).filter(p => p.active)
+      if (parsed.length === 0) return { promotions: [], ok: false }
+      const promotions = await resolveImages(parsed)
+      return { promotions, ok: true }
+    } catch (error) {
+      handleError(
+        new ExternalServiceError('WordPress promociones (all)', error)
+      )
+      return { promotions: [], ok: false }
+    }
+  }
+
+  // ── Homepage path: primary (home=1) → fallback (activa=1), capped at 3 ────
   try {
     const homePayload = await $fetch<unknown>(homePromocionesUrl(), {
       timeout: LIST_FETCH_TIMEOUT_MS,

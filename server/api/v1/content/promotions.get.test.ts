@@ -12,7 +12,12 @@ const { mockFetch } = vi.hoisted(() => ({ mockFetch: vi.fn() }))
 
 vi.mock('h3', async importOriginal => {
   const actual = await importOriginal<typeof import('h3')>()
-  return { ...actual, defineEventHandler: (fn: unknown) => fn }
+  return {
+    ...actual,
+    defineEventHandler: (fn: unknown) => fn,
+    getQuery: (event: { _query?: Record<string, string> }) =>
+      event._query ?? {},
+  }
 })
 vi.mock('../../../utils/env', () => ({
   env: { WORDPRESS_API_URL: 'https://cms.example.test' },
@@ -23,8 +28,13 @@ vi.stubGlobal('$fetch', mockFetch)
 import handler from './promotions.get'
 
 type Result = { promotions: Array<Record<string, unknown>>; ok: boolean }
-const run = () =>
-  (handler as unknown as (event: unknown) => Promise<Result>)({} as unknown)
+const run = (query: Record<string, string> = {}) =>
+  (handler as unknown as (event: unknown) => Promise<Result>)({
+    _query: query,
+  } as unknown)
+
+/** Convenience: run with ?all=1 query param. */
+const runAll = () => run({ all: '1' })
 
 /**
  * Route mock: routes the `promociones` list URL by query —
@@ -216,5 +226,78 @@ describe('GET /api/v1/content/promotions', () => {
     mockUpstream(MALFORMED_WP_RESPONSE)
     const res = await run()
     expect(res).toEqual({ promotions: [], ok: false })
+  })
+})
+
+// ── ?all=1 code path ──────────────────────────────────────────────────────────
+
+describe('GET /api/v1/content/promotions?all=1', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns all 5 active promos (no 3-cap) when all=1', async () => {
+    // VALID_WP_PROMOTIONS has 5 active items (ids 10,11,12,13,15) + 1 inactive (14) + 1 invalid (16)
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes('/wp-json/wp/v2/media/')) {
+        return Promise.resolve(makeMediaResponse())
+      }
+      return Promise.resolve(VALID_WP_PROMOTIONS)
+    })
+    const res = await runAll()
+    expect(res.ok).toBe(true)
+    // 5 active promos, no 3-cap applied
+    expect(res.promotions).toHaveLength(5)
+    const ids = res.promotions.map(p => p.id)
+    // includes all active items, not capped
+    expect(ids).toContain('10')
+    expect(ids).toContain('11')
+    expect(ids).toContain('12')
+    expect(ids).toContain('13')
+    expect(ids).toContain('15')
+    // inactive (14) excluded; invalid (16) dropped
+    expect(ids).not.toContain('14')
+    expect(ids).not.toContain('16')
+  })
+
+  it('returns { promotions: [], ok: false } when WP returns an error with all=1', async () => {
+    mockFetch.mockRejectedValue(new Error('ECONNREFUSED'))
+    const res = await runAll()
+    expect(res).toEqual({ promotions: [], ok: false })
+  })
+
+  it('degrades to imageUrl=null for a single media failure without aborting the list', async () => {
+    // Item 29 has imagen=29; others have imagen=0 → null without a media fetch
+    const promoWithImage = makeMediaResponse(
+      'https://cms.sumo.com.mx/wp-content/uploads/promo.jpg'
+    )
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes('/wp-json/wp/v2/media/')) {
+        return Promise.reject(new Error('media 404'))
+      }
+      return Promise.resolve(SINGLE_WP_PROMOTION)
+    })
+    const res = await runAll()
+    expect(res.ok).toBe(true)
+    expect(res.promotions[0]?.imageUrl).toBeNull()
+    // Suppress the unused variable lint warning
+    void promoWithImage
+  })
+
+  it('does NOT issue a home=1 query when all=1 is set', async () => {
+    mockFetch.mockImplementation((url: string) => {
+      if (url.includes('/wp-json/wp/v2/media/')) {
+        return Promise.resolve(makeMediaResponse())
+      }
+      return Promise.resolve(VALID_WP_PROMOTIONS)
+    })
+    await runAll()
+    const listUrls = mockFetch.mock.calls
+      .map(call => String(call[0]))
+      .filter(url => url.includes('/wp-json/wp/v2/promociones'))
+    // Should only issue one list query (activa=1, no home=1 filter)
+    expect(listUrls).toHaveLength(1)
+    expect(listUrls[0]).not.toContain('home=1')
+    expect(listUrls[0]).toContain('activa=1')
   })
 })
