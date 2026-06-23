@@ -42,7 +42,7 @@ export default defineNuxtConfig({
     '~/components',
     // Auto-import feature components by bare name (HomeHero, DishCard, ...) so
     // vertical slices need no explicit imports in templates.
-    { path: '~/features', pathPrefix: false },
+    { path: '~/features', pathPrefix: false, extensions: ['vue'] },
   ],
   // staff.css is intentionally NOT global — it ships a dark `body` theme that
   // would override the public cream `--bg`. It is loaded only by the `staff`
