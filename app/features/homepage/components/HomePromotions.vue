@@ -13,10 +13,10 @@ const lightbox = reactive({
   alt: '',
 })
 
-function openLightbox(payload: { src: string; alt: string }): void {
+function openLightboxFromUrl(imageUrl: string): void {
   lightbox.open = true
-  lightbox.src = payload.src
-  lightbox.alt = payload.alt
+  lightbox.src = imageUrl
+  lightbox.alt = ''
 }
 </script>
 
@@ -28,7 +28,7 @@ function openLightbox(payload: { src: string; alt: string }): void {
   >
     <header class="flex flex-wrap items-center justify-between gap-4">
       <UiKicker tone="pink">{{ t('home.promotions.kicker') }}</UiKicker>
-      <NuxtLink :to="localePath('/promociones')" class="no-underline">
+      <NuxtLink :to="localePath('/promotions')" class="no-underline">
         <UiButton variant="ghost" size="sm">
           {{ t('home.promotions.cta') }} →
         </UiButton>
@@ -37,11 +37,11 @@ function openLightbox(payload: { src: string; alt: string }): void {
     <div
       class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]"
     >
-      <PromoCard
+      <UiPromotionCard
         v-for="promo in promotions"
         :key="promo.id"
-        :promo="promo"
-        @open="openLightbox"
+        :promotion="promo"
+        @open-lightbox="openLightboxFromUrl"
       />
     </div>
     <UiLightbox
