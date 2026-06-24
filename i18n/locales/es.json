@@ -204,5 +204,52 @@
       "findBranch": "Encuentra la tuya",
       "reserve": "Reservar"
     }
+  },
+  "reservation": {
+    "page_title": "Reservar mesa | SUMO AYCE",
+    "form": {
+      "label": {
+        "branch": "Sucursal",
+        "tipo": "Tipo",
+        "date": "Fecha",
+        "time": "Hora",
+        "party_size": "Personas",
+        "name": "Nombre completo",
+        "phone": "WhatsApp"
+      },
+      "placeholder": {
+        "branch": "Selecciona una sucursal",
+        "time_no_branch": "Selecciona una sucursal primero",
+        "time_no_schedule": "Horarios no disponibles",
+        "time_select_date": "Primero elige una fecha",
+        "last_slot": "Última reserva:"
+      },
+      "submit": "Confirmar reservación",
+      "submitting": "Confirmando..."
+    },
+    "error": {
+      "branch_required": "Selecciona una sucursal",
+      "date_required": "Selecciona una fecha",
+      "date_past": "La fecha debe ser hoy o futura",
+      "date_too_far": "La fecha debe estar dentro de los próximos 30 días",
+      "time_required": "Selecciona una hora",
+      "time_invalid": "Hora inválida",
+      "time_out_of_range": "La hora está fuera del horario de la sucursal",
+      "party_size": "Entre 1 y 20 personas",
+      "name_required": "Ingresa tu nombre",
+      "phone_invalid": "Número de WhatsApp inválido",
+      "api_generic": "No pudimos crear tu reservación. Inténtalo de nuevo.",
+      "branch_unavailable": "No hay sucursales disponibles en este momento."
+    },
+    "confirmation": {
+      "title": "¡Reservación confirmada!",
+      "folio_label": "Folio",
+      "branch_label": "Sucursal",
+      "date_label": "Fecha",
+      "time_label": "Hora",
+      "party_size_label": "Personas",
+      "whatsapp_note": "Recibirás una confirmación por WhatsApp en breve.",
+      "reset_button": "Hacer otra reservación"
+    }
   }
 }

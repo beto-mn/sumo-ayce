@@ -85,6 +85,7 @@ export default defineNuxtConfig({
     '/promotions': { isr: 60 },
     '/contact': { prerender: true },
     '/lealtad': { ssr: true },
+    '/reserve': { ssr: true },
     '/staff/**': { ssr: true },
     '/api/**': {},
   },
