@@ -1,9 +1,12 @@
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SortedBranch } from '../types'
 
 // Stub Nuxt globals
 vi.stubGlobal('useI18n', () => ({ t: (k: string) => k }))
+vi.stubGlobal('useLocalePath', () => (p: string) => p)
+
+const stubs = { NuxtLink: RouterLinkStub }
 
 import BranchCard from './BranchCard.vue'
 
@@ -16,8 +19,13 @@ const AYCE_BRANCH: SortedBranch = {
   isActive: true,
   type: 'ayce',
   schedule: {
-    weekdays: { open: '12:00', close: '22:00' },
-    weekends: { open: '11:00', close: '23:00' },
+    mon: { open: '12:00', close: '22:00' },
+    tue: { open: '12:00', close: '22:00' },
+    wed: { open: '12:00', close: '22:00' },
+    thu: { open: '12:00', close: '22:00' },
+    fri: { open: '12:00', close: '22:00' },
+    sat: { open: '11:00', close: '23:00' },
+    sun: { open: '11:00', close: '23:00' },
   },
   phone: '+52551234567',
 }
@@ -47,6 +55,7 @@ describe('BranchCard', () => {
   it('renders the branch name', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     expect(wrapper.text()).toContain('SUMO Polanco')
   })
@@ -54,6 +63,7 @@ describe('BranchCard', () => {
   it('renders AYCE type chip with orange accent class', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     const chip = wrapper.find('[data-testid="type-chip"]')
     expect(chip.exists()).toBe(true)
@@ -63,6 +73,7 @@ describe('BranchCard', () => {
   it('renders Express type chip with express accent class', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: EXPRESS_BRANCH },
+      global: { stubs },
     })
     const chip = wrapper.find('[data-testid="type-chip"]')
     expect(chip.exists()).toBe(true)
@@ -72,6 +83,7 @@ describe('BranchCard', () => {
   it('shows distanceKm element when provided', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: BRANCH_WITH_DISTANCE },
+      global: { stubs },
     })
     const distEl = wrapper.find('[data-testid="distance"]')
     expect(distEl.exists()).toBe(true)
@@ -80,6 +92,7 @@ describe('BranchCard', () => {
   it('hides distance when distanceKm is not defined', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     const distEl = wrapper.find('[data-testid="distance"]')
     expect(distEl.exists()).toBe(false)
@@ -88,6 +101,7 @@ describe('BranchCard', () => {
   it('hides Call button when phone is null', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: EXPRESS_BRANCH },
+      global: { stubs },
     })
     const callBtn = wrapper.find('[data-testid="call-button"]')
     expect(callBtn.exists()).toBe(false)
@@ -96,22 +110,27 @@ describe('BranchCard', () => {
   it('shows Call button when phone is provided', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     const callBtn = wrapper.find('[data-testid="call-button"]')
     expect(callBtn.exists()).toBe(true)
   })
 
-  it('emits reserve when Reserve button is clicked', async () => {
+  it('reserve button links to /reserve with branch id and type', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
-    await wrapper.find('[data-testid="reserve-button"]').trigger('click')
-    expect(wrapper.emitted('reserve')).toBeTruthy()
+    const reserveLink = wrapper.findComponent(RouterLinkStub)
+    expect(reserveLink.props('to')).toContain('/reserve')
+    expect(reserveLink.props('to')).toContain(AYCE_BRANCH.id)
+    expect(reserveLink.props('to')).toContain('ayce')
   })
 
   it('directions button links to Google Maps with branch coordinates', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     const href = wrapper
       .find('[data-testid="directions-button"]')
@@ -124,6 +143,7 @@ describe('BranchCard', () => {
   it('emits call when Call button is clicked', async () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     await wrapper.find('[data-testid="call-button"]').trigger('click')
     expect(wrapper.emitted('call')).toBeTruthy()
@@ -133,6 +153,7 @@ describe('BranchCard', () => {
   it('applies highlight ring class when highlighted prop is true', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH, highlighted: true },
+      global: { stubs },
     })
     const root = wrapper.find('[data-testid="branch-card"]')
     expect(root.classes()).toContain('ring-4')
@@ -141,6 +162,7 @@ describe('BranchCard', () => {
   it('does not apply highlight ring class by default', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     const root = wrapper.find('[data-testid="branch-card"]')
     expect(root.classes()).not.toContain('ring-4')
@@ -149,6 +171,7 @@ describe('BranchCard', () => {
   it('renders the branch address', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     expect(wrapper.text()).toContain('Av. Presidente Masaryk 123, Polanco')
   })
@@ -156,6 +179,7 @@ describe('BranchCard', () => {
   it('has an accessible aria-label including the branch name', () => {
     const wrapper = mount(BranchCard, {
       props: { branch: AYCE_BRANCH },
+      global: { stubs },
     })
     const root = wrapper.find('[data-testid="branch-card"]')
     expect(root.attributes('aria-label')).toContain('SUMO Polanco')
@@ -165,11 +189,18 @@ describe('BranchCard', () => {
     const branchWithSchedule: SortedBranch = {
       ...AYCE_BRANCH,
       schedule: {
-        weekdays: { open: '12:00', close: '22:00' },
+        mon: { open: '12:00', close: '22:00' },
+        tue: { open: '12:00', close: '22:00' },
+        wed: { open: '12:00', close: '22:00' },
+        thu: { open: '12:00', close: '22:00' },
+        fri: { open: '12:00', close: '22:00' },
+        sat: null,
+        sun: null,
       },
     }
     const wrapper = mount(BranchCard, {
       props: { branch: branchWithSchedule },
+      global: { stubs },
     })
     expect(wrapper.text()).toContain('12:00')
     expect(wrapper.text()).toContain('22:00')
@@ -182,6 +213,7 @@ describe('BranchCard', () => {
     }
     const wrapper = mount(BranchCard, {
       props: { branch: branchNoSchedule },
+      global: { stubs },
     })
     expect(wrapper.text()).toContain('branches.card.hoursUnavailable')
   })

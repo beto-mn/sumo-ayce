@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { useReservationModal } from '@/composables/useReservationModal'
-
 const { t } = useI18n()
 const localePath = useLocalePath()
-const { openReservation } = useReservationModal()
 </script>
 
 <template>
@@ -26,9 +23,11 @@ const { openReservation } = useReservationModal()
             {{ t('home.branches.findBranch') }} →
           </UiButton>
         </NuxtLink>
-        <UiButton variant="ghost" size="lg" @click="openReservation">
-          {{ t('home.branches.reserve') }}
-        </UiButton>
+        <NuxtLink :to="localePath('/reserve')" class="no-underline">
+          <UiButton variant="ghost" size="lg">
+            {{ t('home.branches.reserve') }}
+          </UiButton>
+        </NuxtLink>
       </div>
     </div>
   </section>

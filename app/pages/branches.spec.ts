@@ -10,6 +10,7 @@ vi.stubGlobal('useRuntimeConfig', () => ({
   public: { mapboxAccessToken: 'pk.test' },
 }))
 vi.stubGlobal('useSeoMeta', vi.fn())
+vi.stubGlobal('useLocalePath', () => (p: string) => p)
 
 const mockFetch = vi.fn()
 vi.stubGlobal('$fetch', mockFetch)
