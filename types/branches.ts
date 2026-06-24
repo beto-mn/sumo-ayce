@@ -6,8 +6,13 @@ export interface BranchScheduleSlot {
 }
 
 export interface BranchSchedule {
-  weekdays?: BranchScheduleSlot
-  weekends?: BranchScheduleSlot
+  mon: BranchScheduleSlot | null
+  tue: BranchScheduleSlot | null
+  wed: BranchScheduleSlot | null
+  thu: BranchScheduleSlot | null
+  fri: BranchScheduleSlot | null
+  sat: BranchScheduleSlot | null
+  sun: BranchScheduleSlot | null
 }
 
 /** Public branch row returned by GET /api/v1/branches */
