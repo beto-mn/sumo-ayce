@@ -128,12 +128,12 @@
     },
     {
       "id": 14,
-      "name": "reservation-modal",
-      "title": "Reservation Modal (/reservaciones)",
-      "description": "Reservation modal UI on top of existing backend (features 002 + 003). Renders as an overlay on any page (no dedicated route). Form: branch → branch-dependent time slots from hours, date, party size, name, phone. Submit triggers POST /api/v1/reservations (always-dynamic Vercel function per docs/business/rendering-strategy.md) which sends Twilio WhatsApp to client + manager. See docs/business/features.md §5.",
-      "spec_path": "specs/014-reservation-modal",
+      "name": "reservation-page",
+      "title": "Reservation Page (/reservar)",
+      "description": "Dedicated reservation page at /reservar. Branch and type (AYCE/Express) can be pre-filled via query params (?branch=arboledas&type=ayce) so the 'Reservar' button on the branches page routes with context. Form: branch (pre-filled if param present) → branch-dependent time slots from hours, date, party size, name, phone. Submit triggers POST /api/v1/reservations (always-dynamic Vercel function per docs/business/rendering-strategy.md) which sends Twilio WhatsApp to client + manager. Same visual design system as the rest of the site (Mercado Pop tokens, orange accent for AYCE). See docs/business/features.md §5.",
+      "spec_path": "specs/014-reservation-page",
       "sdd": true,
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": 15,
@@ -151,7 +151,7 @@
       "description": "Dedicated contact page at /contact. Left panel: form with Nombre, WhatsApp, Elige sucursal (dropdown populated from /api/v1/branches), and Mensaje fields. Submit opens a wa.me deep-link to the selected branch's WhatsApp number with the message pre-composed (no backend, no form submission). Right panel: static contact info (global WhatsApp, email, social network links). Bilingual (ES/EN). SSG rendering (content is static). Branch list fetched client-side so the dropdown is always up to date.",
       "spec_path": "specs/017-contact-page",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 16,
