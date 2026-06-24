@@ -11,8 +11,13 @@ const AYCE_BRANCH: SortedBranch = {
   isActive: true,
   type: 'ayce',
   schedule: {
-    weekdays: { open: '12:00', close: '22:00' },
-    weekends: { open: '11:00', close: '23:00' },
+    mon: { open: '12:00', close: '22:00' },
+    tue: { open: '12:00', close: '22:00' },
+    wed: { open: '12:00', close: '22:00' },
+    thu: { open: '12:00', close: '22:00' },
+    fri: { open: '12:00', close: '22:00' },
+    sat: { open: '11:00', close: '23:00' },
+    sun: { open: '11:00', close: '23:00' },
   },
   phone: '+52551234567',
 }
@@ -26,7 +31,13 @@ const EXPRESS_BRANCH: SortedBranch = {
   isActive: true,
   type: 'express',
   schedule: {
-    weekdays: { open: '13:00', close: '22:00' },
+    mon: { open: '13:00', close: '22:00' },
+    tue: { open: '13:00', close: '22:00' },
+    wed: { open: '13:00', close: '22:00' },
+    thu: { open: '13:00', close: '22:00' },
+    fri: { open: '13:00', close: '22:00' },
+    sat: null,
+    sun: null,
   },
   phone: '+52551234568',
 }
@@ -75,8 +86,13 @@ export const WithSchedule: Story = {
     branch: {
       ...AYCE_BRANCH,
       schedule: {
-        weekdays: { open: '12:00', close: '22:00' },
-        weekends: { open: '11:00', close: '23:00' },
+        mon: { open: '12:00', close: '22:00' },
+        tue: { open: '12:00', close: '22:00' },
+        wed: { open: '12:00', close: '22:00' },
+        thu: { open: '12:00', close: '22:00' },
+        fri: { open: '12:00', close: '22:00' },
+        sat: { open: '11:00', close: '23:00' },
+        sun: { open: '11:00', close: '23:00' },
       },
     },
   },

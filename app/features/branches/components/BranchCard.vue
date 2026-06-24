@@ -5,18 +5,38 @@ import type { SortedBranch } from '../types'
 const props = defineProps<{
   branch: SortedBranch
   highlighted?: boolean
+  reserveLink?: string
 }>()
 
 const emit = defineEmits<{
-  reserve: []
   call: [phone: string]
 }>()
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const directionsUrl = computed(
   () =>
     `https://www.google.com/maps/dir/?api=1&destination=${props.branch.lat},${props.branch.lng}`
+)
+
+// Derive a weekday slot (Mon–Fri) and weekend slot (Sat–Sun) from per-day schedule
+const weekdaySlot = computed(() => {
+  const s = props.branch.schedule
+  if (!s) return null
+  return s.mon ?? s.tue ?? s.wed ?? s.thu ?? s.fri ?? null
+})
+
+const weekendSlot = computed(() => {
+  const s = props.branch.schedule
+  if (!s) return null
+  return s.sat ?? s.sun ?? null
+})
+
+const resolvedReserveLink = computed(
+  () =>
+    props.reserveLink ??
+    localePath(`/reserve?branch=${props.branch.id}&type=${props.branch.type}`)
 )
 
 function onCall() {
@@ -57,13 +77,13 @@ function onCall() {
 
     <!-- Schedule summary -->
     <div class="mt-1 font-body text-xs text-soft">
-      <template v-if="branch.schedule">
-        <span v-if="branch.schedule.weekdays">
-          {{ t('branches.card.weekdays') }} {{ branch.schedule.weekdays.open }}–{{ branch.schedule.weekdays.close }}
+      <template v-if="branch.schedule && (weekdaySlot || weekendSlot)">
+        <span v-if="weekdaySlot">
+          {{ t('branches.card.weekdays') }} {{ weekdaySlot.open }}–{{ weekdaySlot.close }}
         </span>
-        <span v-if="branch.schedule.weekdays && branch.schedule.weekends"> · </span>
-        <span v-if="branch.schedule.weekends">
-          {{ t('branches.card.weekends') }} {{ branch.schedule.weekends.open }}–{{ branch.schedule.weekends.close }}
+        <span v-if="weekdaySlot && weekendSlot"> · </span>
+        <span v-if="weekendSlot">
+          {{ t('branches.card.weekends') }} {{ weekendSlot.open }}–{{ weekendSlot.close }}
         </span>
       </template>
       <span v-else>{{ t('branches.card.hoursUnavailable') }}</span>
@@ -80,14 +100,13 @@ function onCall() {
 
     <!-- Actions -->
     <div class="mt-4 flex flex-wrap gap-2">
-      <button
+      <NuxtLink
         data-testid="reserve-button"
-        type="button"
-        class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-pop-full border-pop border-ink bg-accent px-5 py-2 font-disp font-extrabold text-sm text-white shadow-pop-sm transition-transform duration-200 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-pop"
-        @click="emit('reserve')"
+        :to="resolvedReserveLink"
+        class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-pop-full border-pop border-ink bg-accent px-5 py-2 font-disp font-extrabold text-sm text-white shadow-pop-sm transition-transform duration-200 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-pop no-underline"
       >
         {{ t('branches.card.reserve') }}
-      </button>
+      </NuxtLink>
 
       <a
         data-testid="directions-button"

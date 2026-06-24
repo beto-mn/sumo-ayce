@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useReservationModal } from '@/composables/useReservationModal'
 import type { SortedBranch } from '../types'
 
 const props = defineProps<{
@@ -12,15 +11,14 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { openReservation } = useReservationModal()
-
-function onReserve(id: string) {
-  openReservation()
-  emit('branch-select', id)
-}
+const localePath = useLocalePath()
 
 function onCall(phone: string) {
   window.location.href = `tel:${phone}`
+}
+
+function reserveLink(branch: SortedBranch): string {
+  return localePath(`/reserve?branch=${branch.id}&type=${branch.type}`)
 }
 </script>
 
@@ -44,7 +42,7 @@ function onCall(phone: string) {
         <BranchCard
           :branch="branch"
           :highlighted="branch.id === highlightedId"
-          @reserve="onReserve(branch.id)"
+          :reserve-link="reserveLink(branch)"
           @call="onCall"
         />
       </li>

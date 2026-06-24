@@ -1,8 +1,6 @@
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
-const openReservation = vi.fn()
-
 vi.stubGlobal('useI18n', () => ({
   t: (key: string) => key,
   locale: { value: 'es' },
@@ -10,9 +8,6 @@ vi.stubGlobal('useI18n', () => ({
 vi.stubGlobal('useLocalePath', () => (p: string) => p)
 vi.stubGlobal('useSwitchLocalePath', () => (l: string) => `/${l}`)
 vi.stubGlobal('useRoute', () => ({ path: '/' }))
-vi.mock('@/composables/useReservationModal', () => ({
-  useReservationModal: () => ({ openReservation }),
-}))
 
 import SiteHeader from './SiteHeader.vue'
 
@@ -66,9 +61,10 @@ describe('SiteHeader', () => {
     expect(toggle?.text()).toBe('common.lang.toggle')
   })
 
-  it('opens the reservation modal when Reservar is clicked', async () => {
-    const wrapper = mountHeader()
-    await wrapper.find('.btn-stub').trigger('click')
-    expect(openReservation).toHaveBeenCalledOnce()
+  it('Reserve button links to /reserve', () => {
+    const targets = mountHeader()
+      .findAllComponents(RouterLinkStub)
+      .map(l => l.props('to'))
+    expect(targets).toContain('/reserve')
   })
 })
