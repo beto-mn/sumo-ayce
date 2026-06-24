@@ -1,16 +1,10 @@
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
 import type { SortedBranch } from '../types'
 
 // Stub Nuxt globals
 vi.stubGlobal('useI18n', () => ({ t: (k: string) => k }))
-vi.stubGlobal('useState', (_key: string, init: () => unknown) => ref(init()))
-
-const mockOpenReservation = vi.fn()
-vi.mock('@/composables/useReservationModal', () => ({
-  useReservationModal: () => ({ openReservation: mockOpenReservation }),
-}))
+vi.stubGlobal('useLocalePath', () => (p: string) => p)
 
 import BranchCard from './BranchCard.vue'
 import BranchList from './BranchList.vue'
@@ -42,6 +36,7 @@ const BRANCH_2: SortedBranch = {
 const globalConfig = {
   global: {
     components: { BranchCard },
+    stubs: { NuxtLink: RouterLinkStub },
   },
 }
 
@@ -83,28 +78,18 @@ describe('BranchList', () => {
       props: { branches: [BRANCH_1, BRANCH_2], highlightedId: 'b1' },
     })
     const cards = wrapper.findAll('[data-testid="branch-card"]')
-    // First card (b1) should have ring-4 class
     expect(cards[0]?.classes()).toContain('ring-4')
-    // Second card (b2) should not
     expect(cards[1]?.classes()).not.toContain('ring-4')
   })
 
-  it('emits branch-select with branch id when a card emits reserve', async () => {
+  it('reserve button is a NuxtLink pointing to /reserve with branch id and type', () => {
     const wrapper = mount(BranchList, {
       ...globalConfig,
       props: { branches: [BRANCH_1] },
     })
-    await wrapper.find('[data-testid="reserve-button"]').trigger('click')
-    expect(wrapper.emitted('branch-select')).toBeTruthy()
-    expect(wrapper.emitted('branch-select')?.[0]).toEqual(['b1'])
-  })
-
-  it('calls openReservation when Reserve button is clicked (US5-AC1)', async () => {
-    const wrapper = mount(BranchList, {
-      ...globalConfig,
-      props: { branches: [BRANCH_1] },
-    })
-    await wrapper.find('[data-testid="reserve-button"]').trigger('click')
-    expect(mockOpenReservation).toHaveBeenCalledOnce()
+    const link = wrapper.findComponent(RouterLinkStub)
+    expect(link.props('to')).toContain('/reserve')
+    expect(link.props('to')).toContain('b1')
+    expect(link.props('to')).toContain('ayce')
   })
 })

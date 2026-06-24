@@ -204,5 +204,52 @@
       "findBranch": "Find yours",
       "reserve": "Reserve"
     }
+  },
+  "reservation": {
+    "page_title": "Reserve a table | SUMO AYCE",
+    "form": {
+      "label": {
+        "branch": "Branch",
+        "tipo": "Type",
+        "date": "Date",
+        "time": "Time",
+        "party_size": "Party size",
+        "name": "Full name",
+        "phone": "WhatsApp"
+      },
+      "placeholder": {
+        "branch": "Select a branch",
+        "time_no_branch": "Select a branch first",
+        "time_no_schedule": "Hours not available",
+        "time_select_date": "Select a date first",
+        "last_slot": "Last slot:"
+      },
+      "submit": "Confirm reservation",
+      "submitting": "Confirming..."
+    },
+    "error": {
+      "branch_required": "Select a branch",
+      "date_required": "Select a date",
+      "date_past": "The date must be today or in the future",
+      "date_too_far": "The date must be within the next 30 days",
+      "time_required": "Select a time",
+      "time_invalid": "Invalid time",
+      "time_out_of_range": "Time is outside branch hours",
+      "party_size": "Between 1 and 20 people",
+      "name_required": "Enter your name",
+      "phone_invalid": "Invalid WhatsApp number",
+      "api_generic": "We could not create your reservation. Please try again.",
+      "branch_unavailable": "No branches available at this time."
+    },
+    "confirmation": {
+      "title": "Reservation confirmed!",
+      "folio_label": "Folio",
+      "branch_label": "Branch",
+      "date_label": "Date",
+      "time_label": "Time",
+      "party_size_label": "Party size",
+      "whatsapp_note": "You'll receive a WhatsApp confirmation shortly.",
+      "reset_button": "Make another reservation"
+    }
   }
 }

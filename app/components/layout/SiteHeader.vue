@@ -1,23 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useReservationModal } from '@/composables/useReservationModal'
 import { cx } from '@/utils/cx'
 
 /**
  * Global public navigation. Wraps the `UiNav` primitive, filling its `logo`,
  * `links`, and `actions` slots. Active route gets the orange-pill treatment;
- * the EN toggle switches locale; the Reservar button opens the (no-op-safe)
- * reservation modal intent.
- *
- * No real SUMO logo asset exists in the repo, so the logo is the shared
- * `SiteLogo` token-built badge (orange square, white "SUMO", ink "all you can
- * eat" bar), also reused by `SiteFooter`.
+ * the EN toggle switches locale; the Reservar button navigates to /reserve.
  */
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const route = useRoute()
-const { openReservation } = useReservationModal()
 
 interface NavLink {
   key: string
@@ -79,9 +72,11 @@ const otherLocale = computed(() => (locale.value === 'es' ? 'en' : 'es'))
       >
         {{ t('common.lang.toggle') }}
       </NuxtLink>
-      <UiButton size="sm" @click="openReservation">
-        {{ t('nav.reserve') }}
-      </UiButton>
+      <NuxtLink :to="localePath('/reserve')" class="no-underline">
+        <UiButton size="sm">
+          {{ t('nav.reserve') }}
+        </UiButton>
+      </NuxtLink>
     </template>
   </UiNav>
 </template>
