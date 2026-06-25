@@ -106,7 +106,7 @@
       "description": "Menu browsing by location type (AYCE / Express) and modality (All You Can Eat / À la carte — AYCE only) with category chips (scroll navigation) and dish grid. Sauce picker for Wings & Boneless. Per-dish price in à la carte, 'incluido' in All You Can Eat. Content from Neon DB via GET /api/v1/menu. ISR 3600s.",
       "spec_path": "specs/011-menu-page",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 12,
