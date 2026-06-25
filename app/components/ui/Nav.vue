@@ -18,6 +18,10 @@ function toggleMenu() {
   open.value = !open.value
 }
 
+function handleDrawerClick(e: MouseEvent) {
+  if ((e.target as Element).closest('a')) open.value = false
+}
+
 const rootClasses = computed(() =>
   cx(
     'w-full bg-bg border-b-pop border-ink z-50',
@@ -78,6 +82,7 @@ const rootClasses = computed(() =>
     <div
       v-if="open"
       class="md:hidden border-t-pop border-ink bg-bg px-4 py-4 flex flex-col gap-2 [&_a]:self-start [&_a]:rotate-0 [&_a]:hover:rotate-0"
+      @click="handleDrawerClick"
     >
       <slot name="links" />
     </div>

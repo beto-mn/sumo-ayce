@@ -41,6 +41,28 @@ function makeInitialDraft(): ReservationDraft {
   }
 }
 
+function applyErrors(errors: FormErrors, v: ReturnType<typeof validate>): void {
+  Object.assign(errors, {
+    branch: v.branch,
+    date: v.date,
+    time: v.time,
+    partySize: v.partySize,
+    name: v.name,
+    phone: v.phone,
+  })
+}
+
+function buildPayload(draft: ReservationDraft): CreateReservationPayload {
+  return {
+    branchId: draft.branchId as string,
+    contactName: draft.name.trim(),
+    contactPhone: stripPhone(draft.phone),
+    partySize: draft.partySize as number,
+    reservationDate: draft.date,
+    reservationTime: draft.time,
+  }
+}
+
 export function useReservationSubmit(
   branches: Branch[]
 ): UseReservationSubmitReturn {
@@ -52,28 +74,14 @@ export function useReservationSubmit(
 
   async function submit(): Promise<void> {
     const validationErrors = validate(draft, branches)
-    Object.assign(errors, {
-      branch: validationErrors.branch,
-      date: validationErrors.date,
-      time: validationErrors.time,
-      partySize: validationErrors.partySize,
-      name: validationErrors.name,
-      phone: validationErrors.phone,
-    })
+    applyErrors(errors, validationErrors)
     if (Object.values(validationErrors).some(Boolean)) return
 
     status.value = 'submitting'
     apiError.value = null
 
     const branch = branches.find(b => b.id === draft.branchId)
-    const payload: CreateReservationPayload = {
-      branchId: draft.branchId as string,
-      contactName: draft.name.trim(),
-      contactPhone: stripPhone(draft.phone),
-      partySize: draft.partySize as number,
-      reservationDate: draft.date,
-      reservationTime: draft.time,
-    }
+    const payload = buildPayload(draft)
 
     try {
       const result = await $fetch<{ data: { folio: string } }>(

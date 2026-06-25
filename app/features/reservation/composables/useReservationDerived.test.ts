@@ -177,8 +177,8 @@ describe('useReservationDerived — todayIso and maxDateIso', () => {
   it('maxDateIso is 30 days after todayIso', () => {
     const draft = makeDraft()
     const { todayIso, maxDateIso } = useReservationDerived(draft, BRANCHES)
-    const today = new Date(todayIso.value + 'T00:00:00')
-    const max = new Date(maxDateIso.value + 'T00:00:00')
+    const today = new Date(`${todayIso.value}T00:00:00`)
+    const max = new Date(`${maxDateIso.value}T00:00:00`)
     const diffDays = Math.round(
       (max.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     )

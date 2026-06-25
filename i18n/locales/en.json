@@ -205,6 +205,59 @@
       "reserve": "Reserve"
     }
   },
+  "menu": {
+    "type": {
+      "ayce": "AYCE",
+      "express": "Express"
+    },
+    "modality": {
+      "buffet": "All You Can Eat",
+      "carta": "À la carte"
+    },
+    "category": {
+      "appetizers": "Appetizers",
+      "salads": "Salads",
+      "rice": "Rice",
+      "ramen": "Ramen",
+      "burgers": "Burgers",
+      "sandwiches": "Sandwiches",
+      "burritos": "Burritos",
+      "hot_dogs": "Hot Dogs",
+      "cold_rolls": "Cold Rolls",
+      "hot_rolls": "Hot Rolls",
+      "sweet_rolls": "Sweet Rolls",
+      "desserts": "Desserts",
+      "wings": "Wings & Boneless",
+      "kids": "Kids Menu",
+      "drinks": "Drinks",
+      "empty": "No dishes in this category"
+    },
+    "dish": {
+      "incluido": "Included",
+      "price_prefix": "$",
+      "no_image_alt": "SUMO dish",
+      "sauce_required": "Choose your sauce"
+    },
+    "drink_group": {
+      "jumbo_cocktails": "Jumbo Cocktails",
+      "cantaritos_sumo_cups": "Cantaritos & Sumo Cups",
+      "non_alcoholic": "Non-Alcoholic Drinks",
+      "sodas": "Sodas & Beverages",
+      "coffee_digestifs": "Coffee & Digestifs",
+      "beers_spirits": "Beers & Spirits"
+    },
+    "sauce": {
+      "spicy_indicator": "Spicy"
+    },
+    "cta": {
+      "ver_carta": "View full menu"
+    },
+    "seo": {
+      "title_ayce": "AYCE Menu – SUMO All You Can Eat",
+      "title_express": "Express Menu – SUMO All You Can Eat",
+      "description": "Explore the full SUMO menu: sushi, burgers, hot dogs, wings, drinks and more."
+    }
+  },
   "reservation": {
     "page_title": "Reserve a table | SUMO AYCE",
     "form": {
