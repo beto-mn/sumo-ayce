@@ -183,6 +183,13 @@
       "when": 1782518400000,
       "tag": "0025_rename_drink_group_meta_to_drink_group",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1782604800000,
+      "tag": "0026_add_drink_sub_group",
+      "breakpoints": true
     }
   ]
 }

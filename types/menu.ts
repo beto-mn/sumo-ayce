@@ -37,8 +37,7 @@ export type DrinkGroup =
   | 'non_alcoholic'
   | 'sodas'
   | 'coffee_digestifs'
-  | 'beers'
-  | 'spirits'
+  | 'beers_spirits'
 
 /**
  * A featured dish/drink row, ready for the homepage rail. The route resolves
@@ -54,6 +53,13 @@ export interface FeaturedDishRow {
   category: MenuCategoryKey
 }
 
+export interface DrinkSubGroup {
+  key: string
+  name: Bilingual
+  subtitle: Bilingual | null
+  promo: Bilingual | null
+}
+
 export interface FullMenuDish {
   id: string
   name: Bilingual
@@ -65,6 +71,7 @@ export interface FullMenuDish {
   /** True when the dish is shown as "incluido" (buffet) instead of a price. */
   incluido: boolean
   drinkGroup: DrinkGroup | null
+  drinkSubGroup: DrinkSubGroup | null
   requiresSauce: boolean
 }
 

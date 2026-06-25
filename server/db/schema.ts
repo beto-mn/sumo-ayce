@@ -292,6 +292,9 @@ export const menuItems = pgTable(
     badgeEn: varchar('badge_en', { length: 40 }),
     featured: boolean('featured').notNull().default(false),
     drinkGroupId: uuid('drink_group_id').references(() => drinkGroups.id),
+    drinkSubGroupId: uuid('drink_sub_group_id').references(
+      () => drinkSubGroups.id
+    ),
     requiresSauce: boolean('requires_sauce').notNull().default(false),
     isActive: boolean('is_active').notNull().default(true),
     displayOrder: integer('display_order').notNull().default(0),
@@ -335,3 +338,26 @@ export const drinkGroups = pgTable('drink_group', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
+
+export const drinkSubGroups = pgTable(
+  'drink_sub_group',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    drinkGroupId: uuid('drink_group_id')
+      .notNull()
+      .references(() => drinkGroups.id),
+    key: varchar('key', { length: 60 }).notNull().unique(),
+    nameEs: text('name_es').notNull(),
+    nameEn: text('name_en').notNull(),
+    subtitleEs: text('subtitle_es'),
+    subtitleEn: text('subtitle_en'),
+    promoEs: text('promo_es'),
+    promoEn: text('promo_en'),
+    displayOrder: integer('display_order').notNull().default(0),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [
+    index('drink_sub_group_group_order_idx').on(t.drinkGroupId, t.displayOrder),
+  ]
+)

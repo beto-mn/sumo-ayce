@@ -3,6 +3,7 @@ import { seedAyceMenu } from './seeds/ayceMenu'
 import { seedBranches } from './seeds/branches'
 import { seedDesserts } from './seeds/desserts'
 import { seedDrinkGroups } from './seeds/drinkGroups'
+import { seedDrinkSubGroups } from './seeds/drinkSubGroups'
 import { seedDrinks } from './seeds/drinks'
 import { seedExpressMenu } from './seeds/expressMenu'
 import { seedKidsMenu } from './seeds/kidsMenu'
@@ -15,6 +16,7 @@ async function main() {
   await seedBranches()
   await seedMenuCategories()
   await seedDrinkGroups()
+  await seedDrinkSubGroups()
   await seedDrinks()
   await seedExpressMenu()
   await seedAyceMenu()
