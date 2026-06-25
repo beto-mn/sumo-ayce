@@ -60,7 +60,8 @@ globals.useI18n = () => ({
 globals.useRuntimeConfig = () => ({ public: { heroPrice: '$269' } })
 globals.useLocalePath = () => (p: string) => p
 globals.useSwitchLocalePath = () => (l: string) => `/${l}`
-globals.useRoute = () => ({ path: '/' })
+globals.useRoute = () => ({ path: '/', query: {} })
+globals.useRouter = () => ({ replace: () => {} })
 globals.useReservationModal = () => ({
   isOpen: ref(false),
   openReservation: () => {},
@@ -75,9 +76,33 @@ const NuxtLink = {
   },
 }
 
+// Stub NuxtImg as a plain img so image components render in Storybook.
+const NuxtImg = {
+  props: {
+    src: String,
+    alt: String,
+    loading: String,
+    width: [String, Number],
+    height: [String, Number],
+    class: String,
+  },
+  setup(props: Record<string, unknown>) {
+    return () =>
+      h('img', {
+        src: props.src,
+        alt: props.alt,
+        loading: props.loading,
+        width: props.width,
+        height: props.height,
+        class: props.class,
+      })
+  },
+}
+
 const preview: Preview = {
   setup(app: App) {
     app.component('NuxtLink', NuxtLink)
+    app.component('NuxtImg', NuxtImg)
     for (const [path, mod] of Object.entries(uiModules)) {
       const base = path.split('/').pop()?.replace('.vue', '')
       if (base) app.component(`Ui${base}`, mod.default)

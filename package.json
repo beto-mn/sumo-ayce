@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "@nuxt/image": "2.0.0",
     "drizzle-orm": "^0.45.2",
     "mapbox-gl": "^3.25.0",
     "nuxt": "^4.4.6",
