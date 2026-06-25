@@ -20,7 +20,7 @@ type AlaCartaItem = {
   nameEn: string
   descriptionEs: string
   descriptionEn: string
-  fileName: string
+  fileName: string | null
   price: string | null
   badgeEs?: string
   badgeEn?: string
@@ -39,6 +39,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Tiras de pollo empanizadas, servidas con aderezo americano.',
     descriptionEn: 'Breaded chicken tenders served with American dressing.',
     fileName: 'chicken_tenders.webp',
+    featured: true,
     price: '128.00',
   },
   {
@@ -109,7 +110,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Deliciosas rodajas de elote fritas y sazonadas, acompañadas con salsa chipotle.',
     descriptionEn:
       'Delicious fried and seasoned corn slices served with chipotle sauce.',
-    fileName: 'sweet_corns.webp',
+    fileName: 'sweet_corn.webp',
     price: '128.00',
   },
   {
@@ -120,7 +121,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Crujientes totopos bañados en queso fundido con chile jalapeño en cubos.',
     descriptionEn:
       'Crunchy nachos drenched in melted cheese with diced jalapeño.',
-    fileName: 'cinema_nachos.webp',
+    fileName: 'nachos.webp',
     price: '129.00',
   },
 ]
@@ -136,7 +137,7 @@ const SALADS: AlaCartaItem[] = [
       'Tender de pollo o pechuga de pollo (120g), sobre base de lechuga italiana, jitomate, aguacate, queso parmesano, crutones y aderezo césar.',
     descriptionEn:
       'Romaine lettuce base, topped with chicken tenders or grilled chicken (120g), tomato, avocado, parmesan cheese, croutons and Caesar dressing.',
-    fileName: 'caesar_salad.webp',
+    fileName: 'cesar_salad.webp',
     price: '145.00',
   },
   {
@@ -147,7 +148,7 @@ const SALADS: AlaCartaItem[] = [
       'Tender de pollo o pechuga de pollo (120g), sobre base de lechuga italiana, jitomate, aguacate, queso parmesano, crutones y aderezo césar.',
     descriptionEn:
       'Romaine lettuce base, topped with chicken tenders (120g), tomato, tortilla strips, avocado, red onion, sesame seeds and blue cheese dressing.',
-    fileName: 'sweet_kani_salad.webp',
+    fileName: 'chicken_chick_salad.webp',
     price: '149.00',
   },
 ]
@@ -164,6 +165,7 @@ const RICE_DISHES: AlaCartaItem[] = [
     descriptionEn:
       'Grilled rice with chicken, beef, egg, mixed vegetables, green onion and sesame.',
     fileName: 'mixed_yakimeshi.webp',
+    featured: true,
     price: '99.00',
   },
   {
@@ -185,7 +187,7 @@ const RICE_DISHES: AlaCartaItem[] = [
       'Arroz blanco al vapor, acompañado con pollo a la plancha en salsa teriyaki.',
     descriptionEn:
       'Steamed white rice served with grilled chicken in teriyaki sauce.',
-    fileName: 'gohan_teriyaki.webp',
+    fileName: 'gohan_tereyaki.webp',
     price: '99.00',
   },
   {
@@ -212,7 +214,8 @@ const RAMEN: AlaCartaItem[] = [
       'Ramen XL en caldo de tu elección, con proteína a elegir y toppings extras al gusto.',
     descriptionEn:
       'XL ramen in your choice of broth, with your choice of protein and extra toppings.',
-    fileName: 'ramen.webp',
+    fileName: 'ramen_xl.webp',
+    featured: true,
     price: '149.00',
   },
 ]
@@ -231,7 +234,8 @@ const BURGERS: AlaCartaItem[] = [
     descriptionEn:
       'Double beef burger (300g) with American dressing, manchego cheese and lettuce, topped with your choice of our sauces.',
     fileName: 'sumo_burger.webp',
-    price: null,
+    featured: true,
+    price: '239.00',
   },
   {
     categoryKey: 'burgers',
@@ -242,7 +246,7 @@ const BURGERS: AlaCartaItem[] = [
     descriptionEn:
       'Chicken tender burger (120g) with American dressing, original buffalo sauce, lettuce, onion and blue cheese dressing.',
     fileName: 'buffalo_chicken_burger.webp',
-    price: null,
+    price: '239.00',
   },
   {
     categoryKey: 'burgers',
@@ -252,8 +256,8 @@ const BURGERS: AlaCartaItem[] = [
       'Hamburguesa de carne de res (150g), aderezo americano, queso manchego, cebolla caramelizada, piña asada, tocino miel y lechuga.',
     descriptionEn:
       'Beef burger (150g) with American dressing, manchego cheese, caramelized onion, grilled pineapple, honey bacon and lettuce.',
-    fileName: 'pina_asada_burger.webp',
-    price: null,
+    fileName: 'grilled_pineapple_burger.webp',
+    price: '239.00',
   },
   {
     categoryKey: 'burgers',
@@ -264,7 +268,7 @@ const BURGERS: AlaCartaItem[] = [
     descriptionEn:
       'Beef burger (150g) with roasted chile dressing, bacon, onion rings, manchego cheese and blue cheese.',
     fileName: 'spicy_burger.webp',
-    price: null,
+    price: '239.00',
   },
   {
     categoryKey: 'burgers',
@@ -275,7 +279,7 @@ const BURGERS: AlaCartaItem[] = [
     descriptionEn:
       'Beef burger (150g) in cheese and bacon sauce over a guacamole base, with manchego cheese, honey bacon and caramelized onion, served with cinema nachos.',
     fileName: 'tostiburger.webp',
-    price: null,
+    price: '239.00',
   },
 ]
 
@@ -292,7 +296,8 @@ const HOT_DOGS: AlaCartaItem[] = [
     descriptionEn:
       'Jumbo hot dog wrapped in bacon with American dressing, Buffalo Ranch sauce and potato chips with cajun seasoning..',
     fileName: 'buffalo_ranch_dog.webp',
-    price: null,
+    featured: true,
+    price: '239.00',
   },
   {
     categoryKey: 'hot_dogs',
@@ -303,7 +308,7 @@ const HOT_DOGS: AlaCartaItem[] = [
     descriptionEn:
       'Jumbo hot dog with American dressing, guacamole and bacon..',
     fileName: 'guacamole_dog.webp',
-    price: null,
+    price: '239.00',
   },
   {
     categoryKey: 'hot_dogs',
@@ -314,7 +319,7 @@ const HOT_DOGS: AlaCartaItem[] = [
     descriptionEn:
       'Jumbo hot dog wrapped in bacon and smash beef, with caramelized onion, manchego cheese and roasted chile dressing..',
     fileName: 'smash_dog.webp',
-    price: null,
+    price: '239.00',
   },
 ]
 
@@ -331,7 +336,8 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: avocado and cucumber. Outside: mango, rocca shrimp, pineapple pico and chiltepín sauce..',
     fileName: 'moon_roll.webp',
-    price: null,
+    featured: true,
+    price: '119.00',
   },
   {
     categoryKey: 'cold_rolls',
@@ -342,7 +348,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: cream cheese, cucumber and breaded shrimp. Outside: mango and eel sauce..',
     fileName: 'bora_bora.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'cold_rolls',
@@ -353,7 +359,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: surimi, avocado and cucumber. Outside: sesame mix..',
     fileName: 'california.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'cold_rolls',
@@ -364,7 +370,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: cream cheese, avocado and salmon. Outside: sesame mix..',
     fileName: 'philadelphia.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'cold_rolls',
@@ -375,7 +381,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: avocado, carrot kakiage and cream cheese. Outside: plantain slices, tampico and eel sauce..',
     fileName: 'monkey_roll.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'cold_rolls',
@@ -386,7 +392,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: breaded shrimp, grilled pineapple and avocado. Outside: cream cheese, shrimp seasoning and pad thai sauce..',
     fileName: 'white_dragon.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'cold_rolls',
@@ -397,7 +403,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: avocado and breaded surimi. Outside: manchego cheese, guacamole, pineapple pico and serrano pepper..',
     fileName: 'nipon_roll.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'cold_rolls',
@@ -408,7 +414,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: breaded shrimp, cucumber and pineapple. Outside: avocado, sesame and pad thai sauce..',
     fileName: 'tiki_thai_roll.webp',
-    price: null,
+    price: '119.00',
   },
 ]
 
@@ -425,7 +431,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: breaded shrimp, cream cheese and avocado. Outside: breaded with tampico and chipotle mayo..',
     fileName: 'kekoto.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -436,7 +442,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: avocado, pineapple, cream cheese and breaded shrimp. Outside: panko and coconut breading, drizzled with chipotle-pineapple sauce. Seaweed-free..',
     fileName: 'coco_roll.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -447,7 +453,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: avocado, manchego cheese and chicken tender. Outside: breaded with your choice of sauce..',
     fileName: 'sumo_roll.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -458,7 +464,8 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: fried rice base, cream cheese and breaded shrimp. Outside: breaded nori seaweed drizzled with eel sauce..',
     fileName: 'rikishi_roll.webp',
-    price: null,
+    featured: true,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -469,7 +476,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: fried rice base, breaded shrimp and avocado. Outside: breaded, cream cheese, tampico and serrano pepper drizzled with eel sauce..',
     fileName: 'more_of_the_same.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -480,7 +487,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: avocado and breaded shrimp. Outside: breaded with manchego cheese, chipotle mayo, eel sauce and green onion. Seaweed-free..',
     fileName: 'tempura_roll.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -491,7 +498,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: beef, manchego, avocado, serrano pepper and green onion. Outside: breaded with french fry strips, chipotle mayo and BBQ sauce..',
     fileName: 'texas_roll.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -502,7 +509,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: cream cheese, avocado, breaded surimi and carrot kakiage. Outside: melted manchego cheese with roasted chiles and green onion. Seaweed-free..',
     fileName: 'manchego_roll.webp',
-    price: null,
+    price: '119.00',
   },
   {
     categoryKey: 'hot_rolls',
@@ -512,8 +519,8 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: queso crema y surimi. Por fuera: plátano macho frito y salsa de anguila..',
     descriptionEn:
       'Inside: cream cheese and surimi. Outside: fried plantain and eel sauce..',
-    fileName: 'banana_fried.webp',
-    price: null,
+    fileName: 'banana_fried_roll.webp',
+    price: '119.00',
   },
 ]
 
@@ -529,6 +536,7 @@ const SWEET_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: cream cheese and plantain. Outside: sweet tempura dusted with sugar and cinnamon, drizzled with chocolate sauce..',
     fileName: 'cinnamon_roll.webp',
+    featured: true,
     price: '119.00',
   },
   {
@@ -555,7 +563,7 @@ const WINGS: AlaCartaItem[] = [
       '10 alitas de pollo con 1 aderezo (45ml) y 2 salsas a elegir (45ml c/u).',
     descriptionEn:
       '10 chicken wings with 1 dressing (45ml) and 2 sauces of your choice (45ml each).',
-    fileName: 'chicken_wings.webp',
+    fileName: null,
     price: '229.00',
     requiresSauce: true,
   },
@@ -567,7 +575,7 @@ const WINGS: AlaCartaItem[] = [
       '20 alitas de pollo con 1 aderezo (45ml), de papas a la francesa, vegetales (70g) y 3 salsas a elegir (45ml c/u).',
     descriptionEn:
       '20 chicken wings with 1 dressing (45ml), french fries, vegetables (70g) and 3 sauces of your choice (45ml each).',
-    fileName: 'chicken_wings.webp',
+    fileName: null,
     price: '409.00',
     requiresSauce: true,
   },
@@ -579,7 +587,7 @@ const WINGS: AlaCartaItem[] = [
       'Trocitos de pechuga de pollo bañados en 2 salsas de tu preferencia (45ml c/u), acompañados con papas a la francesa (100g)..',
     descriptionEn:
       '12 breaded chicken bites in 2 sauces of your choice (45ml each), served with french fries (100g).',
-    fileName: 'boneless.webp',
+    fileName: null,
     price: '279.00',
     requiresSauce: true,
   },
@@ -591,7 +599,7 @@ const WINGS: AlaCartaItem[] = [
       'Trocitos de pechuga de pollo bañados en 3 salsas de tu preferencia (45ml c/u), acompañados con papas a la francesa (200g)..',
     descriptionEn:
       '30 breaded chicken bites in 3 sauces of your choice (45ml each), served with french fries (200g).',
-    fileName: 'boneless.webp',
+    fileName: null,
     price: '579.00',
     requiresSauce: true,
   },

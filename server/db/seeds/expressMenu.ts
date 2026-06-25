@@ -18,7 +18,7 @@ type ExpressItem = {
   nameEn: string
   descriptionEs: string
   descriptionEn: string
-  fileName: string
+  fileName: string | null
   badgeEs?: string
   badgeEn?: string
   featured?: boolean
@@ -348,7 +348,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: tuna spicy, pepino. Por fuera: aguacate, tempura crunch y salsa teriyaki dulce. 5 pzs.',
     descriptionEn:
       'Inside: spicy tuna, cucumber. Outside: avocado, tempura crunch and sweet teriyaki sauce. 5 pcs.',
-    fileName: 'kyoto_roll.webp',
+    fileName: 'kyoto.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -358,7 +358,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: queso crema, pepino. Por fuera: filete de pescado, aguacate, ajonjolí, salsa sweet chili y mayo japonesa. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, cucumber. Outside: fish fillet, avocado, sesame, sweet chili sauce and Japanese mayo. 5 pcs.',
-    fileName: 'tokio_roll.webp',
+    fileName: 'tokio.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -423,7 +423,7 @@ const HOT_ROLLS: ExpressItem[] = [
       'Por dentro: salmón spicy, queso crema. Por fuera: queso crema, empanizado y frito, con salmón y salsa especial. 5 pzs.',
     descriptionEn:
       'Inside: spicy salmon, cream cheese. Outside: cream cheese, breaded and fried, with salmon and special sauce. 5 pcs.',
-    fileName: 'japan_roll.webp',
+    fileName: 'japan.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -461,7 +461,7 @@ const WINGS: ExpressItem[] = [
     nameEn: 'Chicken Wings',
     descriptionEs: '5 alitas de pollo con tu salsa a elegir.',
     descriptionEn: '5 chicken wings with your choice of sauce.',
-    fileName: 'chicken_wings.webp',
+    fileName: null,
     requiresSauce: true,
   },
   {
@@ -472,7 +472,7 @@ const WINGS: ExpressItem[] = [
       '150g de pepitas de pollo empanizadas, bañadas en una de nuestras salsas.',
     descriptionEn:
       '150g breaded chicken bites, topped with your choice of sauce.',
-    fileName: 'boneless.webp',
+    fileName: null,
     requiresSauce: true,
   },
 ]

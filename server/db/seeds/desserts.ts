@@ -25,7 +25,7 @@ const DESSERTS: DessertItem[] = [
       'Papa camote frita, tocino maple, acompañado de helado de vainilla.',
     descriptionEn:
       'Sweet potato fries topped with maple bacon dressing and served with vanilla ice cream.',
-    fileName: 'sumo_fries_dessert.webp',
+    fileName: 'sumo_fries.webp',
     price: '149.00',
   },
   {
@@ -48,6 +48,7 @@ const DESSERTS: DessertItem[] = [
     descriptionEn:
       'Donut holes, sprinkled with sugar and cinnamon, served with vanilla ice cream, drizzled with chocolate sauce and topped with whipped cream.',
     fileName: 'sumo_bites.webp',
+    featured: true,
     price: '129.00',
   },
   {

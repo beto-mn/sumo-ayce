@@ -25,6 +25,7 @@ const KIDS_ITEMS: KidsItem[] = [
     descriptionEn:
       '60g smash beef patty topped with an American cheese slice, lettuce and American dressing. Served with french fries.',
     fileName: 'kid_burger.webp',
+    featured: true,
   },
   {
     nameEs: 'Sushi Kids',
@@ -47,7 +48,7 @@ const KIDS_ITEMS: KidsItem[] = [
     descriptionEs: '240g Pasta en salsa de queso, tocino y cebollín.',
     descriptionEn:
       '240g Macaroni in creamy cheese sauce, bacon and finely chopped green onions.',
-    fileName: 'mac_and_cheese_kids.webp',
+    fileName: 'mac_&_cheese.webp',
   },
   {
     nameEs: 'Kawaii Pizza de Queso',
@@ -65,7 +66,7 @@ const KIDS_ITEMS: KidsItem[] = [
       '300g Pizza con salsa de tomate, pepperoni, mezcla de quesos y papas a la francesa.',
     descriptionEn:
       '300g pizza with tomato sauce, pepperoni, a mix of cheeses, served with french fries.',
-    fileName: 'kawaii_pepperoni_pizza.webp',
+    fileName: 'kawai_pepperoni_pizza.webp',
   },
 ]
 

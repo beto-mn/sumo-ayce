@@ -18,7 +18,7 @@ type AyceItem = {
   nameEn: string
   descriptionEs: string
   descriptionEn: string
-  fileName: string
+  fileName: string | null
   badgeEs?: string
   badgeEn?: string
   featured?: boolean
@@ -530,7 +530,7 @@ const WINGS: AyceItem[] = [
     nameEn: 'Chicken Wings',
     descriptionEs: '5 alitas de pollo con una salsa a elegir.',
     descriptionEn: '5 chicken wings with your choice of sauce.',
-    fileName: 'chicken_wings.webp',
+    fileName: null,
     requiresSauce: true,
   },
   {
@@ -540,7 +540,7 @@ const WINGS: AyceItem[] = [
     descriptionEs:
       '150g de trocitos de pollo empanizados y bañados en una de nuestras salsas.',
     descriptionEn: '150g breaded chicken bites topped with one of our sauces.',
-    fileName: 'boneless.webp',
+    fileName: null,
     requiresSauce: true,
   },
 ]
