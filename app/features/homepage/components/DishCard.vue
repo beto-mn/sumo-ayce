@@ -19,11 +19,11 @@ const description = computed(() =>
     shadow-size="sm"
   >
     <div
-      class="relative aspect-[4/3] overflow-hidden rounded-pop-sm border-pop border-ink bg-bg2"
+      class="relative h-44 rounded-pop-sm border-pop border-ink bg-bg2 p-4"
     >
       <img
         v-if="dish.imageUrl"
-        class="block h-full w-full object-cover"
+        class="block h-full w-full object-contain"
         :src="dish.imageUrl"
         :alt="dish.name"
         loading="lazy"

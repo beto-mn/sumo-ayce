@@ -1,24 +1,38 @@
-import { computed, type Ref, ref } from 'vue'
-import { FEATURED_DISHES } from '@/features/homepage/data/featured-dishes'
+import type { ComputedRef } from 'vue'
+import { computed } from 'vue'
 import type { FeaturedDish } from '@/types/content'
+import type { FeaturedDishRow } from '@/types/menu'
 
 interface UseFeaturedDishesReturn {
-  dishes: Ref<FeaturedDish[]>
-  ok: Ref<boolean>
-  pending: Ref<boolean>
+  dishes: ComputedRef<FeaturedDish[]>
+  ok: ComputedRef<boolean>
+  pending: ComputedRef<boolean>
 }
 
-/**
- * Featured dishes for the homepage rail.
- *
- * TODO: dishes are read from a static fixture for now; swap for a real data
- * source (e.g. a Nitro route) later. The return contract (`dishes` + `ok` +
- * `pending`) is already correct, so the page and rail component need no change.
- */
 export function useFeaturedDishes(): UseFeaturedDishesReturn {
+  const { locale } = useI18n()
+
+  const { data, status } = useAsyncData<FeaturedDishRow[]>(
+    'featured-dishes',
+    () => $fetch<FeaturedDishRow[]>('/api/v1/menu/featured')
+  )
+
+  const dishes = computed<FeaturedDish[]>(() => {
+    if (!data.value) return []
+    const loc = locale.value as 'es' | 'en'
+    return data.value.map(row => ({
+      id: row.id,
+      name: row.name[loc] ?? row.name.es,
+      description: row.description,
+      imageUrl: row.imageUrl,
+      badge: row.badge ? (row.badge[loc] ?? row.badge.es) : null,
+      category: row.category,
+    }))
+  })
+
   return {
-    dishes: computed(() => FEATURED_DISHES),
-    ok: ref(true),
-    pending: ref(false),
+    dishes,
+    ok: computed(() => status.value !== 'error'),
+    pending: computed(() => status.value === 'pending'),
   }
 }

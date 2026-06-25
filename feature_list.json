@@ -103,10 +103,10 @@
       "id": 11,
       "name": "menu-page",
       "title": "Menu / Bebidas Page (/menu)",
-      "description": "Menu browsing by location type (AYCE / Express) and modality (All You Can Eat / À la carte — AYCE only) with category chips filtering the dish grid. Sauce picker for Wings & Boneless. Per-dish price in à la carte, 'incluido' in All You Can Eat. Lightbox for full printed-menu images. Content via WordPress CPT menu_item fetched server-side. Rendering mode per docs/business/rendering-strategy.md. See docs/business/features.md §2.",
+      "description": "Menu browsing by location type (AYCE / Express) and modality (All You Can Eat / À la carte — AYCE only) with category chips (scroll navigation) and dish grid. Sauce picker for Wings & Boneless. Per-dish price in à la carte, 'incluido' in All You Can Eat. Content from Neon DB via GET /api/v1/menu. ISR 3600s.",
       "spec_path": "specs/011-menu-page",
       "sdd": true,
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": 12,
@@ -129,11 +129,11 @@
     {
       "id": 14,
       "name": "reservation-page",
-      "title": "Reservation Page (/reservar)",
-      "description": "Dedicated reservation page at /reservar. Branch and type (AYCE/Express) can be pre-filled via query params (?branch=arboledas&type=ayce) so the 'Reservar' button on the branches page routes with context. Form: branch (pre-filled if param present) → branch-dependent time slots from hours, date, party size, name, phone. Submit triggers POST /api/v1/reservations (always-dynamic Vercel function per docs/business/rendering-strategy.md) which sends Twilio WhatsApp to client + manager. Same visual design system as the rest of the site (Mercado Pop tokens, orange accent for AYCE). See docs/business/features.md §5.",
+      "title": "Reservation Page (/reserve)",
+      "description": "Dedicated reservation page at /reserve. Branch and type (AYCE/Express) can be pre-filled via query params (?branch=arboledas&type=ayce) so the 'Reservar' button on the branches page routes with context. Form: branch (pre-filled if param present) → branch-dependent time slots from hours, date, party size, name, phone. Submit triggers POST /api/v1/reservations which sends Twilio WhatsApp to client + manager. See docs/business/features.md §5.",
       "spec_path": "specs/014-reservation-page",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 15,

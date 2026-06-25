@@ -2,6 +2,12 @@ import type { ComputedRef, Ref } from 'vue'
 import { computed } from 'vue'
 import type { Branch } from '../types'
 
+function toMinutes(hhmm: string, isMidnightClose = false): number {
+  const [h, m] = hhmm.split(':').map(Number)
+  if (isMidnightClose && h === 0 && m === 0) return 1440
+  return (h ?? 0) * 60 + (m ?? 0)
+}
+
 /**
  * Generates 15-minute time slot strings for a given branch schedule and date.
  *
@@ -16,12 +22,6 @@ export function generateSlots(
   date: string
 ): string[] {
   if (!open || !close) return []
-
-  const toMinutes = (hhmm: string, isMidnightClose = false): number => {
-    const [h, m] = hhmm.split(':').map(Number)
-    if (isMidnightClose && h === 0 && m === 0) return 1440
-    return (h ?? 0) * 60 + (m ?? 0)
-  }
 
   const openMin = toMinutes(open)
   const closeMin = toMinutes(close, true)

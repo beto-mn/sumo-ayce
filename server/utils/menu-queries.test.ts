@@ -1,16 +1,29 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { mockDbSelect } = vi.hoisted(() => ({ mockDbSelect: vi.fn() }))
-
-vi.mock('./db', () => ({ db: { select: mockDbSelect } }))
-vi.mock('../db/schema', () => ({
-  menuItems: {},
-  menuCategories: {},
-  sauces: {},
-  drinkGroups: {},
+const { mockDbSelect, mockInArray } = vi.hoisted(() => ({
+  mockDbSelect: vi.fn(),
+  mockInArray: vi.fn(),
 }))
 
-import { getFeaturedDishes, getFullMenu } from './menu-queries'
+vi.mock('./db', () => ({ db: { select: mockDbSelect } }))
+vi.mock('drizzle-orm', async importOriginal => {
+  const actual = await importOriginal<typeof import('drizzle-orm')>()
+  mockInArray.mockImplementation(actual.inArray)
+  return { ...actual, inArray: mockInArray }
+})
+vi.mock('../db/schema', async importOriginal => {
+  const actual = await importOriginal<typeof import('../db/schema')>()
+  return {
+    ...actual,
+    menuItems: {},
+    menuCategories: {},
+    sauces: {},
+    drinkGroups: {},
+    drinkSubGroups: actual.drinkSubGroups,
+  }
+})
+
+import { getFeaturedDishes, getFullMenu, locationScope } from './menu-queries'
 
 // A joined menu_items×menu_categories row as the SQL select returns it.
 type FeaturedQueryRow = {
@@ -20,6 +33,8 @@ type FeaturedQueryRow = {
   descriptionEs: string
   descriptionEn: string
   fileName: string | null
+  locationType: string
+  includedInAyce: boolean
   badgeEs: string | null
   badgeEn: string | null
   category: string
@@ -49,6 +64,8 @@ const featuredRow = (
   descriptionEs: 'Vainas de soya',
   descriptionEn: 'Soybean pods',
   fileName: 'edamame.jpg',
+  locationType: 'ayce',
+  includedInAyce: false,
   badgeEs: 'Nuevo',
   badgeEn: 'New',
   category: 'entradas',
@@ -67,7 +84,7 @@ describe('getFeaturedDishes', () => {
       id: 'dish-1',
       name: { es: 'Edamame', en: 'Edamame' },
       description: { es: 'Vainas de soya', en: 'Soybean pods' },
-      imageUrl: 'edamame.jpg',
+      imageUrl: '/menu/ala-carta/edamame.jpg',
       badge: { es: 'Nuevo', en: 'New' },
       category: 'entradas',
     })
@@ -150,16 +167,20 @@ type SauceRow = {
 }
 
 // First select(...) → dishes-with-category; second select(...) → sauces.
+// The dishes query chains: .from → .innerJoin → .leftJoin (drinkGroups) → .leftJoin (drinkSubGroups) → .where → .orderBy
 function mockMenuChains(menuRows: MenuQueryRow[], sauceRows: SauceRow[]): void {
+  const innerChain = {
+    where: vi.fn().mockReturnValue({
+      orderBy: vi.fn().mockResolvedValue(menuRows),
+    }),
+  }
+  const leftJoin2 = vi.fn().mockReturnValue(innerChain)
+  const leftJoin1 = vi.fn().mockReturnValue({ leftJoin: leftJoin2 })
   mockDbSelect
     .mockReturnValueOnce({
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
-          leftJoin: vi.fn().mockReturnValue({
-            where: vi.fn().mockReturnValue({
-              orderBy: vi.fn().mockResolvedValue(menuRows),
-            }),
-          }),
+          leftJoin: leftJoin1,
         }),
       }),
     })
@@ -198,6 +219,23 @@ const sauceRow = (over: Partial<SauceRow> = {}): SauceRow => ({
   nameEn: 'BBQ',
   spiceLevel: 0,
   ...over,
+})
+
+// US3 SC2 — direct unit test for the locationScope predicate builder.
+describe('locationScope', () => {
+  it('calls inArray with ["express","both"] for express', () => {
+    locationScope('express')
+    // The first arg is menuItems.locationType (undefined in schema mock — that's fine).
+    // What matters is the values array passed to inArray.
+    const [, values] = mockInArray.mock.calls[0] as [unknown, string[]]
+    expect(values).toEqual(['express', 'both'])
+  })
+
+  it('calls inArray with ["ayce","both"] for ayce', () => {
+    locationScope('ayce')
+    const [, values] = mockInArray.mock.calls[0] as [unknown, string[]]
+    expect(values).toEqual(['ayce', 'both'])
+  })
 })
 
 describe('getFullMenu', () => {
@@ -321,15 +359,36 @@ describe('getFullMenu', () => {
     ])
   })
 
+  // US3 SC2 — only Express and 'both' items appear for locationType=express.
+  // The WHERE clause is built by locationScope() via inArray(locationType, ['express','both']).
+  // This test verifies the correct value list is passed to inArray when locationType='express'.
+  it('applies Express location filter via inArray(locationType, ["express","both"])', async () => {
+    mockMenuChains([menuRow()], [])
+    await getFullMenu({ locationType: 'express', modality: 'buffet' })
+    // The first arg is menuItems.locationType (undefined in schema mock — that's fine).
+    const [, valuesExpress] = mockInArray.mock.calls[0] as [unknown, string[]]
+    expect(valuesExpress).toEqual(['express', 'both'])
+  })
+
+  it('applies AYCE location filter via inArray(locationType, ["ayce","both"])', async () => {
+    mockMenuChains([menuRow()], [])
+    await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
+    const [, valuesAyce] = mockInArray.mock.calls[0] as [unknown, string[]]
+    expect(valuesAyce).toEqual(['ayce', 'both'])
+  })
+
   it('propagates DB errors from the dishes query', async () => {
+    const errorChain = {
+      where: vi.fn().mockReturnValue({
+        orderBy: vi.fn().mockRejectedValue(new Error('db down')),
+      }),
+    }
+    const leftJoin2Err = vi.fn().mockReturnValue(errorChain)
+    const leftJoin1Err = vi.fn().mockReturnValue({ leftJoin: leftJoin2Err })
     mockDbSelect.mockReturnValueOnce({
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
-          leftJoin: vi.fn().mockReturnValue({
-            where: vi.fn().mockReturnValue({
-              orderBy: vi.fn().mockRejectedValue(new Error('db down')),
-            }),
-          }),
+          leftJoin: leftJoin1Err,
         }),
       }),
     })

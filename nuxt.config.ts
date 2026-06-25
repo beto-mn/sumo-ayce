@@ -29,7 +29,12 @@ export default defineNuxtConfig({
       ],
     },
   },
-  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n', '@nuxt/fonts'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/i18n',
+    '@nuxt/fonts',
+    '@nuxt/image',
+  ],
   components: [
     // Shared primitives → `Ui` prefix (<UiButton>, <UiNav>, ...).
     { path: '~/components/ui', prefix: 'Ui' },
