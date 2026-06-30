@@ -55,6 +55,43 @@
 - 101 test files, 754 tests passed
 - `./init.sh` exits 0
 
+## Feature spec authored: 020 — storybook-full-coverage (2026-06-29)
+
+**Feature id**: 20  
+**Feature name**: storybook-full-coverage  
+**Status change**: `pending` → `spec_ready`  
+**Spec folder**: `specs/020-storybook-full-coverage/`  
+**Branch**: `chore/021-storybook-coverage`
+
+### Skills invoked (in order)
+
+1. `/speckit-git-feature` — created branch `chore/021-storybook-coverage`
+2. `/speckit-specify` — generated `specs/020-storybook-full-coverage/spec.md`
+3. `/speckit-plan` — generated `plan.md`, `research.md`, `data-model.md`, `quickstart.md`
+4. `/speckit-tasks` — generated `tasks.md` (139 tasks)
+
+### No [NEEDS CLARIFICATION] markers
+
+All aspects of the feature were fully specified by the context. No clarification round was needed.
+
+### Main Phase -1 gates (from plan.md)
+
+- **Article I**: Story files must remain co-located with components in `app/features/<slice>/components/` or `app/components/ui/`. No cross-feature story imports.
+- **Article VII**: Every story file must cover Default + applicable state variants (loading, empty, error, disabled) + both locale variants (ES, EN) + responsive behavior.
+- **Article VIII**: No story file may exceed 200 lines. Overflow splits to `*.variants.stories.ts` sibling.
+- **Article IX**: Biome lint + formatting must pass. `vue-tsc --noEmit` must pass. `storybook build` must succeed with zero errors and zero image 404s. Zero WCAG AA violations on Default stories.
+- **Article X**: No shared story utilities unless used by 3+ story files.
+
+### Key technical decisions (from research.md)
+
+- Addons pinned to `^10.4.1` to match installed Storybook major
+- Autodocs enabled globally via `docs: { autodocs: true }` in `main.ts` (not per-file tags)
+- Viewport presets configured in `.storybook/preview.ts` (not `main.ts`)
+- Broken images fixed with `https://placehold.co/400x300` (3 occurrences in menu story files)
+- Locale variants use direct prop passing (no i18n plugin decorator required)
+- ComponentDocs files use CSF3 `.stories.ts` with `tags: ['autodocs']`
+
 ## Pending
 - Feature **018** — mark `done` in `feature_list.json` (owner action required)
-- Feature **019 — homepage-brand-updates** (`pending`, `sdd: true`) — spec pendiente
+- Feature **019 — homepage-brand-updates** (`pending`, `sdd: true`) — spec pending
+- Feature **020 — storybook-full-coverage** (`spec_ready`) — awaiting human approval before implementation
