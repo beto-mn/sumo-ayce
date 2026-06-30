@@ -177,14 +177,58 @@ the design context in `docs/business/overview.md`.
 - Every new `.vue` component in `app/components/ui/`, `app/components/layout/`,
   or `app/features/*/components/` MUST have a co-located `.stories.ts`. If
   any new component lacks one, REJECTED.
+- Every **modified** `.vue` component MUST have its `.stories.ts` updated in
+  the same commit. A component whose story still describes the old API (stale
+  argTypes, missing new prop variants, removed props still in args) → REJECTED
+  as if the story is missing. Verify with:
+  ```bash
+  git diff --name-only master...HEAD | grep -E 'app/.+\.vue$' | while read vue; do
+    story="${vue%.vue}.stories.ts"
+    git diff --name-only master...HEAD | grep -qF "$story" || echo "Story not updated: $story"
+  done
+  ```
+  Any line printed → REJECTED unless the `.vue` change was purely internal
+  (no prop API change, no new states, no behavior change visible to users).
 - Each story file MUST include:
-  - A `Default` story
+  - A `Default` story with `tags: ['autodocs']` on the meta object
   - Stories for all significant prop variants (states, sizes, AYCE/Express
     accent if the component is accent-aware)
   - A responsive story or viewport annotation covering mobile and desktop
     breakpoints (breakpoint values per `docs/business/overview.md` §9)
+- `argTypes` MUST only reference props that actually exist on the component.
+  Phantom props in `argTypes` (e.g. `loading` on a component with no `loading`
+  prop) → REJECTED. Verify by running `pnpm typecheck` — `satisfies
+  Meta<typeof ComponentName>` will catch these as TS errors.
 - A story that does not actually demonstrate the variants it claims to
   cover is the same as no story → REJECTED.
+- **The story MUST mount the REAL component, not a hand-written HTML mock.**
+  Every story file must either set `component: Component` in the meta or mount
+  `<Component .../>` in its `render`. A story that recreates the component's
+  markup with raw `<div>`/`<button>`/`<nav>` HTML instead of importing and
+  mounting the `.vue` → REJECTED (it drifts from the real UI). Verify each
+  story references its component:
+  ```bash
+  git diff --name-only master...HEAD | grep -E 'app/.+\.stories\.ts$' | while read s; do
+    comp=$(basename "$s" .stories.ts)
+    grep -qE "component:\s*$comp|<$comp[ />]|from '\./$comp\.vue'" "$s" \
+      || echo "Story does not mount its real component: $s"
+  done
+  ```
+  Any line printed → REJECTED, unless it is the documented external-service
+  exception below.
+- **Demo content must reflect the live site.** Slot/demo copy (nav links, menu
+  items, phrases) must come from real i18n/fixtures and match the real pages.
+  Invented content that contradicts the live site (e.g. a nav link that does not
+  exist) → REJECTED. Generic primitives may show demo slot content, but must use
+  the REAL sub-components for it (e.g. `<SiteLogo />`), not fake placeholders.
+- **Allowed exception:** a component requiring a live external service or secret
+  to render (e.g. `MapView` → live Mapbox token) MAY use a documented visual
+  stub. The story's JSDoc must state why. No other stub is acceptable.
+- **Best-practice sourcing.** Stories are expected to follow current official
+  Storybook practice fetched via Context7 (not memorized patterns). If a story
+  violates a current best practice (duplicate-title split files, fake index/HTML
+  "overview" stories, `render` with manually-typed `args`, missing `autodocs`),
+  → REJECTED with the specific rule.
 
 **Design context alignment (per Article VII):**
 - Implementation matches `docs/business/overview.md`: tokens (colors,
