@@ -29,12 +29,7 @@ export default defineNuxtConfig({
       ],
     },
   },
-  modules: [
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/i18n',
-    '@nuxt/fonts',
-    '@nuxt/image',
-  ],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n', '@nuxt/fonts'],
   components: [
     // Shared primitives → `Ui` prefix (<UiButton>, <UiNav>, ...).
     { path: '~/components/ui', prefix: 'Ui' },
@@ -85,7 +80,7 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/': { isr: 3600 },
-    '/menu': { isr: 3600 },
+    '/menu': { ssr: true },
     '/branches': { isr: 3600 },
     '/promotions': { isr: 60 },
     '/contact': { prerender: true },

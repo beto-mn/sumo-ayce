@@ -6,9 +6,15 @@ const sauces: FullMenuSauce[] = [
   {
     id: 's1',
     name: { es: 'Honey Mustard', en: 'Honey Mustard' },
+    imageUrl: null,
     spiceLevel: 0,
   },
-  { id: 's2', name: { es: 'Buffalo', en: 'Buffalo' }, spiceLevel: 2 },
+  {
+    id: 's2',
+    name: { es: 'Buffalo', en: 'Buffalo' },
+    imageUrl: null,
+    spiceLevel: 2,
+  },
 ]
 
 const categories: FullMenuCategory[] = [

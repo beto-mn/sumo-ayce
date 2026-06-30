@@ -36,7 +36,7 @@ const APPETIZERS: AyceItem[] = [
       'Arroz a la plancha con pollo, carne de res, huevo, mix de vegetales, cebollín y ajonjolí.',
     descriptionEn:
       'Grilled rice with chicken, beef, egg, mixed vegetables, green onion and sesame.',
-    fileName: 'mixed_yakimeshi.webp',
+    fileName: 'menu/ayce/mixed_yakimeshi.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -46,7 +46,7 @@ const APPETIZERS: AyceItem[] = [
       'Arroz frito a la plancha con pollo, carne de res, huevo, aguacate, queso crema, mix de vegetales, tampico y cebollín.',
     descriptionEn:
       'Grilled fried rice with chicken, beef, egg, avocado, cream cheese, mixed vegetables, tampico and green onion.',
-    fileName: 'special_yakimeshi.webp',
+    fileName: 'menu/ayce/special_yakimeshi.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -56,7 +56,7 @@ const APPETIZERS: AyceItem[] = [
       'Arroz blanco al vapor, acompañado con pollo a la plancha en salsa teriyaki.',
     descriptionEn:
       'Steamed white rice served with grilled chicken in teriyaki sauce.',
-    fileName: 'gohan_teriyaki.webp',
+    fileName: 'menu/ayce/gohan_teriyaki.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -66,7 +66,7 @@ const APPETIZERS: AyceItem[] = [
       'Arroz blanco al vapor, aguacate, queso crema, tampico, surimi, ajonjolí y cebollín.',
     descriptionEn:
       'Steamed white rice with avocado, cream cheese, tampico, surimi, sesame and green onion.',
-    fileName: 'special_gohan.webp',
+    fileName: 'menu/ayce/special_gohan.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -74,7 +74,7 @@ const APPETIZERS: AyceItem[] = [
     nameEn: 'French Fries With or Without Cheese',
     descriptionEs: 'Papas a la francesa, con o sin queso.',
     descriptionEn: 'French fries with or without cheese.',
-    fileName: 'french_fries.webp',
+    fileName: 'menu/ayce/french_fries.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -84,7 +84,7 @@ const APPETIZERS: AyceItem[] = [
       'Papas a la francesa, carne smash, cebolla caramelizada, cebollín y aderezo americano.',
     descriptionEn:
       'French fries, smash beef, caramelized onion, green onion and American dressing.',
-    fileName: 'smash_fries.webp',
+    fileName: 'menu/ayce/smash_fries.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -93,7 +93,7 @@ const APPETIZERS: AyceItem[] = [
     descriptionEs:
       'Base de pasta ramen en caldo de vegetales picante en tamaño XL.',
     descriptionEn: 'Ramen noodles in spicy vegetable broth, XL size.',
-    fileName: 'ramen.webp',
+    fileName: 'menu/ayce/ramen.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -103,7 +103,7 @@ const APPETIZERS: AyceItem[] = [
       'Pasta en salsa de queso, tocino, cebollín y jalapeños en vinagre.',
     descriptionEn:
       'Pasta in cheese sauce with bacon, green onion and pickled jalapeños.',
-    fileName: 'mac_and_cheese.webp',
+    fileName: 'menu/ayce/mac_and_cheese.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -113,7 +113,7 @@ const APPETIZERS: AyceItem[] = [
       'Ensalada con pepino, mango, aguacate, lechuga, surimi, mix de ajonjolí y bañada con vinagreta de la casa.',
     descriptionEn:
       'Salad with cucumber, mango, avocado, lettuce, surimi, sesame mix and house vinaigrette.',
-    fileName: 'sweet_kani_salad.webp',
+    fileName: 'menu/ayce/sweet_kani_salad.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -123,7 +123,7 @@ const APPETIZERS: AyceItem[] = [
       'Mix de vegetales frescos, rebozados en nuestra pasta tempura y fritos. Aderezo a elegir: mayonesa mango habanero o piña habanero.',
     descriptionEn:
       'Fresh mixed vegetables battered in our tempura and fried. Choice of dressing: mango habanero mayo or pineapple habanero.',
-    fileName: 'yasai_tempura.webp',
+    fileName: 'menu/ayce/yasai_tempura.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -133,7 +133,7 @@ const APPETIZERS: AyceItem[] = [
       'Deliciosas rodajas de elote fritas y sazonadas, acompañadas con salsa chipotle.',
     descriptionEn:
       'Delicious fried and seasoned corn slices served with chipotle sauce.',
-    fileName: 'sweet_corns.webp',
+    fileName: 'menu/ayce/sweet_corns.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -143,7 +143,7 @@ const APPETIZERS: AyceItem[] = [
       'Crujientes totopos bañados en queso fundido con chile jalapeño en cubos.',
     descriptionEn:
       'Crunchy nachos drenched in melted cheese with diced jalapeño.',
-    fileName: 'cinema_nachos.webp',
+    fileName: 'menu/ayce/cinema_nachos.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -151,7 +151,7 @@ const APPETIZERS: AyceItem[] = [
     nameEn: 'Cheese Kushiage',
     descriptionEs: 'Queso manchego empanizado en panko.',
     descriptionEn: 'Manchego cheese breaded in panko.',
-    fileName: 'cheese_kushiage.webp',
+    fileName: 'menu/ayce/cheese_kushiage.webp',
   },
 ]
 
@@ -166,7 +166,7 @@ const BURGERS: AyceItem[] = [
       '60g de carne smash con queso amarillo, lechuga, cebolla morada y aderezo americano.',
     descriptionEn:
       '60g smash beef with yellow cheese, lettuce, red onion and American dressing.',
-    fileName: 'classic_burger.webp',
+    fileName: 'menu/ayce/classic_burger.webp',
     badgeEs: 'Doble o triple carne',
     badgeEn: 'Double or triple meat',
   },
@@ -176,7 +176,7 @@ const BURGERS: AyceItem[] = [
     nameEn: 'Pulled Pork Burger',
     descriptionEs: '70g de carne de cerdo deshebrada bañada en salsa BBQ.',
     descriptionEn: '70g pulled pork drizzled with BBQ sauce.',
-    fileName: 'pulled_pork_burger.webp',
+    fileName: 'menu/ayce/pulled_pork_burger.webp',
   },
   {
     categoryKey: 'burgers',
@@ -186,7 +186,7 @@ const BURGERS: AyceItem[] = [
       '60g de carne smash con queso amarillo, salchicha, piña, tocino, lechuga y aderezo americano.',
     descriptionEn:
       '60g smash beef with yellow cheese, sausage, pineapple, bacon, lettuce and American dressing.',
-    fileName: 'barrio_burger.webp',
+    fileName: 'menu/ayce/barrio_burger.webp',
     badgeEs: 'Doble o triple carne',
     badgeEn: 'Double or triple meat',
   },
@@ -198,7 +198,7 @@ const BURGERS: AyceItem[] = [
       '60g de carne smash con queso manchego, cebolla caramelizada, guacamole, Doritos Nacho® y salsa de queso.',
     descriptionEn:
       '60g smash beef with manchego cheese, caramelized onion, guacamole, Doritos Nacho® and cheese sauce.',
-    fileName: 'guacamole_burger.webp',
+    fileName: 'menu/ayce/guacamole_burger.webp',
     badgeEs: 'Doble o triple carne',
     badgeEn: 'Double or triple meat',
   },
@@ -210,7 +210,7 @@ const BURGERS: AyceItem[] = [
       '60g de carne smash con queso amarillo, cebolla caramelizada, chile serrano y aderezo de chile toreado.',
     descriptionEn:
       '60g smash beef with yellow cheese, caramelized onion, serrano pepper and roasted chile dressing.',
-    fileName: 'spicy_smash.webp',
+    fileName: 'menu/ayce/spicy_smash.webp',
     badgeEs: 'Doble o triple carne',
     badgeEn: 'Double or triple meat',
   },
@@ -222,7 +222,7 @@ const BURGERS: AyceItem[] = [
       '60g de tender de pollo con queso amarillo, aros de cebolla, tocino, lechuga, bañado en salsa BBQ.',
     descriptionEn:
       '60g chicken tender with yellow cheese, onion rings, bacon, lettuce, drizzled with BBQ sauce.',
-    fileName: 'bbq_burger.webp',
+    fileName: 'menu/ayce/bbq_burger.webp',
     badgeEs: 'Doble o triple carne',
     badgeEn: 'Double or triple meat',
   },
@@ -234,7 +234,7 @@ const BURGERS: AyceItem[] = [
       '60g de tender de pollo, tocino miel, lechuga, aderezo americano.',
     descriptionEn:
       '60g chicken tender with honey bacon, lettuce and American dressing.',
-    fileName: 'spicy_chicken_burger.webp',
+    fileName: 'menu/ayce/spicy_chicken_burger.webp',
   },
   {
     categoryKey: 'burgers',
@@ -244,7 +244,7 @@ const BURGERS: AyceItem[] = [
       '60g de tender de pollo con lechuga, queso manchego, cebolla morada y aderezo americano.',
     descriptionEn:
       '60g chicken tender with lettuce, manchego cheese, red onion and American dressing.',
-    fileName: 'chicken_cheese_burger.webp',
+    fileName: 'menu/ayce/chicken_cheese_burger.webp',
   },
 ]
 
@@ -259,7 +259,7 @@ const SANDWICHES: AyceItem[] = [
       'Sándwich a base de arroz y empanizado, relleno de alga nori, queso crema, aguacate y camarón, bañado en mayonesa chipotle y mix de ajonjolí.',
     descriptionEn:
       'Rice and breaded sandwich filled with nori seaweed, cream cheese, avocado and shrimp, drizzled with chipotle mayo and sesame mix.',
-    fileName: 'sandwich_shrimp.webp',
+    fileName: 'menu/ayce/sandwich_shrimp.webp',
   },
   {
     categoryKey: 'sandwiches',
@@ -269,7 +269,7 @@ const SANDWICHES: AyceItem[] = [
       'Sándwich a base de arroz y empanizado, relleno de alga nori, queso crema, aguacate y surimi, bañado en mayonesa chipotle y mix de ajonjolí.',
     descriptionEn:
       'Rice and breaded sandwich filled with nori seaweed, cream cheese, avocado and surimi, drizzled with chipotle mayo and sesame mix.',
-    fileName: 'sandwich_surimi.webp',
+    fileName: 'menu/ayce/sandwich_surimi.webp',
   },
   {
     categoryKey: 'sandwiches',
@@ -279,7 +279,7 @@ const SANDWICHES: AyceItem[] = [
       'Sándwich a base de arroz y empanizado, relleno de alga nori, queso crema, aguacate y salmón, bañado en mayonesa chipotle y mix de ajonjolí.',
     descriptionEn:
       'Rice and breaded sandwich filled with nori seaweed, cream cheese, avocado and salmon, drizzled with chipotle mayo and sesame mix.',
-    fileName: 'sandwich_salmon.webp',
+    fileName: 'menu/ayce/sandwich_salmon.webp',
   },
 ]
 
@@ -292,7 +292,7 @@ const HOT_DOGS: AyceItem[] = [
     nameEn: 'Jumbo Sumo Dog',
     descriptionEs: 'Hot Dog Jumbo con cebollas y pimientos a la BBQ. 1 pz.',
     descriptionEn: 'Jumbo hot dog with BBQ onions and peppers..',
-    fileName: 'jumbo_sumo_dog.webp',
+    fileName: 'menu/ayce/jumbo_sumo_dog.webp',
   },
   {
     categoryKey: 'hot_dogs',
@@ -302,7 +302,7 @@ const HOT_DOGS: AyceItem[] = [
       'Hot Dog con aderezo americano, salsa Buffalo Ranch, papatinas fritas con sazonador cajún. 1 pz.',
     descriptionEn:
       'Hot dog with American dressing, Buffalo Ranch sauce and potato chips with cajun seasoning..',
-    fileName: 'buffalo_ranch_dog.webp',
+    fileName: 'menu/ayce/buffalo_ranch_dog.webp',
   },
   {
     categoryKey: 'hot_dogs',
@@ -312,7 +312,7 @@ const HOT_DOGS: AyceItem[] = [
       'Hot Dog Jumbo envuelto en tocino, carne smash, con cebolla caramelizada, queso manchego y aderezo de chile toreado. 1 pz.',
     descriptionEn:
       'Jumbo hot dog wrapped in bacon and smash beef, with caramelized onion, manchego cheese and roasted chile dressing..',
-    fileName: 'smash_dog.webp',
+    fileName: 'menu/ayce/smash_dog.webp',
   },
 ]
 
@@ -327,7 +327,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: queso crema, pepino y camarón empanizado. Por fuera: mango y salsa de anguila. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, cucumber and breaded shrimp. Outside: mango and eel sauce..',
-    fileName: 'bora_bora.webp',
+    fileName: 'menu/ayce/bora_bora.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -337,7 +337,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: camarón empanizado, piña asada y aguacate. Por fuera: queso crema, empanizado de camarón y salsa panthai. 5 pzs.',
     descriptionEn:
       'Inside: breaded shrimp, grilled pineapple and avocado. Outside: cream cheese, shrimp breading and pad thai sauce..',
-    fileName: 'white_dragon.webp',
+    fileName: 'menu/ayce/white_dragon.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -347,7 +347,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: camarón empanizado, pepino y piña. Por fuera: aguacate, empanizado de camarón y bañado en pico de piña y salsa de chiltepin. 5 pzs.',
     descriptionEn:
       'Inside: breaded shrimp, cucumber and pineapple. Outside: avocado, shrimp breading drizzled with pineapple pico and chiltepin sauce..',
-    fileName: 'tiki_thai_roll.webp',
+    fileName: 'menu/ayce/tiki_thai_roll.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -357,7 +357,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: queso crema, pepino y jalapeño. Por fuera: mix de ajonjolí. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, cucumber and jalapeño. Outside: sesame mix..',
-    fileName: 'philadelphia.webp',
+    fileName: 'menu/ayce/philadelphia.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -367,7 +367,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: aguacate y surimi empanizado. Por fuera: queso manchego, guacamole, pico de piña y chile serrano. 5 pzs.',
     descriptionEn:
       'Inside: avocado and breaded surimi. Outside: manchego cheese, guacamole, pineapple pico and serrano pepper..',
-    fileName: 'nipon_roll.webp',
+    fileName: 'menu/ayce/nipon_roll.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -377,7 +377,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: aguacate y pepino. Por fuera: mango, camarones rocca, pico de piña y salsa de chiltepin. 5 pzs.',
     descriptionEn:
       'Inside: avocado and cucumber. Outside: mango, rocca shrimp, pineapple pico and chiltepin sauce..',
-    fileName: 'moon_roll.webp',
+    fileName: 'menu/ayce/moon_roll.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -387,7 +387,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: surimi, aguacate y pepino. Por fuera: mix de ajonjolí. 5 pzs.',
     descriptionEn:
       'Inside: surimi, avocado and cucumber. Outside: sesame mix..',
-    fileName: 'california.webp',
+    fileName: 'menu/ayce/california.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -397,7 +397,7 @@ const COLD_ROLLS: AyceItem[] = [
       'Por dentro: aguacate, kakeage de zanahoria y queso crema. Por fuera: láminas de queso manchego, tampico y salsa de anguila. 5 pzs.',
     descriptionEn:
       'Inside: avocado, carrot kakeage and cream cheese. Outside: manchego cheese slices, tampico and eel sauce..',
-    fileName: 'monkey_roll.webp',
+    fileName: 'menu/ayce/monkey_roll.webp',
   },
 ]
 
@@ -412,7 +412,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: base de arroz frito, queso crema y camarón empanizado. Por fuera: alga nori empanizado y bañado en salsa de anguila. 5 pzs.',
     descriptionEn:
       'Inside: fried rice base, cream cheese and breaded shrimp. Outside: breaded nori seaweed drizzled with eel sauce..',
-    fileName: 'rikishi_roll.webp',
+    fileName: 'menu/ayce/rikishi_roll.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -422,7 +422,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: camarón empanizado, queso crema y aguacate. Por fuera: empanizado, tampico y mayonesa chipotle. 5 pzs.',
     descriptionEn:
       'Inside: breaded shrimp, cream cheese and avocado. Outside: breaded with tampico and chipotle mayo..',
-    fileName: 'kekoto.webp',
+    fileName: 'menu/ayce/kekoto.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -432,7 +432,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: queso crema y plátano macho. Por fuera: plátano macho frito y salsa de anguila. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese and plantain. Outside: fried plantain and eel sauce..',
-    fileName: 'banana_fried.webp',
+    fileName: 'menu/ayce/banana_fried.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -442,7 +442,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: aguacate, queso manchego y tampico. Por fuera: empanizado y salsa de preferencia a escoger. 5 pzs.',
     descriptionEn:
       'Inside: avocado, manchego cheese and tampico. Outside: breaded with your choice of sauce..',
-    fileName: 'sumo_roll.webp',
+    fileName: 'menu/ayce/sumo_roll.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -452,7 +452,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: carne de res, manchego, aguacate, chile serrano y cebollín. Por fuera: empanizado, tiritas de papas fritas, mayonesa chipotle y salsa BBQ. 5 pzs.',
     descriptionEn:
       'Inside: beef, manchego cheese, avocado, serrano pepper and green onion. Outside: breaded with french fry strips, chipotle mayo and BBQ sauce..',
-    fileName: 'texas_roll.webp',
+    fileName: 'menu/ayce/texas_roll.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -462,7 +462,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: base de arroz frito, camarón empanizado y aguacate. Por fuera: empanizado, queso crema, tampico, chile serrano bañado en salsa de anguila. 5 pzs.',
     descriptionEn:
       'Inside: fried rice base, breaded shrimp and avocado. Outside: breaded, cream cheese, tampico and serrano pepper drizzled with eel sauce..',
-    fileName: 'more_of_the_same.webp',
+    fileName: 'menu/ayce/more_of_the_same.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -472,7 +472,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: aguacate, piña, queso crema y camarón empanizado. Por fuera: empanizado con panko y coco, bañado de salsa piña chipoltepin. Sushi sin alga. 5 pzs.',
     descriptionEn:
       'Inside: avocado, pineapple, cream cheese and breaded shrimp. Outside: panko and coconut breading, drizzled with chipotle-pineapple sauce. Seaweed-free..',
-    fileName: 'coco_roll.webp',
+    fileName: 'menu/ayce/coco_roll.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -482,7 +482,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: aguacate y camarón empanizado. Por fuera: empanizado, mayonesa chipotle, salsa de anguila y cebollín. Sushi sin alga. 5 pzs.',
     descriptionEn:
       'Inside: avocado and breaded shrimp. Outside: breaded with chipotle mayo, eel sauce and green onion. Seaweed-free..',
-    fileName: 'tempura_roll.webp',
+    fileName: 'menu/ayce/tempura_roll.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -492,7 +492,7 @@ const HOT_ROLLS: AyceItem[] = [
       'Por dentro: queso crema, surimi empanizado, kakeage de zanahoria. Por fuera: queso manchego derretido con chiles toreados y cebollín. Sushi sin alga. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, breaded surimi and carrot kakeage. Outside: melted manchego cheese with roasted chiles and green onion. Seaweed-free..',
-    fileName: 'manchego_roll.webp',
+    fileName: 'menu/ayce/manchego_roll.webp',
   },
 ]
 
@@ -507,7 +507,7 @@ const SWEET_ROLLS: AyceItem[] = [
       'Por dentro: queso crema y plátano macho. Por fuera: tempura dulce, espolvoreado con azúcar y canela. Bañado en salsa de chocolate. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese and plantain. Outside: sweet tempura dusted with sugar and cinnamon, drizzled with chocolate sauce..',
-    fileName: 'cinnamon_roll.webp',
+    fileName: 'menu/ayce/cinnamon_roll.webp',
   },
   {
     categoryKey: 'sweet_rolls',
@@ -517,7 +517,7 @@ const SWEET_ROLLS: AyceItem[] = [
       'Por dentro: queso crema y mango. Por fuera: plátano macho. Bañado en salsa de chocolate. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese and mango. Outside: plantain, drizzled with chocolate sauce..',
-    fileName: 'beach_roll.webp',
+    fileName: 'menu/ayce/beach_roll.webp',
   },
 ]
 

@@ -8,6 +8,7 @@ import type {
   MenuCategoryKey,
   MenuModality,
 } from '@/types/menu'
+import { resolveImageUrl } from '../api/v1/menu/resolveImageUrl'
 import {
   drinkGroups,
   drinkSubGroups,
@@ -26,27 +27,9 @@ interface FeaturedQueryRow {
   descriptionEs: string
   descriptionEn: string
   fileName: string | null
-  locationType: string
-  includedInAyce: boolean
   badgeEs: string | null
   badgeEn: string | null
   category: string
-}
-
-function resolveFeaturedImageUrl(
-  fileName: string | null,
-  locationType: string,
-  categoryKey: string,
-  includedInAyce: boolean
-): string | null {
-  if (!fileName) return null
-  if (locationType === 'both') return `/menu/drinks/${fileName}`
-  if (categoryKey === 'kids') return `/menu/kids/${fileName}`
-  if (categoryKey === 'desserts') return `/menu/desserts/${fileName}`
-  if (locationType === 'express') return `/menu/express/${fileName}`
-  return includedInAyce
-    ? `/menu/ayce/${fileName}`
-    : `/menu/ala-carta/${fileName}`
 }
 
 function toFeaturedDishRow(row: FeaturedQueryRow): FeaturedDishRow {
@@ -54,12 +37,7 @@ function toFeaturedDishRow(row: FeaturedQueryRow): FeaturedDishRow {
     id: row.id,
     name: { es: row.nameEs, en: row.nameEn },
     description: { es: row.descriptionEs, en: row.descriptionEn },
-    imageUrl: resolveFeaturedImageUrl(
-      row.fileName,
-      row.locationType,
-      row.category,
-      row.includedInAyce
-    ),
+    imageUrl: resolveImageUrl(row.fileName),
     badge:
       row.badgeEs != null || row.badgeEn != null
         ? { es: row.badgeEs ?? '', en: row.badgeEn ?? '' }
@@ -82,8 +60,6 @@ export async function getFeaturedDishes(): Promise<FeaturedDishRow[]> {
       descriptionEs: menuItems.descriptionEs,
       descriptionEn: menuItems.descriptionEn,
       fileName: menuItems.fileName,
-      locationType: menuItems.locationType,
-      includedInAyce: menuItems.includedInAyce,
       badgeEs: menuItems.badgeEs,
       badgeEn: menuItems.badgeEn,
       category: menuCategories.key,
@@ -136,6 +112,7 @@ interface SauceQueryRow {
   nameEs: string
   nameEn: string
   spiceLevel: number
+  fileName: string | null
 }
 
 /** À-la-carte (`carta`) is AYCE-only; Express is always coerced to the buffet view. */
@@ -177,7 +154,7 @@ function toFullMenuDish(
     id: row.dishId,
     name: { es: row.nameEs, en: row.nameEn },
     description: { es: row.descriptionEs, en: row.descriptionEn },
-    imageUrl: row.fileName,
+    imageUrl: resolveImageUrl(row.fileName),
     badge:
       row.badgeEs != null || row.badgeEn != null
         ? { es: row.badgeEs ?? '', en: row.badgeEn ?? '' }
@@ -285,6 +262,7 @@ async function querySauces(): Promise<FullMenuSauce[]> {
       nameEs: sauces.nameEs,
       nameEn: sauces.nameEn,
       spiceLevel: sauces.spiceLevel,
+      fileName: sauces.fileName,
     })
     .from(sauces)
     .where(eq(sauces.isActive, true))
@@ -293,6 +271,7 @@ async function querySauces(): Promise<FullMenuSauce[]> {
   return rows.map(row => ({
     id: row.id,
     name: { es: row.nameEs, en: row.nameEn },
+    imageUrl: resolveImageUrl(row.fileName),
     spiceLevel: row.spiceLevel,
   }))
 }

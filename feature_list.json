@@ -106,7 +106,7 @@
       "description": "Menu browsing by location type (AYCE / Express) and modality (All You Can Eat / À la carte — AYCE only) with category chips (scroll navigation) and dish grid. Sauce picker for Wings & Boneless. Per-dish price in à la carte, 'incluido' in All You Can Eat. Content from Neon DB via GET /api/v1/menu. ISR 3600s.",
       "spec_path": "specs/011-menu-page",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 12,
@@ -161,6 +161,24 @@
       "spec_path": "specs/016-menu-schema-db",
       "sdd": true,
       "status": "done"
+    },
+    {
+      "id": 18,
+      "name": "vercel-blob-images",
+      "title": "Vercel Blob: Menu Image Storage",
+      "description": "Migrate menu image delivery from static public/ assets to Vercel Blob Storage. The file_name column in menu_items, menu_categories, and sauces tables already exists and currently stores bare filenames (e.g. wings.jpg). Change its semantic to store the full Blob-relative path (e.g. menu/ayce/wings.jpg — no base URL). Add a BLOB_BASE_URL runtime env var. Update resolveImageUrl() in server/api/v1/menu/index.get.ts to prefix BLOB_BASE_URL instead of building /public/ local paths. Update all seed files (server/db/seeds/ayceMenu.ts, alaCarta.ts, expressMenu.ts, kidsMenu.ts, desserts.ts, drinks.ts, sauces.ts, menuCategories.ts) so file_name values carry the full Blob path. No DB migration needed — column shape is already text nullable. No admin upload UI — the client uploads images manually through Vercel Dashboard or CLI and updates the file_name column directly in the DB. Document upload conventions and the BLOB_BASE_URL env var in docs/harness/vercel-blob.md (new).",
+      "spec_path": "specs/018-vercel-blob-images",
+      "sdd": true,
+      "status": "in_progress"
+    },
+    {
+      "id": 19,
+      "name": "homepage-brand-updates",
+      "title": "Homepage Hero: Vertical Logo & AYCE Headline Redesign",
+      "description": "Two visual updates to the homepage hero section in app/features/homepage/components/HomeHero.vue: (1) Replace the current /brand/sumo-vertical.svg asset with a new client-provided vertical logo asset (same slot, same rounded/rotated frame). (2) Redesign the 'ALL YOU CAN EAT' h1 headline — either swap the text node for a branded image asset (e.g. /brand/ayce-headline.svg or .png) or apply a new typographic treatment (e.g. outlined/stroke text, layered shadow, gradient fill) while keeping the existing i18n key for the alt/aria-label. Decision between image vs. styled text is a spec-phase design call. Changes confined to HomeHero.vue and public/brand/. No backend, no new routes, no DB changes.",
+      "spec_path": "specs/019-homepage-brand-updates",
+      "sdd": true,
+      "status": "pending"
     }
   ]
 }

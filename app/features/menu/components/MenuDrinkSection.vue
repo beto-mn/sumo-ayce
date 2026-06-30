@@ -118,13 +118,12 @@ function drinkBadge(drink: FullMenuDish): string | null {
                   v-if="drink.imageUrl"
                   class="relative h-44 overflow-hidden rounded-pop-sm border-pop-sm border-ink bg-accent/20 p-4"
                 >
-                  <NuxtImg
+                  <img
                     class="block h-full w-full object-contain"
-                    style="aspect-ratio: auto"
                     :src="drink.imageUrl"
                     :alt="drinkName(drink)"
-                    width="320"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <h4 class="font-disp font-extrabold uppercase text-dish-title">{{ drinkName(drink) }}</h4>
@@ -148,14 +147,12 @@ function drinkBadge(drink: FullMenuDish): string | null {
               v-if="drink.imageUrl"
               class="relative h-44 overflow-hidden rounded-pop-sm border-pop-sm border-ink bg-accent/20 p-4"
             >
-              <NuxtImg
+              <img
                 class="block h-full w-full object-contain"
-                style="aspect-ratio: auto"
                 :src="drink.imageUrl"
                 :alt="drinkName(drink)"
-                width="320"
-                height="240"
                 loading="lazy"
+                decoding="async"
               />
             </div>
             <h4 class="font-disp font-extrabold uppercase text-dish-title">{{ drinkName(drink) }}</h4>

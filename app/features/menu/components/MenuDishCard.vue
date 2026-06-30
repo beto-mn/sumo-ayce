@@ -37,13 +37,12 @@ const showIncluido = computed(
       v-if="dish.imageUrl"
       class="relative h-44 overflow-hidden rounded-pop-sm border-pop-sm border-ink bg-accent/20 p-4"
     >
-      <NuxtImg
+      <img
         class="block h-full w-full object-contain"
-        style="aspect-ratio: auto"
         :src="dish.imageUrl"
         :alt="dishName"
-        width="320"
         loading="lazy"
+        decoding="async"
       />
       <span
         v-if="dishBadge"

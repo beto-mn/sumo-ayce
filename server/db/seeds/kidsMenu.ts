@@ -24,7 +24,7 @@ const KIDS_ITEMS: KidsItem[] = [
       '60g de carne smash con queso amarillo, lechuga y aderezo americano. Acompañado de papas a la francesa.',
     descriptionEn:
       '60g smash beef patty topped with an American cheese slice, lettuce and American dressing. Served with french fries.',
-    fileName: 'kid_burger.webp',
+    fileName: 'menu/kids/kid_burger.webp',
     featured: true,
   },
   {
@@ -33,14 +33,14 @@ const KIDS_ITEMS: KidsItem[] = [
     descriptionEs:
       '5 pzas de cualquier rollo de nuestra carta y un yakimeshi (240g).',
     descriptionEn: 'Any sushi roll from our menu (5 pcs) and Yakimeshi (240g).',
-    fileName: 'sushi_kids.webp',
+    fileName: 'menu/kids/sushi_kids.webp',
   },
   {
     nameEs: 'Chicken Kids',
     nameEn: 'Chicken Kids',
     descriptionEs: '120g Tender de pollo, acompañado de papas a la francesa.',
     descriptionEn: '120g chicken tender, served with french fries.',
-    fileName: 'chicken_kids.webp',
+    fileName: 'menu/kids/chicken_kids.webp',
   },
   {
     nameEs: 'Mac & Cheese',
@@ -48,7 +48,7 @@ const KIDS_ITEMS: KidsItem[] = [
     descriptionEs: '240g Pasta en salsa de queso, tocino y cebollín.',
     descriptionEn:
       '240g Macaroni in creamy cheese sauce, bacon and finely chopped green onions.',
-    fileName: 'mac_&_cheese.webp',
+    fileName: 'menu/kids/mac_&_cheese.webp',
   },
   {
     nameEs: 'Kawaii Pizza de Queso',
@@ -57,7 +57,7 @@ const KIDS_ITEMS: KidsItem[] = [
       '300g Pizza con salsa de tomate, mezcla de quesos y papas a la francesa.',
     descriptionEn:
       '300g pizza with tomato sauce and a mix of cheeses, served with french fries.',
-    fileName: 'kawaii_cheese_pizza.webp',
+    fileName: 'menu/kids/kawaii_cheese_pizza.webp',
   },
   {
     nameEs: 'Kawaii Pizza de Pepperoni',
@@ -66,7 +66,7 @@ const KIDS_ITEMS: KidsItem[] = [
       '300g Pizza con salsa de tomate, pepperoni, mezcla de quesos y papas a la francesa.',
     descriptionEn:
       '300g pizza with tomato sauce, pepperoni, a mix of cheeses, served with french fries.',
-    fileName: 'kawai_pepperoni_pizza.webp',
+    fileName: 'menu/kids/kawai_pepperoni_pizza.webp',
   },
 ]
 

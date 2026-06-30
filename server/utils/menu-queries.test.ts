@@ -22,6 +22,10 @@ vi.mock('../db/schema', async importOriginal => {
     drinkSubGroups: actual.drinkSubGroups,
   }
 })
+vi.mock('../api/v1/menu/resolveImageUrl', () => ({
+  resolveImageUrl: (filePath: string | null) =>
+    filePath ? `https://blob.example.com/${filePath}` : null,
+}))
 
 import { getFeaturedDishes, getFullMenu, locationScope } from './menu-queries'
 
@@ -33,8 +37,6 @@ type FeaturedQueryRow = {
   descriptionEs: string
   descriptionEn: string
   fileName: string | null
-  locationType: string
-  includedInAyce: boolean
   badgeEs: string | null
   badgeEn: string | null
   category: string
@@ -63,9 +65,7 @@ const featuredRow = (
   nameEn: 'Edamame',
   descriptionEs: 'Vainas de soya',
   descriptionEn: 'Soybean pods',
-  fileName: 'edamame.jpg',
-  locationType: 'ayce',
-  includedInAyce: false,
+  fileName: 'menu/ala-carta/edamame.jpg',
   badgeEs: 'Nuevo',
   badgeEn: 'New',
   category: 'entradas',
@@ -84,7 +84,7 @@ describe('getFeaturedDishes', () => {
       id: 'dish-1',
       name: { es: 'Edamame', en: 'Edamame' },
       description: { es: 'Vainas de soya', en: 'Soybean pods' },
-      imageUrl: '/menu/ala-carta/edamame.jpg',
+      imageUrl: 'https://blob.example.com/menu/ala-carta/edamame.jpg',
       badge: { es: 'Nuevo', en: 'New' },
       category: 'entradas',
     })
@@ -164,6 +164,7 @@ type SauceRow = {
   nameEs: string
   nameEn: string
   spiceLevel: number
+  fileName: string | null
 }
 
 // First select(...) → dishes-with-category; second select(...) → sauces.
@@ -218,6 +219,7 @@ const sauceRow = (over: Partial<SauceRow> = {}): SauceRow => ({
   nameEs: 'BBQ',
   nameEn: 'BBQ',
   spiceLevel: 0,
+  fileName: null,
   ...over,
 })
 
@@ -354,9 +356,55 @@ describe('getFullMenu', () => {
       modality: 'buffet',
     })
     expect(result.sauces).toEqual([
-      { id: 's1', name: { es: 'BBQ', en: 'BBQ' }, spiceLevel: 0 },
-      { id: 's2', name: { es: 'Buffalo', en: 'Buffalo' }, spiceLevel: 1 },
+      {
+        id: 's1',
+        name: { es: 'BBQ', en: 'BBQ' },
+        imageUrl: null,
+        spiceLevel: 0,
+      },
+      {
+        id: 's2',
+        name: { es: 'Buffalo', en: 'Buffalo' },
+        imageUrl: null,
+        spiceLevel: 1,
+      },
     ])
+  })
+
+  it('resolves dish imageUrl to a fully-qualified URL when fileName is non-null', async () => {
+    mockMenuChains([menuRow({ fileName: 'menu/ayce/boneless.webp' })], [])
+    const result = await getFullMenu({
+      locationType: 'ayce',
+      modality: 'buffet',
+    })
+    const dish = result.categories[0]?.dishes[0]
+    expect(dish?.imageUrl).toBe(
+      'https://blob.example.com/menu/ayce/boneless.webp'
+    )
+    expect(dish?.imageUrl).toMatch(/^https:\/\//)
+  })
+
+  it('resolves sauce imageUrl to a fully-qualified URL when fileName is non-null', async () => {
+    mockMenuChains(
+      [],
+      [
+        sauceRow({
+          id: 's1',
+          nameEs: 'BBQ',
+          spiceLevel: 0,
+          fileName: 'menu/sauces/bbq.webp',
+        }),
+      ]
+    )
+    const result = await getFullMenu({
+      locationType: 'ayce',
+      modality: 'buffet',
+    })
+    const sauce = result.sauces[0]
+    expect(sauce?.imageUrl).toBe(
+      'https://blob.example.com/menu/sauces/bbq.webp'
+    )
+    expect(sauce?.imageUrl).toMatch(/^https:\/\//)
   })
 
   // US3 SC2 — only Express and 'both' items appear for locationType=express.
