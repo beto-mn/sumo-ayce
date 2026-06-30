@@ -30,7 +30,7 @@ const categories: FullMenuCategory[] = [
           es: 'Salmón flameado con aguacate.',
           en: 'Flamed salmon with avocado.',
         },
-        imageUrl: '/menu/ayce/bora_bora.webp',
+        imageUrl: 'https://placehold.co/400x300',
         badge: null,
         price: null,
         incluido: true,
@@ -84,6 +84,24 @@ const meta = {
   component: MenuDishGrid,
   tags: ['autodocs'],
   args: { categories, sauces, modality: 'buffet' },
+  argTypes: {
+    categories: {
+      description:
+        'Array of menu category objects each containing an array of dishes',
+      control: { type: 'object' },
+    },
+    sauces: {
+      description:
+        'Available sauce options for dishes that require a sauce selection',
+      control: { type: 'object' },
+    },
+    modality: {
+      description:
+        'Menu modality: buffet (all-inclusive) or carta (a la carte with prices)',
+      control: { type: 'select' },
+      options: ['buffet', 'carta'],
+    },
+  },
 } satisfies Meta<typeof MenuDishGrid>
 
 export default meta
@@ -107,7 +125,7 @@ export const CartaModality: Story = {
               es: 'Salmón flameado con aguacate.',
               en: 'Flamed salmon with avocado.',
             },
-            imageUrl: '/menu/ayce/bora_bora.webp',
+            imageUrl: 'https://placehold.co/400x300',
             badge: null,
             price: '128.00',
             incluido: false,

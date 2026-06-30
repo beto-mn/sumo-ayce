@@ -179,6 +179,15 @@
       "spec_path": "specs/019-homepage-brand-updates",
       "sdd": true,
       "status": "pending"
+    },
+    {
+      "id": 20,
+      "name": "storybook-full-coverage",
+      "title": "Storybook: Complete UI/UX Documentation",
+      "description": "Upgrade Storybook from minimal single-story coverage to full documentation-grade. All 50+ Vue components already have at least one story file, but three structural gaps exist: (1) Broken image refs — public/menu/ was deleted in feature 018, stories that reference /menu/**/*.webp will show broken images since staticDirs points to ../public; fix by replacing with placeholder images or null. (2) Missing addon coverage — only @storybook/addon-docs is installed; add @storybook/addon-viewport (mobile/tablet/desktop breakpoints) and @storybook/addon-a11y (accessibility audit). (3) Incomplete story variants — most stories have a single 'Default' story; add missing state variants per component: loading skeleton, empty/no-data, error/validation, disabled, both ES and EN locale. Additionally: enable autodocs globally (set autodocs: true in main.ts instead of 'tag') or add tags: ['autodocs'] to all Meta objects; add proper argTypes with description and control config for interactive props; add a ComponentDocs page/index story for each feature slice summarising the slice's components. No app code changes, no backend, no DB, no new routes — Storybook files and config only.",
+      "spec_path": "specs/020-storybook-full-coverage",
+      "sdd": true,
+      "status": "in_progress"
     }
   ]
 }

@@ -6,11 +6,29 @@ const meta = {
   component: Button,
   tags: ['autodocs'],
   argTypes: {
-    variant: { control: 'select', options: ['primary', 'ink', 'ghost'] },
-    size: { control: 'select', options: ['sm', 'md', 'lg'] },
-    type: { control: 'select', options: ['button', 'submit', 'reset'] },
-    disabled: { control: 'boolean' },
-    loading: { control: 'boolean' },
+    variant: {
+      description: 'Visual style of the button',
+      control: { type: 'select' },
+      options: ['primary', 'ink', 'ghost'],
+    },
+    size: {
+      description: 'Size of the button',
+      control: { type: 'select' },
+      options: ['sm', 'md', 'lg'],
+    },
+    type: {
+      description: 'HTML button type attribute',
+      control: { type: 'select' },
+      options: ['button', 'submit', 'reset'],
+    },
+    disabled: {
+      description: 'Disables the button, preventing interaction',
+      control: { type: 'boolean' },
+    },
+    loading: {
+      description: 'Shows a loading spinner and disables the button',
+      control: { type: 'boolean' },
+    },
   },
   render: args => ({
     components: { Button },

@@ -13,6 +13,21 @@ const meta = {
   component: SiteLogo,
   tags: ['autodocs'],
   args: { to: '/', label: 'SUMO — All You Can Eat' },
+  argTypes: {
+    to: {
+      description: 'Navigation destination for the logo link',
+      control: { type: 'text' },
+    },
+    label: {
+      description: 'Accessible label for the logo link (screen readers)',
+      control: { type: 'text' },
+    },
+    size: {
+      description: 'Visual size of the logo',
+      control: { type: 'select' },
+      options: ['default', 'small'],
+    },
+  },
 } satisfies Meta<typeof SiteLogo>
 
 export default meta

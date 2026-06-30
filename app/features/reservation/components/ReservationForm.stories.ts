@@ -39,8 +39,18 @@ const meta = {
   component: ReservationFormComponent,
   tags: ['autodocs'],
   argTypes: {
+    branches: {
+      description:
+        'Array of Branch objects available for selection in the form',
+      control: { type: 'object' },
+    },
+    initialBranchId: {
+      description: 'Pre-selected branch ID to initialize the form with',
+      control: { type: 'text' },
+    },
     initialTipo: {
-      control: 'select',
+      description: 'Pre-selected restaurant type to initialize the form with',
+      control: { type: 'select' },
       options: ['ayce', 'express'],
     },
   },
@@ -238,7 +248,6 @@ export const WithApiError: Story = {
     )
     submitBtn?.click()
 
-    // Wait for the rejection to propagate and the error banner to render
     await new Promise(r => setTimeout(r, 100))
   },
 }

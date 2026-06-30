@@ -5,6 +5,14 @@ const meta = {
   title: 'Menu/MenuModalityToggle',
   component: MenuModalityToggle,
   tags: ['autodocs'],
+  argTypes: {
+    activeModality: {
+      description:
+        'Currently active menu modality: buffet (all-inclusive) or carta (a la carte)',
+      control: { type: 'select' },
+      options: ['buffet', 'carta'],
+    },
+  },
 } satisfies Meta<typeof MenuModalityToggle>
 
 export default meta
@@ -16,6 +24,18 @@ export const Buffet: Story = {
 
 export const Carta: Story = {
   args: { activeModality: 'carta' },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { activeModality: 'buffet' },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { activeModality: 'buffet' },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

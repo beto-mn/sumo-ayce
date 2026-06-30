@@ -7,9 +7,34 @@ const meta = {
   component: Textarea,
   tags: ['autodocs'],
   argTypes: {
-    rows: { control: { type: 'number', min: 2, max: 12, step: 1 } },
-    required: { control: 'boolean' },
-    disabled: { control: 'boolean' },
+    label: {
+      description: 'Visible label displayed above the textarea',
+      control: { type: 'text' },
+    },
+    placeholder: {
+      description: 'Placeholder text shown when the textarea is empty',
+      control: { type: 'text' },
+    },
+    modelValue: {
+      description: 'Bound value via v-model',
+      control: { type: 'text' },
+    },
+    error: {
+      description: 'Validation error message displayed below the textarea',
+      control: { type: 'text' },
+    },
+    rows: {
+      description: 'Number of visible text lines',
+      control: { type: 'number', min: 2, max: 12, step: 1 },
+    },
+    required: {
+      description: 'Marks the field as required',
+      control: { type: 'boolean' },
+    },
+    disabled: {
+      description: 'Disables the textarea, preventing interaction',
+      control: { type: 'boolean' },
+    },
   },
   render: args => ({
     components: { Textarea },
@@ -73,6 +98,24 @@ export const TallRows: Story = {
     name: 'message',
     label: 'Mensaje',
     rows: 8,
+    modelValue: '',
+  },
+}
+
+export const LocaleES: Story = {
+  args: {
+    name: 'message',
+    label: 'Mensaje',
+    placeholder: '¿Cómo te ayudamos?',
+    modelValue: '',
+  },
+}
+
+export const LocaleEN: Story = {
+  args: {
+    name: 'message',
+    label: 'Message',
+    placeholder: 'How can we help you?',
     modelValue: '',
   },
 }

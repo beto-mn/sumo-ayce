@@ -54,10 +54,59 @@ catching them now saves a REJECTED cycle.
       files. If your design has a Primary and a Secondary, that's ONE component
       with a `variant` prop, not two.
 - [ ] Every new `.vue` component has a co-located `.stories.ts` with:
-  - Default story
+  - Default story with `tags: ['autodocs']` on the meta object
   - All significant prop variants (states, sizes, accent for AYCE vs. Express
-    if applicable)
+    if applicable): at minimum `Default` + one variant per meaningful prop combination
   - Responsive viewport annotation (mobile + desktop per `docs/business/overview.md` §9)
+  - `argTypes` entries **only for props that actually exist on the component** —
+    use `satisfies Meta<typeof ComponentName>` so TypeScript catches phantom props
+    at compile time. Include `description` and `control` type per prop.
+  - Default `args` at the meta level; per-story `args` only override what changes
+- [ ] Every **modified** `.vue` component has its `.stories.ts` updated in the same
+  commit to reflect the change: new props added to `argTypes`, removed props
+  deleted from `argTypes` and `args`, new states covered by new story exports,
+  changed behavior described in story names or JSDoc. A story that describes a
+  component that no longer matches the implementation is treated as missing.
+
+**Storybook story quality rules (per official Storybook best practices):**
+- **Fetch current best practices with Context7 BEFORE writing or updating any
+  story.** Run `resolve-library-id` for "Storybook" then `query-docs` against
+  the resolved id (`/storybookjs/storybook`) for the specific topic (autodocs,
+  argTypes, play functions, story structure, Vue3 setup). Do NOT rely on
+  memorized patterns — Storybook's API changes between majors. Apply what
+  Context7 returns.
+- **Stories MUST mount the REAL component — never rebuild its markup as
+  hand-written HTML.** Either use `component: Component` in the meta (auto-render)
+  or mount `<Component v-bind="args" />` in a `render`. A story that recreates
+  the component's DOM with raw `<div>`/`<button>`/`<nav>` markup instead of
+  importing the `.vue` is FORBIDDEN — it is double work and drifts from the real
+  UI the moment the component changes.
+  - Generic slot-based primitives (Nav, Card, Modal…) still mount the real
+    component; provide demo **slot content**, and use the REAL sub-components for
+    it (e.g. `<SiteLogo />` in Nav's `#logo` slot), never a fake placeholder.
+  - Demo copy (labels, links, phrases) MUST come from real data — i18n messages
+    (`i18n/locales/*.json`) or fixtures — and MUST match the live site. Never
+    invent nav links, menu items, or copy that contradicts the real pages.
+  - Only exception: a component that requires a live external service or secret
+    to render (e.g. `MapView` needs a live Mapbox token) MAY use a documented
+    visual stub instead of the live integration. Document why in the story's
+    JSDoc.
+- Global components a composed component relies on (Nuxt auto-imports like
+  `<UiNav>`, `<NuxtLink>`, layout shells like `<SiteLogo>`) must be registered in
+  `.storybook/preview.ts` via the `setup` function IMPORTED from
+  `@storybook/vue3-vite` — a `setup` key on the exported preview object is
+  ignored and the components silently fail to resolve. If a new component depends
+  on an unregistered global, register it there in the same change.
+- Story names use `PascalCase` and are self-explanatory: `WithImage`, `Disabled`,
+  `ErrorState`, `MobileViewport` — never `Variant1` or `Test`.
+- Group argTypes into categories with `table.category` when a component has more
+  than ~4 props: e.g. `Content`, `Appearance`, `Behavior`, `Events`.
+- Decorators supply context the component needs (padding, background): use
+  `decorators` on the meta or per-story, not hardcoded wrapper markup inside
+  the template.
+- Do not use `render` functions with manually typed `args` parameters — use
+  `setup()` returning `{ args }` bound via `v-bind="args"` instead to let
+  Storybook's controls flow through without type gymnastics.
 - [ ] Implementation follows `docs/business/overview.md`: tokens (color hex,
       radii, shadow `6px 6px 0 ink`, fonts), component anatomy (borders, shadows,
       hover lifts, pill chips), per-type accent via `--accent` swap.

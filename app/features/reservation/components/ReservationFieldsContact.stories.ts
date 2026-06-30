@@ -10,6 +10,46 @@ const meta = {
   title: 'Reservation/ReservationFieldsContact',
   component: ReservationFieldsContactComponent,
   tags: ['autodocs'],
+  argTypes: {
+    name: {
+      description: "Customer's full name value",
+      control: { type: 'text' },
+    },
+    partySize: {
+      description: 'Selected party size number (or null if not selected)',
+      control: { type: 'number' },
+    },
+    phone: {
+      description: "Customer's phone number value",
+      control: { type: 'text' },
+    },
+    partySizeOptions: {
+      description:
+        'Array of { value, label } options for the party size selector',
+      control: { type: 'object' },
+    },
+    errorName: {
+      description: 'Validation error message for the name field',
+      control: { type: 'text' },
+    },
+    errorPartySize: {
+      description: 'Validation error message for the party size field',
+      control: { type: 'text' },
+    },
+    errorPhone: {
+      description: 'Validation error message for the phone field',
+      control: { type: 'text' },
+    },
+    isSubmitting: {
+      description: 'Disables all fields while the form is being submitted',
+      control: { type: 'boolean' },
+    },
+    nameDisabled: {
+      description:
+        'Disables the name field independently (e.g., no branch selected)',
+      control: { type: 'boolean' },
+    },
+  },
 } satisfies Meta<typeof ReservationFieldsContactComponent>
 
 export default meta
@@ -87,6 +127,38 @@ export const Submitting: Story = {
     isSubmitting: true,
     nameDisabled: true,
   },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: {
+    name: '',
+    partySize: null,
+    phone: '',
+    partySizeOptions: PARTY_SIZE_OPTIONS,
+    errorName: undefined,
+    errorPartySize: undefined,
+    errorPhone: undefined,
+    isSubmitting: false,
+    nameDisabled: false,
+  },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: {
+    name: '',
+    partySize: null,
+    phone: '',
+    partySizeOptions: PARTY_SIZE_OPTIONS,
+    errorName: undefined,
+    errorPartySize: undefined,
+    errorPhone: undefined,
+    isSubmitting: false,
+    nameDisabled: false,
+  },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

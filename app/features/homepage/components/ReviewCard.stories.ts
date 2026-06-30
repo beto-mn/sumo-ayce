@@ -18,6 +18,13 @@ const meta = {
   title: 'Homepage/ReviewCard',
   component: ReviewCard,
   tags: ['autodocs'],
+  argTypes: {
+    review: {
+      description:
+        'Review object with authorName, rating (1-5), text (ES/EN), source, and reviewedAt date',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof ReviewCard>
 
 export default meta
@@ -33,6 +40,18 @@ export const FourStars: Story = {
 
 export const OneStar: Story = {
   args: { review: { ...base, rating: 1, authorName: 'Anónimo' } },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { review: base },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { review: base },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

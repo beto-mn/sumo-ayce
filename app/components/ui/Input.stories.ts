@@ -7,12 +7,35 @@ const meta = {
   component: Input,
   tags: ['autodocs'],
   argTypes: {
+    label: {
+      description: 'Visible label displayed above the input',
+      control: { type: 'text' },
+    },
+    placeholder: {
+      description: 'Placeholder text shown when the input is empty',
+      control: { type: 'text' },
+    },
+    modelValue: {
+      description: 'Bound value via v-model',
+      control: { type: 'text' },
+    },
+    error: {
+      description: 'Validation error message displayed below the input',
+      control: { type: 'text' },
+    },
     type: {
-      control: 'select',
+      description: 'HTML input type attribute',
+      control: { type: 'select' },
       options: ['text', 'email', 'tel', 'number', 'password'],
     },
-    required: { control: 'boolean' },
-    disabled: { control: 'boolean' },
+    required: {
+      description: 'Marks the field as required',
+      control: { type: 'boolean' },
+    },
+    disabled: {
+      description: 'Disables the input, preventing interaction',
+      control: { type: 'boolean' },
+    },
   },
   render: args => ({
     components: { Input },
@@ -81,6 +104,24 @@ export const Password: Story = {
     name: 'password',
     type: 'password',
     label: 'Contraseña',
+    modelValue: '',
+  },
+}
+
+export const LocaleES: Story = {
+  args: {
+    name: 'name',
+    label: 'Nombre completo',
+    placeholder: 'Tu nombre',
+    modelValue: '',
+  },
+}
+
+export const LocaleEN: Story = {
+  args: {
+    name: 'name',
+    label: 'Full name',
+    placeholder: 'Your name',
     modelValue: '',
   },
 }

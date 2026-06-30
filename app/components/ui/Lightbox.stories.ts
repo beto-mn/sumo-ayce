@@ -9,9 +9,18 @@ const meta = {
   component: Lightbox,
   tags: ['autodocs'],
   argTypes: {
-    open: { control: 'boolean' },
-    src: { control: 'text' },
-    alt: { control: 'text' },
+    open: {
+      description: 'Whether the lightbox overlay is visible',
+      control: { type: 'boolean' },
+    },
+    src: {
+      description: 'URL of the image to display in the lightbox',
+      control: { type: 'text' },
+    },
+    alt: {
+      description: 'Accessible alt text for the lightbox image',
+      control: { type: 'text' },
+    },
   },
 } satisfies Meta<typeof Lightbox>
 

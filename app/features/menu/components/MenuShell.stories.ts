@@ -72,6 +72,24 @@ const meta = {
     initialType: 'ayce',
     initialModality: 'buffet',
   },
+  argTypes: {
+    menuData: {
+      description:
+        'Complete menu data result including categories, sauces, and locationType',
+      control: { type: 'object' },
+    },
+    initialType: {
+      description: 'Initial menu type to display: ayce or express',
+      control: { type: 'select' },
+      options: ['ayce', 'express'],
+    },
+    initialModality: {
+      description:
+        'Initial menu modality: buffet (all-inclusive) or carta (a la carte)',
+      control: { type: 'select' },
+      options: ['buffet', 'carta'],
+    },
+  },
   decorators: [
     (story => ({
       components: {
@@ -101,6 +119,14 @@ export const ExpressType: Story = {
 
 export const CartaModality: Story = {
   args: { initialModality: 'carta' },
+}
+
+export const Empty: Story = {
+  args: {
+    menuData: { ...menuData, categories: [] },
+    initialType: 'ayce',
+    initialModality: 'buffet',
+  },
 }
 
 export const Mobile: Story = {

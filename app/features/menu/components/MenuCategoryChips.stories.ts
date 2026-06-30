@@ -34,6 +34,17 @@ const meta = {
   component: MenuCategoryChips,
   tags: ['autodocs'],
   args: { categories, activeCategory: null },
+  argTypes: {
+    categories: {
+      description: 'Array of menu category objects with key and localized name',
+      control: { type: 'object' },
+    },
+    activeCategory: {
+      description:
+        'Key of the currently active/selected category chip (or null for all)',
+      control: { type: 'text' },
+    },
+  },
 } satisfies Meta<typeof MenuCategoryChips>
 
 export default meta
@@ -45,6 +56,18 @@ export const Default: Story = {
 
 export const WithActiveCategory: Story = {
   args: { activeCategory: 'wings' },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { activeCategory: null },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { activeCategory: null },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

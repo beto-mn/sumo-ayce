@@ -6,8 +6,16 @@ const meta = {
   component: BranchSearch,
   tags: ['autodocs'],
   argTypes: {
-    geoState: { control: 'object' },
-    cpState: { control: 'object' },
+    geoState: {
+      description:
+        'Geolocation state object with status (idle|loading|error|unsupported), errorMessage, and coordinates',
+      control: { type: 'object' },
+    },
+    cpState: {
+      description:
+        'Postal code input state object with value, status, and optional errorMessage',
+      control: { type: 'object' },
+    },
   },
 } satisfies Meta<typeof BranchSearch>
 
@@ -79,6 +87,34 @@ export const Unsupported: Story = {
     },
     cpState: { value: '', status: 'idle', errorMessage: null },
   },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: {
+    geoState: {
+      status: 'idle',
+      errorMessage: null,
+      userLat: null,
+      userLng: null,
+    },
+    cpState: { value: '', status: 'idle', errorMessage: null },
+  },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: {
+    geoState: {
+      status: 'idle',
+      errorMessage: null,
+      userLat: null,
+      userLng: null,
+    },
+    cpState: { value: '', status: 'idle', errorMessage: null },
+  },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

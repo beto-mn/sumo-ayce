@@ -7,10 +7,14 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     tone: {
-      control: 'select',
+      description: 'Background color of the sticker badge',
+      control: { type: 'select' },
       options: ['yellow', 'pink', 'orange', 'blue', 'green'],
     },
-    rotate: { control: { type: 'number', min: -180, max: 180, step: 1 } },
+    rotate: {
+      description: 'Rotation angle in degrees for the playful tilt effect',
+      control: { type: 'number', min: -180, max: 180, step: 1 },
+    },
   },
   render: args => ({
     components: { Sticker },

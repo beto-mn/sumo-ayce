@@ -11,12 +11,21 @@ const meta = {
   component: SiteMarquee,
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen', backgrounds: { default: 'cream' } },
+  argTypes: {},
 } satisfies Meta<typeof SiteMarquee>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
+
+export const LocaleES: Story = {
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  parameters: { globals: { locale: 'en' } },
+}
 
 export const Mobile: Story = {
   parameters: { viewport: { defaultViewport: 'mobile1' } },

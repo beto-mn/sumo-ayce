@@ -5,6 +5,61 @@ const meta = {
   title: 'Reservation/ReservationFieldsDateTime',
   component: ReservationFieldsDateTimeComponent,
   tags: ['autodocs'],
+  argTypes: {
+    branchId: {
+      description: 'Selected branch ID (enables date input when not null)',
+      control: { type: 'text' },
+    },
+    date: {
+      description: 'Selected date value in ISO format (YYYY-MM-DD)',
+      control: { type: 'text' },
+    },
+    time: {
+      description: 'Selected time value in HH:MM format',
+      control: { type: 'text' },
+    },
+    todayIso: {
+      description: 'Minimum selectable date (today) in ISO format',
+      control: { type: 'text' },
+    },
+    maxDateIso: {
+      description: 'Maximum selectable date in ISO format',
+      control: { type: 'text' },
+    },
+    horaMin: {
+      description: 'Earliest time slot available in HH:MM format',
+      control: { type: 'text' },
+    },
+    horaMax: {
+      description: 'Latest time slot available in HH:MM format',
+      control: { type: 'text' },
+    },
+    scheduleForDate: {
+      description:
+        'Branch schedule for the selected date with open/close times',
+      control: { type: 'object' },
+    },
+    errorDate: {
+      description: 'Validation error i18n key for the date field',
+      control: { type: 'text' },
+    },
+    errorTime: {
+      description: 'Validation error i18n key for the time field',
+      control: { type: 'text' },
+    },
+    isSubmitting: {
+      description: 'Disables all fields while the form is being submitted',
+      control: { type: 'boolean' },
+    },
+    dateDisabled: {
+      description: 'Disables the date input field',
+      control: { type: 'boolean' },
+    },
+    timeDisabled: {
+      description: 'Disables the time input field (no date selected)',
+      control: { type: 'boolean' },
+    },
+  },
 } satisfies Meta<typeof ReservationFieldsDateTimeComponent>
 
 export default meta

@@ -6,6 +6,17 @@ const meta: Meta<typeof VisitButton> = {
   component: VisitButton,
   tags: ['autodocs'],
   parameters: { backgrounds: { default: 'dark' } },
+  argTypes: {
+    state: {
+      description: 'Current interaction state of the button',
+      control: { type: 'select' },
+      options: ['idle', 'loading', 'success', 'error'],
+    },
+    errorMessage: {
+      description: 'Error message displayed when state is "error"',
+      control: { type: 'text' },
+    },
+  },
 }
 
 export default meta
