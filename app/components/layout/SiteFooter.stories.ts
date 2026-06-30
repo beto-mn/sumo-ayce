@@ -13,12 +13,26 @@ const meta = {
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
   args: { year: 2026 },
+  argTypes: {
+    year: {
+      description: 'Copyright year displayed in the footer',
+      control: { type: 'number' },
+    },
+  },
 } satisfies Meta<typeof SiteFooter>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
+
+export const LocaleES: Story = {
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  parameters: { globals: { locale: 'en' } },
+}
 
 export const Mobile: Story = {
   parameters: { viewport: { defaultViewport: 'mobile1' } },

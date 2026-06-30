@@ -6,9 +6,20 @@ const meta = {
   component: Chip,
   tags: ['autodocs'],
   argTypes: {
-    active: { control: 'boolean' },
-    accent: { control: 'select', options: ['ayce', 'express'] },
-    as: { control: 'select', options: ['button', 'span'] },
+    active: {
+      description: 'Whether the chip is in its selected/active state',
+      control: { type: 'boolean' },
+    },
+    accent: {
+      description: 'Brand accent context: AYCE (orange) or Express (blue)',
+      control: { type: 'select' },
+      options: ['ayce', 'express'],
+    },
+    as: {
+      description: 'HTML element to render: interactive button or static span',
+      control: { type: 'select' },
+      options: ['button', 'span'],
+    },
   },
   render: args => ({
     components: { Chip },

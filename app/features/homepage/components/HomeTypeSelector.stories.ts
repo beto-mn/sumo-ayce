@@ -5,6 +5,7 @@ const meta = {
   title: 'Homepage/HomeTypeSelector',
   component: HomeTypeSelector,
   tags: ['autodocs'],
+  argTypes: {},
 } satisfies Meta<typeof HomeTypeSelector>
 
 export default meta
@@ -18,6 +19,16 @@ export const Mobile: Story = {
 
 export const Tablet: Story = {
   parameters: { viewport: { defaultViewport: 'tablet' } },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Desktop: Story = {

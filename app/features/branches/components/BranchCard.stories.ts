@@ -47,7 +47,16 @@ const meta = {
   component: BranchCard,
   tags: ['autodocs'],
   argTypes: {
-    highlighted: { control: 'boolean' },
+    branch: {
+      description:
+        'Branch data object including name, address, type, schedule, phone, and optional distanceKm',
+      control: { type: 'object' },
+    },
+    highlighted: {
+      description:
+        'Visually highlights the card (e.g., when selected on the map)',
+      control: { type: 'boolean' },
+    },
   },
 } satisfies Meta<typeof BranchCard>
 
@@ -111,6 +120,18 @@ export const PhoneNull: Story = {
 export const Highlighted: Story = {
   name: 'Highlighted',
   args: { branch: { ...AYCE_BRANCH, distanceKm: 0.5 }, highlighted: true },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { branch: AYCE_BRANCH },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { branch: AYCE_BRANCH },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

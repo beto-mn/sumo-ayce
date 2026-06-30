@@ -6,6 +6,13 @@ const meta = {
   title: 'Homepage/HomeReviews',
   component: HomeReviews,
   tags: ['autodocs'],
+  argTypes: {
+    reviews: {
+      description:
+        'Array of Review objects to display in the homepage reviews section',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof HomeReviews>
 
 export default meta

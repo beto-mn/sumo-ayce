@@ -6,7 +6,11 @@ const meta = {
   component: HomeHero,
   tags: ['autodocs'],
   argTypes: {
-    price: { control: 'text' },
+    price: {
+      description:
+        'Current AYCE price to display on the hero sticker (e.g., "$269")',
+      control: { type: 'text' },
+    },
   },
 } satisfies Meta<typeof HomeHero>
 
@@ -37,6 +41,18 @@ export const Desktop: Story = {
  * accessibility settings to verify — no JS state involved. The marquee now
  * lives in a global band (SiteMarquee), not in the hero.
  */
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { price: '$269' },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { price: '$269' },
+  parameters: { globals: { locale: 'en' } },
+}
+
 export const ReducedMotion: Story = {
   args: { price: '$269' },
 }

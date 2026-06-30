@@ -82,6 +82,13 @@ const meta = {
   title: 'Promotions/PromotionCard',
   component: PromotionCard,
   tags: ['autodocs'],
+  argTypes: {
+    promotion: {
+      description:
+        'Full Promotion object including badge, title, description, validity, color, type, and optional imageUrl',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof PromotionCard>
 
 export default meta
@@ -120,6 +127,18 @@ export const Mobile: Story = {
 export const Desktop: Story = {
   args: { promotion: AYCE_PROMO },
   parameters: { viewport: { defaultViewport: 'desktop' } },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { promotion: AYCE_PROMO },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { promotion: AYCE_PROMO },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const MobileNarrow: Story = {

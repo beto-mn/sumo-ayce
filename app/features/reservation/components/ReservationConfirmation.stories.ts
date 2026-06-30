@@ -14,6 +14,13 @@ const meta = {
   title: 'Reservation/ReservationConfirmation',
   component: ReservationConfirmationComponent,
   tags: ['autodocs'],
+  argTypes: {
+    confirmation: {
+      description:
+        'Confirmation object with folio, branchName, date, time, and partySize',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof ReservationConfirmationComponent>
 
 export default meta
@@ -45,6 +52,18 @@ export const ExpressBranch: Story = {
       folio: 'SUMO-9999',
     },
   },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { confirmation: SAMPLE_CONFIRMATION },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { confirmation: SAMPLE_CONFIRMATION },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

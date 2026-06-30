@@ -12,12 +12,21 @@ const meta = {
   component: SiteHeader,
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
+  argTypes: {},
 } satisfies Meta<typeof SiteHeader>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
+
+export const LocaleES: Story = {
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  parameters: { globals: { locale: 'en' } },
+}
 
 export const Mobile: Story = {
   parameters: { viewport: { defaultViewport: 'mobile1' } },

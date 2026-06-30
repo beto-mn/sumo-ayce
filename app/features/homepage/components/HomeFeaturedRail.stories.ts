@@ -24,6 +24,13 @@ const meta = {
   title: 'Homepage/HomeFeaturedRail',
   component: HomeFeaturedRail,
   tags: ['autodocs'],
+  argTypes: {
+    dishes: {
+      description:
+        'Array of featured dish objects to display in the horizontal rail',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof HomeFeaturedRail>
 
 export default meta

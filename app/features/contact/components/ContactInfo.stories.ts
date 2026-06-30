@@ -6,9 +6,19 @@ const meta = {
   component: ContactInfo,
   tags: ['autodocs'],
   argTypes: {
-    selectedBranch: { control: 'object' },
-    name: { control: 'text' },
-    message: { control: 'text' },
+    selectedBranch: {
+      description:
+        'Currently selected branch with id, name, and phone (or null if none selected)',
+      control: { type: 'object' },
+    },
+    name: {
+      description: "Customer's name to pre-fill in the WhatsApp message",
+      control: { type: 'text' },
+    },
+    message: {
+      description: 'Message text to pre-fill in the WhatsApp template',
+      control: { type: 'text' },
+    },
   },
 } satisfies Meta<typeof ContactInfo>
 
@@ -40,6 +50,18 @@ export const WithFormData: Story = {
     name: 'Ana García',
     message: 'Hola, quisiera reservar una mesa para 4 personas este sábado.',
   },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { selectedBranch: null, name: '', message: '' },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { selectedBranch: null, name: '', message: '' },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {
