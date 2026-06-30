@@ -40,6 +40,17 @@ const meta: Meta<typeof TransactionTable> = {
   tags: ['autodocs'],
   parameters: { backgrounds: { default: 'dark' } },
   args: { transactions: txs },
+  argTypes: {
+    transactions: {
+      description: 'Array of transaction records to display in the table',
+      control: { type: 'object' },
+    },
+    loading: {
+      description:
+        'Shows a loading skeleton while transactions are being fetched',
+      control: { type: 'boolean' },
+    },
+  },
 }
 
 export default meta

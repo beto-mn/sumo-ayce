@@ -16,7 +16,32 @@ const meta = {
   component: ReservationFieldsPrimaryComponent,
   tags: ['autodocs'],
   argTypes: {
-    tipo: { control: 'select', options: ['ayce', 'express'] },
+    tipo: {
+      description: 'Currently selected restaurant type: ayce or express',
+      control: { type: 'select' },
+      options: ['ayce', 'express'],
+    },
+    branchId: {
+      description: 'Currently selected branch ID (or null if none selected)',
+      control: { type: 'text' },
+    },
+    branchOptions: {
+      description:
+        'Array of { value, label } branch options for the branch selector',
+      control: { type: 'object' },
+    },
+    tipoOptions: {
+      description: 'Array of { value, label } type options (AYCE / Express)',
+      control: { type: 'object' },
+    },
+    errorBranch: {
+      description: 'Validation error i18n key for the branch selection field',
+      control: { type: 'text' },
+    },
+    isSubmitting: {
+      description: 'Disables all fields while the form is being submitted',
+      control: { type: 'boolean' },
+    },
   },
 } satisfies Meta<typeof ReservationFieldsPrimaryComponent>
 
@@ -80,6 +105,32 @@ export const Submitting: Story = {
     errorBranch: undefined,
     isSubmitting: true,
   },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: {
+    tipo: 'ayce',
+    branchId: null,
+    branchOptions: BRANCH_OPTIONS,
+    tipoOptions: TIPO_OPTIONS,
+    errorBranch: undefined,
+    isSubmitting: false,
+  },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: {
+    tipo: 'ayce',
+    branchId: null,
+    branchOptions: BRANCH_OPTIONS,
+    tipoOptions: TIPO_OPTIONS,
+    errorBranch: undefined,
+    isSubmitting: false,
+  },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

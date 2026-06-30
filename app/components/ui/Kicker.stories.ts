@@ -7,10 +7,14 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     tone: {
-      control: 'select',
+      description: 'Color tone of the kicker label. Blue is Express-only.',
+      control: { type: 'select' },
       options: ['ink', 'accent', 'orange', 'pink', 'blue', 'yellow'],
     },
-    rotate: { control: { type: 'number', min: -180, max: 180, step: 1 } },
+    rotate: {
+      description: 'Rotation in degrees for the playful tilt effect',
+      control: { type: 'number', min: -180, max: 180, step: 1 },
+    },
   },
   render: args => ({
     components: { Kicker },
@@ -44,6 +48,26 @@ export const AccentExpress: Story = {
     setup: () => ({ args }),
     template:
       '<div class="scope-express p-6"><Kicker v-bind="args">Express</Kicker></div>',
+  }),
+}
+
+export const LocaleES: Story = {
+  args: { tone: 'ink', rotate: -2 },
+  render: args => ({
+    components: { Kicker },
+    setup: () => ({ args }),
+    template:
+      '<div class="p-6"><Kicker v-bind="args">Come sin límites</Kicker></div>',
+  }),
+}
+
+export const LocaleEN: Story = {
+  args: { tone: 'ink', rotate: -2 },
+  render: args => ({
+    components: { Kicker },
+    setup: () => ({ args }),
+    template:
+      '<div class="p-6"><Kicker v-bind="args">Eat Without Limits</Kicker></div>',
   }),
 }
 

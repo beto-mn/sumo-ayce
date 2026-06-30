@@ -11,6 +11,20 @@ const meta: Meta<typeof CustomerCard> = {
     phone: '+52 55 1234 5678',
     pointsBalance: 45,
   },
+  argTypes: {
+    name: {
+      description: "Customer's full name",
+      control: { type: 'text' },
+    },
+    phone: {
+      description: "Customer's phone number (formatted)",
+      control: { type: 'text' },
+    },
+    pointsBalance: {
+      description: 'Current loyalty points balance',
+      control: { type: 'number' },
+    },
+  },
 }
 
 export default meta

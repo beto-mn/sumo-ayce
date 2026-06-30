@@ -18,6 +18,13 @@ const meta = {
   title: 'Homepage/DishCard',
   component: DishCard,
   tags: ['autodocs'],
+  argTypes: {
+    dish: {
+      description:
+        'FeaturedDish object with id, name, description (ES/EN), imageUrl, badge, and category',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof DishCard>
 
 export default meta
@@ -33,6 +40,18 @@ export const WithBadge: Story = {
 
 export const NoImage: Story = {
   args: { dish: { ...base, imageUrl: null } },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { dish: base },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { dish: base },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

@@ -6,6 +6,7 @@ const meta = {
   title: 'Contact/ContactForm',
   component: ContactForm,
   tags: ['autodocs'],
+  argTypes: {},
 } satisfies Meta<typeof ContactForm>
 
 export default meta
@@ -45,6 +46,16 @@ export const AllFieldsFilled: Story = {
     },
     template: `<ContactForm @update:selected-branch="selectedBranch = $event" />`,
   }),
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

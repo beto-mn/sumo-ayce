@@ -25,6 +25,13 @@ const meta = {
   title: 'Homepage/HomePromotions',
   component: HomePromotions,
   tags: ['autodocs'],
+  argTypes: {
+    promotions: {
+      description:
+        'Array of Promotion objects to display in the homepage promotions section',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof HomePromotions>
 
 export default meta

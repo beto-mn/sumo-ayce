@@ -45,6 +45,13 @@ const meta = {
   title: 'Menu/MenuSaucePicker',
   component: MenuSaucePicker,
   tags: ['autodocs'],
+  argTypes: {
+    sauces: {
+      description:
+        'Array of sauce objects with id, localized name, imageUrl, and spiceLevel (0-5)',
+      control: { type: 'object' },
+    },
+  },
 } satisfies Meta<typeof MenuSaucePicker>
 
 export default meta
@@ -60,6 +67,18 @@ export const SelectedState: Story = {
     const btns = canvasElement.querySelectorAll('button')
     if (btns[2]) (btns[2] as HTMLButtonElement).click()
   },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { sauces },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { sauces },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

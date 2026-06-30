@@ -61,6 +61,17 @@ const meta = {
   title: 'Promotions/PromotionsGrid',
   component: PromotionsGrid,
   tags: ['autodocs'],
+  argTypes: {
+    promotions: {
+      description: 'Array of Promotion objects to display in the grid',
+      control: { type: 'object' },
+    },
+    ok: {
+      description:
+        'Whether the promotions fetch succeeded; false shows an error state',
+      control: { type: 'boolean' },
+    },
+  },
 } satisfies Meta<typeof PromotionsGrid>
 
 export default meta

@@ -62,7 +62,14 @@ const meta = {
   component: BranchList,
   tags: ['autodocs'],
   argTypes: {
-    highlightedId: { control: 'text' },
+    branches: {
+      description: 'Array of branch objects to display in the list',
+      control: { type: 'object' },
+    },
+    highlightedId: {
+      description: 'ID of the branch card to highlight (e.g., selected on map)',
+      control: { type: 'text' },
+    },
   },
 } satisfies Meta<typeof BranchList>
 

@@ -46,6 +46,18 @@ const meta = {
   component: MenuDrinkSection,
   tags: ['autodocs'],
   args: { drinks },
+  argTypes: {
+    drinks: {
+      description:
+        'Array of drink dish objects with drinkGroup for categorization',
+      control: { type: 'object' },
+    },
+    activeGroup: {
+      description:
+        'Currently active drink group filter key (or null/undefined for all)',
+      control: { type: 'text' },
+    },
+  },
 } satisfies Meta<typeof MenuDrinkSection>
 
 export default meta
@@ -55,6 +67,22 @@ export const Default: Story = {}
 
 export const FilteredGroup: Story = {
   args: { activeGroup: 'sodas' },
+}
+
+export const Empty: Story = {
+  args: { drinks: [] },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { drinks },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { drinks },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

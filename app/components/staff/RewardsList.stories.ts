@@ -23,6 +23,20 @@ const meta: Meta<typeof RewardsList> = {
   tags: ['autodocs'],
   parameters: { backgrounds: { default: 'dark' } },
   args: { rewards, customerBalance: 12 },
+  argTypes: {
+    rewards: {
+      description: 'Array of available reward objects the customer can redeem',
+      control: { type: 'object' },
+    },
+    customerBalance: {
+      description: 'Current loyalty points balance of the customer',
+      control: { type: 'number' },
+    },
+    loading: {
+      description: 'Shows a loading skeleton while rewards are being fetched',
+      control: { type: 'boolean' },
+    },
+  },
 }
 
 export default meta

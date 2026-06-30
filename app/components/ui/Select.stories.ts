@@ -14,8 +14,30 @@ const meta = {
   component: Select,
   tags: ['autodocs'],
   argTypes: {
-    required: { control: 'boolean' },
-    disabled: { control: 'boolean' },
+    label: {
+      description: 'Visible label displayed above the select',
+      control: { type: 'text' },
+    },
+    options: {
+      description: 'Array of { value, label } option objects',
+      control: { type: 'object' },
+    },
+    modelValue: {
+      description: 'Currently selected value via v-model',
+      control: { type: 'text' },
+    },
+    error: {
+      description: 'Validation error message displayed below the select',
+      control: { type: 'text' },
+    },
+    required: {
+      description: 'Marks the field as required',
+      control: { type: 'boolean' },
+    },
+    disabled: {
+      description: 'Disables the select, preventing interaction',
+      control: { type: 'boolean' },
+    },
   },
   render: args => ({
     components: { Select },
@@ -81,6 +103,26 @@ export const Disabled: Story = {
     disabled: true,
     options: branchOptions,
     modelValue: 'polanco',
+  },
+}
+
+export const LocaleES: Story = {
+  args: {
+    name: 'branch',
+    label: 'Sucursal',
+    options: branchOptions,
+    placeholder: 'Seleccionar',
+    modelValue: '',
+  },
+}
+
+export const LocaleEN: Story = {
+  args: {
+    name: 'branch',
+    label: 'Branch',
+    options: branchOptions,
+    placeholder: 'Select',
+    modelValue: '',
   },
 }
 

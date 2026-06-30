@@ -8,6 +8,16 @@ const meta: Meta<typeof LoginForm> = {
   parameters: {
     backgrounds: { default: 'dark' },
   },
+  argTypes: {
+    error: {
+      description: 'Error message to display below the form (login failure)',
+      control: { type: 'text' },
+    },
+    loading: {
+      description: 'Shows a loading state and disables the submit button',
+      control: { type: 'boolean' },
+    },
+  },
 }
 
 export default meta

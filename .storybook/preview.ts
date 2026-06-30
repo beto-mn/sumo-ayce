@@ -1,14 +1,35 @@
-import type { Preview } from '@storybook/vue3'
+import { type Preview, setup } from '@storybook/vue3-vite'
+import * as Vue from 'vue'
 import { type App, type Component, h, ref } from 'vue'
+import '../app/assets/css/tailwind.css'
 import '../app/assets/css/base.css'
 import en from '../i18n/locales/en.json'
 import es from '../i18n/locales/es.json'
+
+// Nuxt auto-imports Vue's reactivity/lifecycle APIs (ref, computed, reactive,
+// watch, onMounted, ...) so components use them without an explicit import.
+// Storybook has no such transform, so those identifiers resolve against the
+// global scope. Expose the real Vue APIs there to mirror the auto-import;
+// components that DO import from 'vue' explicitly are unaffected (local
+// bindings shadow the globals).
+Object.assign(globalThis, Vue)
 
 // Globally register the auto-imported UI primitives so feature/layout
 // components (which reference `<UiNav>`, `<UiButton>`, ... without explicit
 // imports per Nuxt auto-import) render correctly inside Storybook.
 const uiModules = import.meta.glob<{ default: Component }>(
   '../app/components/ui/*.vue',
+  { eager: true }
+)
+
+// SiteLogo is auto-imported by Nuxt and rendered internally by SiteHeader and
+// SiteFooter; without registering it here those stories render with a missing
+// logo. Register ONLY SiteLogo — eagerly importing the other layout shells
+// (SiteHeader/SiteFooter/SiteMarquee) at preview-init breaks the preview
+// bundle, and they don't need global registration (their own stories import
+// them directly).
+const layoutModules = import.meta.glob<{ default: Component }>(
+  '../app/components/layout/SiteLogo.vue',
   { eager: true }
 )
 
@@ -68,6 +89,30 @@ globals.useReservationModal = () => ({
   closeReservation: () => {},
 })
 
+// Nuxt data-fetching primitives. Components (directly or via feature
+// composables) call these during `setup()`; without a Nuxt runtime they are
+// undefined, so `setup()` throws and the whole render fails with cryptic errors
+// like `$setup.t is not a function`. Shim them with inert, safe defaults so
+// components render an empty/loaded-empty state instead of crashing.
+const asyncDataShim = () => ({
+  data: ref(null),
+  pending: ref(false),
+  error: ref(null),
+  status: ref('success'),
+  refresh: async () => {},
+  execute: async () => {},
+  clear: () => {},
+})
+globals.useFetch = asyncDataShim
+globals.useAsyncData = asyncDataShim
+globals.$fetch = async () => ({ data: [] })
+globals.useState = (_key: string, init?: () => unknown) =>
+  ref(typeof init === 'function' ? init() : undefined)
+globals.useNuxtApp = () => ({
+  payload: { data: {} },
+  static: { data: {} },
+})
+
 // Stub NuxtLink as a plain anchor so navigation-based stories render.
 const NuxtLink = {
   props: { to: { type: [String, Object], default: '#' } },
@@ -99,15 +144,23 @@ const NuxtImg = {
   },
 }
 
+// Register global components on Storybook's Vue app. This MUST use the `setup`
+// function exported by `@storybook/vue3-vite` — a `setup` key on the preview
+// object is IGNORED, so components like `<UiNav>`, `<NuxtLink>`, `<SiteLogo>`
+// referenced INSIDE composed components would fail to resolve and render blank.
+setup((app: App) => {
+  app.component('NuxtLink', NuxtLink)
+  app.component('NuxtImg', NuxtImg)
+  for (const [path, mod] of Object.entries(uiModules)) {
+    const base = path.split('/').pop()?.replace('.vue', '')
+    if (base) app.component(`Ui${base}`, mod.default)
+  }
+  for (const mod of Object.values(layoutModules)) {
+    app.component('SiteLogo', mod.default)
+  }
+})
+
 const preview: Preview = {
-  setup(app: App) {
-    app.component('NuxtLink', NuxtLink)
-    app.component('NuxtImg', NuxtImg)
-    for (const [path, mod] of Object.entries(uiModules)) {
-      const base = path.split('/').pop()?.replace('.vue', '')
-      if (base) app.component(`Ui${base}`, mod.default)
-    }
-  },
   decorators: [
     (story, context) => {
       currentLocale.value = (context.globals.locale as 'es' | 'en') ?? 'es'
@@ -140,23 +193,28 @@ const preview: Preview = {
     },
     viewport: {
       viewports: {
+        mobile: {
+          name: 'Mobile (375px)',
+          styles: { width: '375px', height: '812px' },
+          type: 'mobile',
+        },
         mobile1: {
           name: 'Mobile (360px)',
           styles: { width: '360px', height: '720px' },
           type: 'mobile',
         },
         tablet: {
-          name: 'Tablet (880px)',
-          styles: { width: '880px', height: '1024px' },
+          name: 'Tablet (768px)',
+          styles: { width: '768px', height: '1024px' },
           type: 'tablet',
         },
         desktop: {
-          name: 'Desktop (1200px)',
-          styles: { width: '1200px', height: '900px' },
+          name: 'Desktop (1280px)',
+          styles: { width: '1280px', height: '900px' },
           type: 'desktop',
         },
       },
-      defaultViewport: 'desktop',
+      defaultViewport: 'mobile',
     },
   },
 }

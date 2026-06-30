@@ -30,7 +30,7 @@ const base: FullMenuDish = {
     es: 'Salmón flameado con aguacate y sriracha.',
     en: 'Flamed salmon with avocado and sriracha.',
   },
-  imageUrl: '/menu/ayce/bora_bora.webp',
+  imageUrl: 'https://placehold.co/400x300',
   badge: null,
   price: null,
   incluido: true,
@@ -44,6 +44,24 @@ const meta = {
   component: MenuDishCard,
   tags: ['autodocs'],
   args: { sauces, modality: 'buffet' },
+  argTypes: {
+    dish: {
+      description:
+        'FullMenuDish object with localized name, description, imageUrl, badge, price, and sauce flags',
+      control: { type: 'object' },
+    },
+    sauces: {
+      description:
+        'Available sauce options shown when the dish requiresSauce is true',
+      control: { type: 'object' },
+    },
+    modality: {
+      description:
+        'Menu modality: buffet (included dishes) or carta (a la carte with prices)',
+      control: { type: 'select' },
+      options: ['buffet', 'carta'],
+    },
+  },
 } satisfies Meta<typeof MenuDishCard>
 
 export default meta
@@ -70,6 +88,18 @@ export const CartaWithPrice: Story = {
     dish: { ...base, price: '128.00', incluido: false },
     modality: 'carta',
   },
+}
+
+export const LocaleES: Story = {
+  name: 'Locale ES (español)',
+  args: { dish: base },
+  parameters: { globals: { locale: 'es' } },
+}
+
+export const LocaleEN: Story = {
+  name: 'Locale EN (English)',
+  args: { dish: base },
+  parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {

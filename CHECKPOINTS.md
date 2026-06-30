@@ -59,6 +59,9 @@ Should return EMPTY.
       feature with frontend changes does NOT pass C4 if no `app/` tests run
 - [ ] `pnpm check` (biome) passes with `--error-on-warnings`
 - [ ] `pnpm typecheck` passes without errors
+- [ ] **Storybook sync** — every `.vue` touched by this feature has its
+      `.stories.ts` created or updated in the same commit. Run
+      `pnpm storybook:build` — must exit 0 with no type errors.
 
 ## C5 — The session was closed properly
 

@@ -6,9 +6,21 @@ const meta = {
   component: Card,
   tags: ['autodocs'],
   argTypes: {
-    accent: { control: 'select', options: ['ayce', 'express'] },
-    tone: { control: 'select', options: ['panel', 'bg2'] },
-    shadowSize: { control: 'select', options: ['lg', 'sm'] },
+    accent: {
+      description: 'Brand accent context: AYCE (orange) or Express (blue)',
+      control: { type: 'select' },
+      options: ['ayce', 'express'],
+    },
+    tone: {
+      description: 'Background tone for the card surface',
+      control: { type: 'select' },
+      options: ['panel', 'bg2'],
+    },
+    shadowSize: {
+      description: 'Size of the Mercado Pop drop shadow',
+      control: { type: 'select' },
+      options: ['lg', 'sm'],
+    },
   },
   render: args => ({
     components: { Card },
