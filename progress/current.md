@@ -32,5 +32,29 @@
 ### Storybook
 - Stories for all new components (MenuDishCard, MenuSaucePicker, MenuTypeToggle, MenuModalityToggle, MenuShell)
 
-## Next step
-- Feature **014 — reservation-page** (`pending`, `sdd: true`) — next in sequence. Spec exists at `specs/014-reservation-page/`.
+## Feature closed: 018 — vercel-blob-images (2026-06-29)
+
+**Branch**: `chore/018-vercel-blob-images`
+
+### What was delivered
+- `server/utils/env.ts` — `BLOB_BASE_URL` added to Zod schema (required, validated at startup)
+- `server/api/v1/menu/resolveImageUrl.ts` — new module: `(filePath: string | null) => string | null`, prefixes `BLOB_BASE_URL`, strips trailing/leading slashes
+- `server/api/v1/menu/index.get.ts` — uses new `resolveImageUrl`; dead folder-routing logic removed
+- `server/utils/menu-queries.ts` — `resolveFeaturedImageUrl` removed, uses shared `resolveImageUrl`
+- 7 seed files updated with full Blob-relative paths (`menu/<folder>/<file>.webp`)
+- `public/menu/` directory deleted (162 images, no longer served from static)
+- `.env.example` — `BLOB_BASE_URL` documented
+- `docs/harness/vercel-blob.md` — upload workflow, path conventions, DB update procedure
+- `scripts/upload-blob.mjs` — one-off script for bulk upload (delete after use)
+
+### Tests added
+- `tests/server/api/v1/menu/resolveImageUrl.test.ts` — 4 tests, 100% branch coverage
+- `tests/server/utils/env.test.ts` — 4 tests covering startup validation
+
+### Final state
+- 101 test files, 754 tests passed
+- `./init.sh` exits 0
+
+## Pending
+- Feature **018** — mark `done` in `feature_list.json` (owner action required)
+- Feature **019 — homepage-brand-updates** (`pending`, `sdd: true`) — spec pendiente
