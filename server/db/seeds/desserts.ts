@@ -25,7 +25,7 @@ const DESSERTS: DessertItem[] = [
       'Papa camote frita, tocino maple, acompañado de helado de vainilla.',
     descriptionEn:
       'Sweet potato fries topped with maple bacon dressing and served with vanilla ice cream.',
-    fileName: 'sumo_fries.webp',
+    fileName: 'menu/desserts/sumo_fries.webp',
     price: '149.00',
   },
   {
@@ -35,7 +35,7 @@ const DESSERTS: DessertItem[] = [
       'Gelatina de café con crema de licor de café y brandy, acompañado de helado de vainilla, chocolate líquido y crema batida.',
     descriptionEn:
       'Coffee jelly with coffee liqueur and brandy, served with vanilla ice cream, drizzled with chocolate sauce and topped with whipped cream.',
-    fileName: 'camelado.webp',
+    fileName: 'menu/desserts/camelado.webp',
     price: '109.00',
     badgeEs: 'Contiene alcohol +18 años',
     badgeEn: 'Made with alcohol (+18 only)',
@@ -47,7 +47,7 @@ const DESSERTS: DessertItem[] = [
       'Centro de dona, espolvoreado con azúcar y canela, bañados en salsa de chocolate, acompañado de helado de vainilla y crema batida.',
     descriptionEn:
       'Donut holes, sprinkled with sugar and cinnamon, served with vanilla ice cream, drizzled with chocolate sauce and topped with whipped cream.',
-    fileName: 'sumo_bites.webp',
+    fileName: 'menu/desserts/sumo_bites.webp',
     featured: true,
     price: '129.00',
   },
@@ -58,7 +58,7 @@ const DESSERTS: DessertItem[] = [
       'Rebanada de cheesecake de Oreo, en una base de chocolate líquido, decorado con polvo de galleta Oreo.',
     descriptionEn:
       'Oreo cheesecake slice, served on a melted chocolate base and sprinkled with Oreo cookie crumbs.',
-    fileName: 'oreo_cheesecake.webp',
+    fileName: 'menu/desserts/oreo_cheesecake.webp',
     price: '149.00',
   },
   {
@@ -68,7 +68,7 @@ const DESSERTS: DessertItem[] = [
       'Rebanada de pastel de Conejo Turin, en una base de chocolate líquido, decorado con polvo de galleta Oreo.',
     descriptionEn:
       'Cake slice made with "Conejo Turin" chocolate, served on a melted chocolate base and sprinkled with Oreo cookie crumbs.',
-    fileName: 'turin_cake.webp',
+    fileName: 'menu/desserts/turin_cake.webp',
     price: '149.00',
   },
 ]

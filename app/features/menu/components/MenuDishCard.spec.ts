@@ -21,6 +21,7 @@ const SAUCES: FullMenuSauce[] = [
   {
     id: 's1',
     name: { es: 'Honey Mustard', en: 'Honey Mustard' },
+    imageUrl: null,
     spiceLevel: 0,
   },
 ]

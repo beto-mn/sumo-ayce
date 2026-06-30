@@ -20,7 +20,11 @@ const { data, error } = await useAsyncData(
   () =>
     $fetch<FullMenuResult>('/api/v1/menu', {
       params: { type: activeType.value, modality: activeModality.value },
-    })
+    }),
+  {
+    getCachedData: (key, nuxtApp) =>
+      nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
+  }
 )
 
 useHead({

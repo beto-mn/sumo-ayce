@@ -60,6 +60,7 @@ export default defineConfig(async () => {
             name: 'server',
             include: ['tests/**/*.test.ts', 'server/**/*.test.ts'],
             environment: 'node',
+            setupFiles: ['./tests/setup-env.ts'],
             server: nuxtConfig.test?.server,
             deps: nuxtConfig.test?.deps,
           },

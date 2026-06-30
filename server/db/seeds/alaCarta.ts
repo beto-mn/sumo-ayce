@@ -38,7 +38,7 @@ const APPETIZERS: AlaCartaItem[] = [
     descriptionEs:
       'Tiras de pollo empanizadas, servidas con aderezo americano.',
     descriptionEn: 'Breaded chicken tenders served with American dressing.',
-    fileName: 'chicken_tenders.webp',
+    fileName: 'menu/ala-carta/chicken_tenders.webp',
     featured: true,
     price: '128.00',
   },
@@ -50,7 +50,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Mix de vegetales frescos, rebozados en nuestra pasta tempura y fritos. Aderezo a elegir: mayonesa mango habanero o piña habanero.',
     descriptionEn:
       'Fresh mixed vegetables battered in our tempura and fried. Choice of dressing: mango habanero mayo or pineapple habanero.',
-    fileName: 'yasai_tempura.webp',
+    fileName: 'menu/ala-carta/yasai_tempura.webp',
     price: '120.00',
   },
   {
@@ -61,7 +61,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Papas a la francesa, carne smash, cebolla caramelizada, cebollín y aderezo americano.',
     descriptionEn:
       'French fries, smash beef, caramelized onion, green onion and American dressing.',
-    fileName: 'smash_fries.webp',
+    fileName: 'menu/ala-carta/smash_fries.webp',
     price: '128.00',
   },
   {
@@ -70,7 +70,7 @@ const APPETIZERS: AlaCartaItem[] = [
     nameEn: 'French Fries with or without Cheese',
     descriptionEs: 'Papas a la francesa, con o sin queso.',
     descriptionEn: 'French fries with or without cheese.',
-    fileName: 'french_fries.webp',
+    fileName: 'menu/ala-carta/french_fries.webp',
     price: '119.00',
   },
   {
@@ -79,7 +79,7 @@ const APPETIZERS: AlaCartaItem[] = [
     nameEn: 'Sweet Potato Fries',
     descriptionEs: 'Papa camote frita, crujiente.',
     descriptionEn: 'Crispy sweet potato fries.',
-    fileName: 'sweet_potato_fries.webp',
+    fileName: 'menu/ala-carta/sweet_potato_fries.webp',
     price: '128.00',
   },
   {
@@ -90,7 +90,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Aros de cebolla fritos en salsa habanero-mango o jalapeño-queso.',
     descriptionEn:
       'Fried onion rings with habanero-mango or jalapeño-cheese sauce.',
-    fileName: 'onion_rings.webp',
+    fileName: 'menu/ala-carta/onion_rings.webp',
     price: '139.00',
   },
   {
@@ -99,7 +99,7 @@ const APPETIZERS: AlaCartaItem[] = [
     nameEn: 'Cheese Kushiage',
     descriptionEs: 'Queso manchego empanizado en panko..',
     descriptionEn: 'Manchego cheese breaded in panko..',
-    fileName: 'cheese_kushiage.webp',
+    fileName: 'menu/ala-carta/cheese_kushiage.webp',
     price: '128.00',
   },
   {
@@ -110,7 +110,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Deliciosas rodajas de elote fritas y sazonadas, acompañadas con salsa chipotle.',
     descriptionEn:
       'Delicious fried and seasoned corn slices served with chipotle sauce.',
-    fileName: 'sweet_corn.webp',
+    fileName: 'menu/ala-carta/sweet_corn.webp',
     price: '128.00',
   },
   {
@@ -121,7 +121,7 @@ const APPETIZERS: AlaCartaItem[] = [
       'Crujientes totopos bañados en queso fundido con chile jalapeño en cubos.',
     descriptionEn:
       'Crunchy nachos drenched in melted cheese with diced jalapeño.',
-    fileName: 'nachos.webp',
+    fileName: 'menu/ala-carta/nachos.webp',
     price: '129.00',
   },
 ]
@@ -137,7 +137,7 @@ const SALADS: AlaCartaItem[] = [
       'Tender de pollo o pechuga de pollo (120g), sobre base de lechuga italiana, jitomate, aguacate, queso parmesano, crutones y aderezo césar.',
     descriptionEn:
       'Romaine lettuce base, topped with chicken tenders or grilled chicken (120g), tomato, avocado, parmesan cheese, croutons and Caesar dressing.',
-    fileName: 'cesar_salad.webp',
+    fileName: 'menu/ala-carta/cesar_salad.webp',
     price: '145.00',
   },
   {
@@ -148,7 +148,7 @@ const SALADS: AlaCartaItem[] = [
       'Tender de pollo o pechuga de pollo (120g), sobre base de lechuga italiana, jitomate, aguacate, queso parmesano, crutones y aderezo césar.',
     descriptionEn:
       'Romaine lettuce base, topped with chicken tenders (120g), tomato, tortilla strips, avocado, red onion, sesame seeds and blue cheese dressing.',
-    fileName: 'chicken_chick_salad.webp',
+    fileName: 'menu/ala-carta/chicken_chick_salad.webp',
     price: '149.00',
   },
 ]
@@ -164,7 +164,7 @@ const RICE_DISHES: AlaCartaItem[] = [
       'Arroz a la plancha con pollo, carne de res, huevo, mix de vegetales, cebollín y ajonjolí.',
     descriptionEn:
       'Grilled rice with chicken, beef, egg, mixed vegetables, green onion and sesame.',
-    fileName: 'mixed_yakimeshi.webp',
+    fileName: 'menu/ala-carta/mixed_yakimeshi.webp',
     featured: true,
     price: '99.00',
   },
@@ -176,7 +176,7 @@ const RICE_DISHES: AlaCartaItem[] = [
       'Arroz frito a la plancha con pollo, carne de res, huevo, aguacate, queso crema, mix de vegetales, tampico y cebollín.',
     descriptionEn:
       'Grilled fried rice with chicken, beef, egg, avocado, cream cheese, mixed vegetables, tampico and green onion.',
-    fileName: 'special_yakimeshi.webp',
+    fileName: 'menu/ala-carta/special_yakimeshi.webp',
     price: '109.00',
   },
   {
@@ -187,7 +187,7 @@ const RICE_DISHES: AlaCartaItem[] = [
       'Arroz blanco al vapor, acompañado con pollo a la plancha en salsa teriyaki.',
     descriptionEn:
       'Steamed white rice served with grilled chicken in teriyaki sauce.',
-    fileName: 'gohan_tereyaki.webp',
+    fileName: 'menu/ala-carta/gohan_tereyaki.webp',
     price: '99.00',
   },
   {
@@ -198,7 +198,7 @@ const RICE_DISHES: AlaCartaItem[] = [
       'Arroz blanco al vapor, aguacate, queso crema, tampico, surimi, ajonjolí y cebollín.',
     descriptionEn:
       'Steamed white rice with avocado, cream cheese, tampico, surimi, sesame and green onion.',
-    fileName: 'special_gohan.webp',
+    fileName: 'menu/ala-carta/special_gohan.webp',
     price: '100.00',
   },
 ]
@@ -214,7 +214,7 @@ const RAMEN: AlaCartaItem[] = [
       'Ramen XL en caldo de tu elección, con proteína a elegir y toppings extras al gusto.',
     descriptionEn:
       'XL ramen in your choice of broth, with your choice of protein and extra toppings.',
-    fileName: 'ramen_xl.webp',
+    fileName: 'menu/ala-carta/ramen_xl.webp',
     featured: true,
     price: '149.00',
   },
@@ -233,7 +233,7 @@ const BURGERS: AlaCartaItem[] = [
       'Hamburguesa con doble carne de res (300g), aderezo americano, queso manchego, lechuga y bañada en cualquiera de nuestras salsas.',
     descriptionEn:
       'Double beef burger (300g) with American dressing, manchego cheese and lettuce, topped with your choice of our sauces.',
-    fileName: 'sumo_burger.webp',
+    fileName: 'menu/ala-carta/sumo_burger.webp',
     featured: true,
     price: '239.00',
   },
@@ -245,7 +245,7 @@ const BURGERS: AlaCartaItem[] = [
       'Hamburguesa de tender de pollo (120g), aderezo americano, bañada con salsa original buffalo, lechuga, cebolla y aderezo de blue cheese.',
     descriptionEn:
       'Chicken tender burger (120g) with American dressing, original buffalo sauce, lettuce, onion and blue cheese dressing.',
-    fileName: 'buffalo_chicken_burger.webp',
+    fileName: 'menu/ala-carta/buffalo_chicken_burger.webp',
     price: '239.00',
   },
   {
@@ -256,7 +256,7 @@ const BURGERS: AlaCartaItem[] = [
       'Hamburguesa de carne de res (150g), aderezo americano, queso manchego, cebolla caramelizada, piña asada, tocino miel y lechuga.',
     descriptionEn:
       'Beef burger (150g) with American dressing, manchego cheese, caramelized onion, grilled pineapple, honey bacon and lettuce.',
-    fileName: 'grilled_pineapple_burger.webp',
+    fileName: 'menu/ala-carta/grilled_pineapple_burger.webp',
     price: '239.00',
   },
   {
@@ -267,7 +267,7 @@ const BURGERS: AlaCartaItem[] = [
       'Hamburguesa de carne de res (150g), aderezo de chile toreado, tocino, aros de cebolla, queso manchego y blue cheese.',
     descriptionEn:
       'Beef burger (150g) with roasted chile dressing, bacon, onion rings, manchego cheese and blue cheese.',
-    fileName: 'spicy_burger.webp',
+    fileName: 'menu/ala-carta/spicy_burger.webp',
     price: '239.00',
   },
   {
@@ -278,7 +278,7 @@ const BURGERS: AlaCartaItem[] = [
       'Hamburguesa de carne de res (150g) bañada en salsa de queso con tocino, base de guacamole, queso manchego, tocino miel y cebolla caramelizada, acompañada de nachos cinema.',
     descriptionEn:
       'Beef burger (150g) in cheese and bacon sauce over a guacamole base, with manchego cheese, honey bacon and caramelized onion, served with cinema nachos.',
-    fileName: 'tostiburger.webp',
+    fileName: 'menu/ala-carta/tostiburger.webp',
     price: '239.00',
   },
 ]
@@ -295,7 +295,7 @@ const HOT_DOGS: AlaCartaItem[] = [
       'Hot Dog Jumbo envuelto en tocino, aderezo americano, salsa Buffalo Ranch, papatinas fritas con sazonador cajún. 1 pz.',
     descriptionEn:
       'Jumbo hot dog wrapped in bacon with American dressing, Buffalo Ranch sauce and potato chips with cajun seasoning..',
-    fileName: 'buffalo_ranch_dog.webp',
+    fileName: 'menu/ala-carta/buffalo_ranch_dog.webp',
     featured: true,
     price: '239.00',
   },
@@ -307,7 +307,7 @@ const HOT_DOGS: AlaCartaItem[] = [
       'Hot Dog Jumbo con aderezo americano, guacamole y tocino. 1 pz.',
     descriptionEn:
       'Jumbo hot dog with American dressing, guacamole and bacon..',
-    fileName: 'guacamole_dog.webp',
+    fileName: 'menu/ala-carta/guacamole_dog.webp',
     price: '239.00',
   },
   {
@@ -318,7 +318,7 @@ const HOT_DOGS: AlaCartaItem[] = [
       'Hot Dog Jumbo envuelto en tocino, carne smash, con cebolla caramelizada, queso manchego y aderezo de chile toreado. 1 pz.',
     descriptionEn:
       'Jumbo hot dog wrapped in bacon and smash beef, with caramelized onion, manchego cheese and roasted chile dressing..',
-    fileName: 'smash_dog.webp',
+    fileName: 'menu/ala-carta/smash_dog.webp',
     price: '239.00',
   },
 ]
@@ -335,7 +335,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: aguacate y pepino. Por fuera: mango, camarones rocca, pico de piña y salsa de chiltepín..',
     descriptionEn:
       'Inside: avocado and cucumber. Outside: mango, rocca shrimp, pineapple pico and chiltepín sauce..',
-    fileName: 'moon_roll.webp',
+    fileName: 'menu/ala-carta/moon_roll.webp',
     featured: true,
     price: '119.00',
   },
@@ -347,7 +347,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: queso crema, pepino y camarón empanizado. Por fuera: mango y salsa de anguila..',
     descriptionEn:
       'Inside: cream cheese, cucumber and breaded shrimp. Outside: mango and eel sauce..',
-    fileName: 'bora_bora.webp',
+    fileName: 'menu/ala-carta/bora_bora.webp',
     price: '119.00',
   },
   {
@@ -358,7 +358,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: surimi, aguacate y pepino. Por fuera: mix de ajonjolí..',
     descriptionEn:
       'Inside: surimi, avocado and cucumber. Outside: sesame mix..',
-    fileName: 'california.webp',
+    fileName: 'menu/ala-carta/california.webp',
     price: '119.00',
   },
   {
@@ -369,7 +369,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: queso crema, aguacate y salmón. Por fuera: mix de ajonjolí..',
     descriptionEn:
       'Inside: cream cheese, avocado and salmon. Outside: sesame mix..',
-    fileName: 'philadelphia.webp',
+    fileName: 'menu/ala-carta/philadelphia.webp',
     price: '119.00',
   },
   {
@@ -380,7 +380,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: aguacate, kakiage de zanahoria y queso crema. Por fuera: láminas de plátano macho, tampico y salsa de anguila..',
     descriptionEn:
       'Inside: avocado, carrot kakiage and cream cheese. Outside: plantain slices, tampico and eel sauce..',
-    fileName: 'monkey_roll.webp',
+    fileName: 'menu/ala-carta/monkey_roll.webp',
     price: '119.00',
   },
   {
@@ -391,7 +391,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: camarón empanizado, piña asada y aguacate. Por fuera: queso crema, condimento de camarón y salsa panthai..',
     descriptionEn:
       'Inside: breaded shrimp, grilled pineapple and avocado. Outside: cream cheese, shrimp seasoning and pad thai sauce..',
-    fileName: 'white_dragon.webp',
+    fileName: 'menu/ala-carta/white_dragon.webp',
     price: '119.00',
   },
   {
@@ -402,7 +402,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: aguacate y surimi empanizado. Por fuera: queso manchego, guacamole, pico de piña y chile serrano..',
     descriptionEn:
       'Inside: avocado and breaded surimi. Outside: manchego cheese, guacamole, pineapple pico and serrano pepper..',
-    fileName: 'nipon_roll.webp',
+    fileName: 'menu/ala-carta/nipon_roll.webp',
     price: '119.00',
   },
   {
@@ -413,7 +413,7 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Por dentro: camarón empanizado, pepino y piña. Por fuera: aguacate, ajonjolí y salsa panthai..',
     descriptionEn:
       'Inside: breaded shrimp, cucumber and pineapple. Outside: avocado, sesame and pad thai sauce..',
-    fileName: 'tiki_thai_roll.webp',
+    fileName: 'menu/ala-carta/tiki_thai_roll.webp',
     price: '119.00',
   },
 ]
@@ -430,7 +430,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: camarón empanizado, queso crema y aguacate. Por fuera: empanizado, tampico y mayonesa chipotle..',
     descriptionEn:
       'Inside: breaded shrimp, cream cheese and avocado. Outside: breaded with tampico and chipotle mayo..',
-    fileName: 'kekoto.webp',
+    fileName: 'menu/ala-carta/kekoto.webp',
     price: '119.00',
   },
   {
@@ -441,7 +441,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: aguacate, piña, queso crema y camarón empanizado. Por fuera: empanizado con panko y coco, bañado de salsa piña chiltepín. Sushi sin alga..',
     descriptionEn:
       'Inside: avocado, pineapple, cream cheese and breaded shrimp. Outside: panko and coconut breading, drizzled with chipotle-pineapple sauce. Seaweed-free..',
-    fileName: 'coco_roll.webp',
+    fileName: 'menu/ala-carta/coco_roll.webp',
     price: '119.00',
   },
   {
@@ -452,7 +452,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: aguacate, queso manchego y tender. Por fuera: empanizado y salsa de preferencia a escoger..',
     descriptionEn:
       'Inside: avocado, manchego cheese and chicken tender. Outside: breaded with your choice of sauce..',
-    fileName: 'sumo_roll.webp',
+    fileName: 'menu/ala-carta/sumo_roll.webp',
     price: '119.00',
   },
   {
@@ -463,7 +463,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: base de arroz frito, queso crema y camarón empanizado. Por fuera: alga nori empanizado y bañado en salsa de anguila..',
     descriptionEn:
       'Inside: fried rice base, cream cheese and breaded shrimp. Outside: breaded nori seaweed drizzled with eel sauce..',
-    fileName: 'rikishi_roll.webp',
+    fileName: 'menu/ala-carta/rikishi_roll.webp',
     featured: true,
     price: '119.00',
   },
@@ -475,7 +475,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: base de arroz frito, camarón empanizado y aguacate. Por fuera: empanizado, queso crema, tampico, chile serrano bañado en salsa de anguila..',
     descriptionEn:
       'Inside: fried rice base, breaded shrimp and avocado. Outside: breaded, cream cheese, tampico and serrano pepper drizzled with eel sauce..',
-    fileName: 'more_of_the_same.webp',
+    fileName: 'menu/ala-carta/more_of_the_same.webp',
     price: '119.00',
   },
   {
@@ -486,7 +486,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: aguacate y camarón empanizado. Por fuera: empanizado, queso manchego, mayonesa chipotle, salsa de anguila y cebollín. Sushi sin alga..',
     descriptionEn:
       'Inside: avocado and breaded shrimp. Outside: breaded with manchego cheese, chipotle mayo, eel sauce and green onion. Seaweed-free..',
-    fileName: 'tempura_roll.webp',
+    fileName: 'menu/ala-carta/tempura_roll.webp',
     price: '119.00',
   },
   {
@@ -497,7 +497,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: carne de res, manchego, aguacate, chile serrano y cebollín. Por fuera: empanizado, tiritas de papas fritas, mayonesa chipotle y salsa BBQ..',
     descriptionEn:
       'Inside: beef, manchego, avocado, serrano pepper and green onion. Outside: breaded with french fry strips, chipotle mayo and BBQ sauce..',
-    fileName: 'texas_roll.webp',
+    fileName: 'menu/ala-carta/texas_roll.webp',
     price: '119.00',
   },
   {
@@ -508,7 +508,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: queso crema, aguacate, surimi empanizado, kakiage de zanahoria. Por fuera: queso manchego derretido con chiles toreados y cebollín. Sushi sin alga..',
     descriptionEn:
       'Inside: cream cheese, avocado, breaded surimi and carrot kakiage. Outside: melted manchego cheese with roasted chiles and green onion. Seaweed-free..',
-    fileName: 'manchego_roll.webp',
+    fileName: 'menu/ala-carta/manchego_roll.webp',
     price: '119.00',
   },
   {
@@ -519,7 +519,7 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Por dentro: queso crema y surimi. Por fuera: plátano macho frito y salsa de anguila..',
     descriptionEn:
       'Inside: cream cheese and surimi. Outside: fried plantain and eel sauce..',
-    fileName: 'banana_fried_roll.webp',
+    fileName: 'menu/ala-carta/banana_fried_roll.webp',
     price: '119.00',
   },
 ]
@@ -535,7 +535,7 @@ const SWEET_ROLLS: AlaCartaItem[] = [
       'Por dentro: queso crema y plátano macho. Por fuera: tempura dulce, espolvoreado con azúcar y canela. Bañado en salsa de chocolate..',
     descriptionEn:
       'Inside: cream cheese and plantain. Outside: sweet tempura dusted with sugar and cinnamon, drizzled with chocolate sauce..',
-    fileName: 'cinnamon_roll.webp',
+    fileName: 'menu/ala-carta/cinnamon_roll.webp',
     featured: true,
     price: '119.00',
   },
@@ -547,7 +547,7 @@ const SWEET_ROLLS: AlaCartaItem[] = [
       'Por dentro: queso crema y mango. Por fuera: plátano macho. Bañado en salsa de chocolate..',
     descriptionEn:
       'Inside: cream cheese and mango. Outside: plantain, drizzled with chocolate sauce..',
-    fileName: 'beach_roll.webp',
+    fileName: 'menu/ala-carta/beach_roll.webp',
     price: '119.00',
   },
 ]

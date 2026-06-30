@@ -1,5 +1,18 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildRadii } from '../../../server/utils/branch-finder-config'
+
+const REQUIRED_ENV = {
+  DATABASE_URL: 'postgresql://user:pass@localhost:5432/test',
+  WORDPRESS_API_URL: 'https://cms.example.com',
+  TWILIO_ACCOUNT_SID: 'ACtest',
+  TWILIO_AUTH_TOKEN: 'authtoken',
+  TWILIO_WHATSAPP_NUMBER: '+15005550006',
+  GOOGLE_SERVICE_ACCOUNT_EMAIL: 'svc@test.iam.gserviceaccount.com',
+  GOOGLE_PRIVATE_KEY: 'key',
+  GOOGLE_DRIVE_FOLDER_ID: 'folder123',
+  NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN: 'pk.test',
+  BLOB_BASE_URL: 'https://abc123.public.blob.vercel-storage.com',
+}
 
 describe('buildRadii', () => {
   it('buildRadii(5, 20) returns [5, 8, 13, 20]', () => {
@@ -33,16 +46,20 @@ describe('buildRadii', () => {
 })
 
 describe('branchFinderConfig', () => {
-  const originalEnv = process.env
+  const ORIGINAL_ENV = { ...process.env }
 
   beforeEach(() => {
-    process.env = { ...originalEnv }
+    vi.resetModules()
+    process.env = {
+      ...ORIGINAL_ENV,
+      ...REQUIRED_ENV,
+    }
     delete process.env.BRANCH_FINDER_DEFAULT_RADIUS_KM
     delete process.env.BRANCH_FINDER_MAX_RADIUS_KM
   })
 
   afterEach(() => {
-    process.env = originalEnv
+    process.env = { ...ORIGINAL_ENV }
   })
 
   it('uses default 5 km when env var is absent', async () => {
@@ -59,11 +76,23 @@ describe('branchFinderConfig', () => {
     expect(branchFinderConfig.maxRadiusKm).toBe(20)
   })
 
-  it('falls back to 5 when env var is 0 or negative', async () => {
+  it('throws at startup when BRANCH_FINDER_DEFAULT_RADIUS_KM is 0 or negative', async () => {
     process.env.BRANCH_FINDER_DEFAULT_RADIUS_KM = '0'
     const { branchFinderConfig } = await import(
       '../../../server/utils/branch-finder-config'
     )
-    expect(branchFinderConfig.defaultRadiusKm).toBe(5)
+    expect(() => branchFinderConfig.defaultRadiusKm).toThrow(
+      /Missing or invalid environment variables/
+    )
+  })
+
+  it('reads custom radius values from env', async () => {
+    process.env.BRANCH_FINDER_DEFAULT_RADIUS_KM = '3'
+    process.env.BRANCH_FINDER_MAX_RADIUS_KM = '15'
+    const { branchFinderConfig } = await import(
+      '../../../server/utils/branch-finder-config'
+    )
+    expect(branchFinderConfig.defaultRadiusKm).toBe(3)
+    expect(branchFinderConfig.maxRadiusKm).toBe(15)
   })
 })

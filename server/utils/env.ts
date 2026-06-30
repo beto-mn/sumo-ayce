@@ -22,6 +22,22 @@ const envSchema = z.object({
 
   // Cron
   CRON_SECRET: z.string().min(1).optional(),
+
+  // Vercel Blob Storage
+  BLOB_BASE_URL: z.string().url().min(1),
+
+  // Reservation timeouts (minutes)
+  RESERVATION_FIRST_REMINDER_MIN: z.coerce.number().int().positive().default(5),
+  RESERVATION_ESCALATION_MIN: z.coerce.number().int().positive().default(5),
+  RESERVATION_AUTO_CANCEL_MIN: z.coerce.number().int().positive().default(20),
+
+  // Branch finder radii (km)
+  BRANCH_FINDER_DEFAULT_RADIUS_KM: z.coerce.number().positive().default(5),
+  BRANCH_FINDER_MAX_RADIUS_KM: z.coerce.number().positive().default(20),
+
+  // Loyalty program
+  LOYALTY_POINTS_PER_VISIT: z.coerce.number().int().positive().default(1),
+  LOYALTY_VELOCITY_THRESHOLD: z.coerce.number().int().min(0).default(5),
 })
 
 export type Env = z.infer<typeof envSchema>
