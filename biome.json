@@ -56,6 +56,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["app/assets/css/tailwind.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          }
+        }
+      }
     }
   ],
   "assist": {
