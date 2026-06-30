@@ -11,5 +11,8 @@
   "[json]": { "editor.defaultFormatter": "biomejs.biome" },
   "[jsonc]": { "editor.defaultFormatter": "biomejs.biome" },
   "[vue]": { "editor.defaultFormatter": "biomejs.biome" },
-  "[css]": { "editor.defaultFormatter": "biomejs.biome" }
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "js/ts.experimental.useTsgo": false
 }
