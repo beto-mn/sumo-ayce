@@ -85,6 +85,7 @@ export interface FullMenuCategory {
 export interface FullMenuSauce {
   id: string
   name: Bilingual
+  imageUrl: string | null
   spiceLevel: number
 }
 

@@ -9,7 +9,7 @@ vi.stubGlobal('useI18n', () => ({
 }))
 
 const sauces: FullMenuSauce[] = [
-  { id: 's1', name: { es: 'BBQ', en: 'BBQ' }, spiceLevel: 0 },
+  { id: 's1', name: { es: 'BBQ', en: 'BBQ' }, imageUrl: null, spiceLevel: 0 },
 ]
 
 const categories: FullMenuCategory[] = [
