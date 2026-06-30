@@ -36,7 +36,7 @@ const APPETIZERS: ExpressItem[] = [
       'Arroz frito con pollo, res, huevo, verduras mixtas, cebollín picado y semillas de ajonjolí. 240 g.',
     descriptionEn:
       'Fried rice with chicken, beef, egg, mixed vegetables, freshly chopped green onions and sesame seeds. 240 g.',
-    fileName: 'mixed_yakimeshi.webp',
+    fileName: 'menu/express/mixed_yakimeshi.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -46,7 +46,7 @@ const APPETIZERS: ExpressItem[] = [
       'Arroz frito con pollo, res, huevo, aguacate, queso crema, salchicha y cebollín picado. 250 g.',
     descriptionEn:
       'Fried rice with chicken, beef, egg, avocado, cream cheese, sausage and freshly chopped green onions. 250 g.',
-    fileName: 'special_yakimeshi.webp',
+    fileName: 'menu/express/special_yakimeshi.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -54,7 +54,7 @@ const APPETIZERS: ExpressItem[] = [
     nameEn: 'Gohan Teriyaki',
     descriptionEs: 'Arroz blanco al vapor con pollo teriyaki. 240 g.',
     descriptionEn: 'Steamed white rice topped with teriyaki chicken. 240 g.',
-    fileName: 'gohan_teriyaki.webp',
+    fileName: 'menu/express/gohan_teriyaki.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -64,7 +64,7 @@ const APPETIZERS: ExpressItem[] = [
       'Arroz al vapor con queso crema, espinaca, zanahoria y cebollín picado. 240 g.',
     descriptionEn:
       'Steamed rice topped with cream cheese, spinach, carrot and freshly chopped green onions. 240 g.',
-    fileName: 'special_gohan.webp',
+    fileName: 'menu/express/special_gohan.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -72,7 +72,7 @@ const APPETIZERS: ExpressItem[] = [
     nameEn: 'French Fries With or Without Cheese',
     descriptionEs: 'Papas a la francesa con o sin queso. 200 g.',
     descriptionEn: 'French fries with or without cheese. 200 g.',
-    fileName: 'french_fries.webp',
+    fileName: 'menu/express/french_fries.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -82,7 +82,7 @@ const APPETIZERS: ExpressItem[] = [
       'Papas smash, carne smash, cebolla caramelizada, aderezo americano y cebollín picado. 300 g.',
     descriptionEn:
       'Smash fries, smash beef, caramelized onions, American dressing and freshly chopped green onions. 300 g.',
-    fileName: 'smash_fries.webp',
+    fileName: 'menu/express/smash_fries.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -92,7 +92,7 @@ const APPETIZERS: ExpressItem[] = [
       'Sopa de ramen con caldo de pollo, verduras, yema de huevo y salsa de soya. 200 g.',
     descriptionEn:
       'Brothy ramen noodles with chicken broth, vegetables, egg yolk and soy sauce. 200 g.',
-    fileName: 'ramen.webp',
+    fileName: 'menu/express/ramen.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -102,7 +102,7 @@ const APPETIZERS: ExpressItem[] = [
       'Pasta espiral en salsa de queso cremoso, cebollín picado. 240 g.',
     descriptionEn:
       'Pasta spirals in creamy cheese sauce, freshly chopped green onions. 240 g.',
-    fileName: 'mac_and_cheese.webp',
+    fileName: 'menu/express/mac_and_cheese.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -112,7 +112,7 @@ const APPETIZERS: ExpressItem[] = [
       'Kani fresco, mezcla de lechugas, tomate, vinagreta de la casa y semillas de ajonjolí tostadas. 180 g.',
     descriptionEn:
       'Fresh kani, mixed greens, tomato, house vinaigrette and toasted sesame seeds. 180 g.',
-    fileName: 'sweet_kani_salad.webp',
+    fileName: 'menu/express/sweet_kani_salad.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -122,7 +122,7 @@ const APPETIZERS: ExpressItem[] = [
       'Verduras frescas fritas en tempura ligera, servidas con salsa teriyaki o a elección: naranja japonesa o habanero-piña. 120 g.',
     descriptionEn:
       'Fresh mixed vegetables in a light tempura batter, served with teriyaki sauce or your choice of Japanese orange or habanero-pineapple sauce. 120 g.',
-    fileName: 'yasai_tempura.webp',
+    fileName: 'menu/express/yasai_tempura.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -132,7 +132,7 @@ const APPETIZERS: ExpressItem[] = [
       'Deliciosas pepitas de elote blanco y maíz mixto en salsa chipotle-piña. 150 g.',
     descriptionEn:
       'Delicious nibbles of white corn and mixed corn in chipotle-pineapple sauce. 150 g.',
-    fileName: 'sweet_corns.webp',
+    fileName: 'menu/express/sweet_corns.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -141,7 +141,7 @@ const APPETIZERS: ExpressItem[] = [
     descriptionEs:
       'Totopos crujientes cubiertos con frijoles, queso y guacamole. 300 g.',
     descriptionEn: 'Crunchy nachos topped with beans, cheese and guac. 300 g.',
-    fileName: 'cinema_nachos.webp',
+    fileName: 'menu/express/cinema_nachos.webp',
   },
   {
     categoryKey: 'appetizers',
@@ -151,7 +151,7 @@ const APPETIZERS: ExpressItem[] = [
       'Aros de cebolla fritos en salsa habanero-mango o jalapeño-queso. 90 g.',
     descriptionEn:
       'Fried onion rings in habanero-mango or jalapeño-cheese sauce. 90 g.',
-    fileName: 'onion_rings.webp',
+    fileName: 'menu/express/onion_rings.webp',
   },
 ]
 
@@ -166,7 +166,7 @@ const BURGERS: ExpressItem[] = [
       '80g de carne smash con queso, lechuga, cebolla roja, aderezo americano y pepinillos.',
     descriptionEn:
       '80g smash beef topped with cheese, lettuce, red onion, American dressing and pickles.',
-    fileName: 'classic_burger.webp',
+    fileName: 'menu/express/classic_burger.webp',
     badgeEs: 'Make it Double +$79',
     badgeEn: 'Make it Double +$79',
   },
@@ -176,7 +176,7 @@ const BURGERS: ExpressItem[] = [
     nameEn: 'Pulled Pork Burger',
     descriptionEs: 'Pulled pork bañado en salsa BBQ.',
     descriptionEn: 'A pulled pork coated in BBQ sauce.',
-    fileName: 'pulled_pork_burger.webp',
+    fileName: 'menu/express/pulled_pork_burger.webp',
   },
   {
     categoryKey: 'burgers',
@@ -186,7 +186,7 @@ const BURGERS: ExpressItem[] = [
       '80g de carne smash con queso americano, salchicha, piña, tocino, lechuga y salsa BBQ.',
     descriptionEn:
       '80g smash beef with American cheese, sausage, pineapple, bacon, lettuce and BBQ sauce.',
-    fileName: 'barrio_burger.webp',
+    fileName: 'menu/express/barrio_burger.webp',
     badgeEs: 'Make it Double +$79',
     badgeEn: 'Make it Double +$79',
   },
@@ -198,7 +198,7 @@ const BURGERS: ExpressItem[] = [
       'Smash picoso con jalapeño, cebolla crujiente, chile serrano y aderezo de chile-tomate.',
     descriptionEn:
       'A spicy smash with jalapeño, crispy onion, serrano pepper and chile-tomato dressing.',
-    fileName: 'spicy_smash.webp',
+    fileName: 'menu/express/spicy_smash.webp',
     badgeEs: 'Make it Double +$79',
     badgeEn: 'Make it Double +$79',
   },
@@ -210,7 +210,7 @@ const BURGERS: ExpressItem[] = [
       '80g de carne smash con queso, cebolla caramelizada, guacamole, jalapeño y salsa BBQ.',
     descriptionEn:
       '80g smash beef topped with cheese, caramelized onions, guacamole, jalapeño and BBQ sauce.',
-    fileName: 'guacamole_burger.webp',
+    fileName: 'menu/express/guacamole_burger.webp',
     badgeEs: 'Make it Double +$79',
     badgeEn: 'Make it Double +$79',
   },
@@ -222,7 +222,7 @@ const BURGERS: ExpressItem[] = [
       '80g de carne smash con cheddar, tocino, lechuga y salsa BBQ.',
     descriptionEn:
       '80g smash beef topped with cheddar, bacon, lettuce and BBQ sauce.',
-    fileName: 'bbq_burger.webp',
+    fileName: 'menu/express/bbq_burger.webp',
     badgeEs: 'Make it Double +$79',
     badgeEn: 'Make it Double +$79',
   },
@@ -234,7 +234,7 @@ const BURGERS: ExpressItem[] = [
       'Burger de pollo con lechuga, jalapeño sauce y aderezo serrano.',
     descriptionEn:
       'Chicken burger with lettuce, jalapeño sauce and serrano dressing.',
-    fileName: 'spicy_chicken_burger.webp',
+    fileName: 'menu/express/spicy_chicken_burger.webp',
   },
   {
     categoryKey: 'burgers',
@@ -244,7 +244,7 @@ const BURGERS: ExpressItem[] = [
       '80g de tender de pollo con lechuga, salsa de queso y aderezo americano.',
     descriptionEn:
       '80g chicken tender topped with lettuce, cheese sauce and American dressing.',
-    fileName: 'chicken_cheese_burger.webp',
+    fileName: 'menu/express/chicken_cheese_burger.webp',
   },
 ]
 
@@ -259,7 +259,7 @@ const BURRITOS: ExpressItem[] = [
       '180g de pulled pork con vegetales, queso y salsa BBQ. 1 pz.',
     descriptionEn:
       '180g pulled pork with vegetables, cheese and BBQ sauce. 1 pc.',
-    fileName: 'pulled_pork_burrito.webp',
+    fileName: 'menu/express/pulled_pork_burrito.webp',
   },
   {
     categoryKey: 'burritos',
@@ -269,7 +269,7 @@ const BURRITOS: ExpressItem[] = [
       '80g de tender de pollo en salsa original, queso azul y vegetales. 1 pz.',
     descriptionEn:
       '80g chicken tender in original sauce, blue cheese and vegetables. 1 pc.',
-    fileName: 'tender_burrito.webp',
+    fileName: 'menu/express/tender_burrito.webp',
   },
 ]
 
@@ -283,7 +283,7 @@ const HOT_DOGS: ExpressItem[] = [
     descriptionEs: 'Hot dog completo servido con cebollín y salsa BBQ. 1 pz.',
     descriptionEn:
       'A whole hot dog served with green onions and BBQ sauce. 1 pc.',
-    fileName: 'jumbo_sumo_dog.webp',
+    fileName: 'menu/express/jumbo_sumo_dog.webp',
   },
   {
     categoryKey: 'hot_dogs',
@@ -293,7 +293,7 @@ const HOT_DOGS: ExpressItem[] = [
       'Hot dog con aderezo americano, salsa Buffalo y ranch. 1 pz.',
     descriptionEn:
       'Hot dog with American dressing, Buffalo sauce and ranch. 1 pc.',
-    fileName: 'buffalo_ranch_dog.webp',
+    fileName: 'menu/express/buffalo_ranch_dog.webp',
   },
   {
     categoryKey: 'hot_dogs',
@@ -303,7 +303,7 @@ const HOT_DOGS: ExpressItem[] = [
       'Hot dog con carne smash, mostaza amarilla, cebolla crujiente, jalapeño sauce y aderezo americano. 1 pz.',
     descriptionEn:
       'Hot dog topped with smash beef, yellow mustard, crispy onion, jalapeño sauce and American dressing. 1 pc.',
-    fileName: 'smash_dog.webp',
+    fileName: 'menu/express/smash_dog.webp',
   },
 ]
 
@@ -318,7 +318,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: pepino, aguacate, filete de pescado. Por fuera: queso crema, tempura crunch, ajonjolí y salsa sweet chili. 5 pzs.',
     descriptionEn:
       'Inside: cucumber, avocado, fish fillet. Outside: cream cheese, tempura crunch, sesame and sweet chili sauce. 5 pcs.',
-    fileName: 'white_dragon.webp',
+    fileName: 'menu/express/white_dragon.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -328,7 +328,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: pepino, aguacate, filete de pescado. Por fuera: aguacate, ajonjolí tostado y mayo japonesa. 5 pzs.',
     descriptionEn:
       'Inside: cucumber, avocado, fish fillet. Outside: avocado, toasted sesame and Japanese mayo. 5 pcs.',
-    fileName: 'california.webp',
+    fileName: 'menu/express/california.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -338,7 +338,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: pepino, aguacate, filete de pescado. Por fuera: queso crema, ajonjolí y sweet chili. 5 pzs.',
     descriptionEn:
       'Inside: cucumber, avocado, fish fillet. Outside: cream cheese, sesame and sweet chili. 5 pcs.',
-    fileName: 'philadelphia.webp',
+    fileName: 'menu/express/philadelphia.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -348,7 +348,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: tuna spicy, pepino. Por fuera: aguacate, tempura crunch y salsa teriyaki dulce. 5 pzs.',
     descriptionEn:
       'Inside: spicy tuna, cucumber. Outside: avocado, tempura crunch and sweet teriyaki sauce. 5 pcs.',
-    fileName: 'kyoto.webp',
+    fileName: 'menu/express/kyoto.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -358,7 +358,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: queso crema, pepino. Por fuera: filete de pescado, aguacate, ajonjolí, salsa sweet chili y mayo japonesa. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, cucumber. Outside: fish fillet, avocado, sesame, sweet chili sauce and Japanese mayo. 5 pcs.',
-    fileName: 'tokio.webp',
+    fileName: 'menu/express/tokio.webp',
   },
   {
     categoryKey: 'cold_rolls',
@@ -368,7 +368,7 @@ const COLD_ROLLS: ExpressItem[] = [
       'Por dentro: tuna spicy, queso crema. Por fuera: mango, ajonjolí y salsa sweet chili. 5 pzs.',
     descriptionEn:
       'Inside: spicy tuna, cream cheese. Outside: mango, sesame and sweet chili sauce. 5 pcs.',
-    fileName: 'bora_bora.webp',
+    fileName: 'menu/express/bora_bora.webp',
   },
 ]
 
@@ -383,7 +383,7 @@ const HOT_ROLLS: ExpressItem[] = [
       'Por dentro: queso crema, carne smash, jalapeño. Por fuera: queso crema, carne smash, empanizado y frito, bañado con salsa teriyaki y sriracha. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, smash beef, jalapeño. Outside: cream cheese, smash beef, breaded and fried, drizzled with teriyaki sauce and sriracha. 5 pcs.',
-    fileName: 'rikishi_roll.webp',
+    fileName: 'menu/express/rikishi_roll.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -393,7 +393,7 @@ const HOT_ROLLS: ExpressItem[] = [
       'Por dentro: queso crema, pepino. Por fuera: queso crema, empanizado y frito, cubierto con steak y habanero spicy. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, cucumber. Outside: cream cheese, breaded and fried, topped with steak and spicy habanero. 5 pcs.',
-    fileName: 'kekoto.webp',
+    fileName: 'menu/express/kekoto.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -403,7 +403,7 @@ const HOT_ROLLS: ExpressItem[] = [
       'Por dentro: queso crema, plátano. Por fuera: queso crema, empanizado y frito, cubierto con plátano y salsa sweet chili. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, banana. Outside: cream cheese, breaded and fried, topped with banana and sweet chili sauce. 5 pcs.',
-    fileName: 'banana_fried.webp',
+    fileName: 'menu/express/banana_fried.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -413,7 +413,7 @@ const HOT_ROLLS: ExpressItem[] = [
       'Por dentro: aguacate, queso crema, atún. Por fuera: queso crema, empanizado y frito con masago y ajonjolí. 5 pzs.',
     descriptionEn:
       'Inside: avocado, cream cheese, tuna. Outside: cream cheese, breaded and fried with masago and sesame. 5 pcs.',
-    fileName: 'sumo_roll.webp',
+    fileName: 'menu/express/sumo_roll.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -423,7 +423,7 @@ const HOT_ROLLS: ExpressItem[] = [
       'Por dentro: salmón spicy, queso crema. Por fuera: queso crema, empanizado y frito, con salmón y salsa especial. 5 pzs.',
     descriptionEn:
       'Inside: spicy salmon, cream cheese. Outside: cream cheese, breaded and fried, with salmon and special sauce. 5 pcs.',
-    fileName: 'japan.webp',
+    fileName: 'menu/express/japan.webp',
   },
   {
     categoryKey: 'hot_rolls',
@@ -433,7 +433,7 @@ const HOT_ROLLS: ExpressItem[] = [
       'Por dentro: queso crema, jalapeño. Por fuera: queso crema, empanizado y frito, cubierto con salsa de queso manchego. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese, jalapeño. Outside: cream cheese, breaded and fried, topped with manchego cheese sauce. 5 pcs.',
-    fileName: 'manchego_roll.webp',
+    fileName: 'menu/express/manchego_roll.webp',
   },
 ]
 
@@ -448,7 +448,7 @@ const SWEET_ROLLS: ExpressItem[] = [
       'Por dentro: queso crema. Por fuera: queso crema, empanizado y frito, cubierto con dulce de leche, canela y azúcar glass. 5 pzs.',
     descriptionEn:
       'Inside: cream cheese. Outside: cream cheese, breaded and fried, topped with dulce de leche, cinnamon and powdered sugar. 5 pcs.',
-    fileName: 'cinnamon_roll.webp',
+    fileName: 'menu/express/cinnamon_roll.webp',
   },
 ]
 
