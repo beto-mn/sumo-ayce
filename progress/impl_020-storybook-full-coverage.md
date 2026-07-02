@@ -39,12 +39,18 @@ Added state variants (Loading, Empty, Error, Disabled, LocaleES, LocaleEN) per c
 - MapView: AYCEPinsOnly, ExpressPinsOnly, MixedPins, FallbackState, Loading (in variants file)
 
 ### T116: 200-line overflow check
-Two files exceeded 200 lines and were split:
-- `MapView.stories.ts` → `MapView.variants.stories.ts` (5 variant stories)
-- `ReservationForm.stories.ts` → `ReservationForm.variants.stories.ts` (Loading + WithApiError with play functions)
+One file exceeded 200 lines and was split (completed in fix branch
+`chore/021-storybook-coverage-fixes`, see `progress/impl_020-fixes.md`):
+- `ReservationForm.stories.ts` (253 lines) → base file reduced to 113 lines;
+  `Loading` + `WithApiError` play-function stories extracted to
+  `ReservationForm.variants.stories.ts` (127 lines).
+
+`MapView.stories.ts` is 161 lines and did NOT require splitting; no
+`MapView.variants.stories.ts` exists.
 
 ### Phase 7: ComponentDocs Feature-Slice Overview Stories
-Created 7 new ComponentDocs index story files:
+Created 7 new ComponentDocs index story files (completed in fix branch
+`chore/021-storybook-coverage-fixes`, see `progress/impl_020-fixes.md`):
 - `app/features/branches/Branches.stories.ts`
 - `app/features/contact/Contact.stories.ts`
 - `app/features/homepage/Homepage.stories.ts`
@@ -66,8 +72,9 @@ Created 7 new ComponentDocs index story files:
 - `.storybook/main.ts` — addon-a11y, storybook 10.4.6 upgrade, autodocs: true
 - `.storybook/preview.ts` — viewport presets
 
-**New story files (9)**:
-- `app/components/ui/MapView.variants.stories.ts`
+**New story files (9)** — the 7 ComponentDocs index files and the
+`ReservationForm.variants.stories.ts` split were delivered in the fix branch
+`chore/021-storybook-coverage-fixes` (the original merge did NOT contain them):
 - `app/components/ui/UIPrimitives.stories.ts`
 - `app/features/branches/Branches.stories.ts`
 - `app/features/contact/Contact.stories.ts`
@@ -76,6 +83,9 @@ Created 7 new ComponentDocs index story files:
 - `app/features/promotions/Promotions.stories.ts`
 - `app/features/reservation/Reservation.stories.ts`
 - `app/features/reservation/components/ReservationForm.variants.stories.ts`
+
+Note: no `MapView.variants.stories.ts` was created; `MapView.stories.ts`
+(161 lines) is within the 200-line limit.
 
 **Modified story files (50)**: All existing `*.stories.ts` files across ui, layout, staff, and all feature slices.
 
