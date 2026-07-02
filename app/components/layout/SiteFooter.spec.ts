@@ -1,34 +1,71 @@
 import { mount, RouterLinkStub } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-vi.stubGlobal('useI18n', () => ({
-  t: (key: string) => key,
-}))
-vi.stubGlobal('useLocalePath', () => (p: string) => p)
+const ES: Record<string, string> = {
+  'footer.brand.tagline': 'Buffet preparado al instante',
+  'footer.brand.blurb':
+    'Sumo All You Can Eat es el buffet en donde encontrarás sushi, alitas, hamburguesas, ramen y mucho más, todo preparado al instante y con una gran variedad de bebidas y promociones para ofrecer una experiencia llena de sabor, variedad y diversión, tú eliges si es en familia, con amigos o en pareja.',
+  'footer.contact.whatsapp': 'WhatsApp',
+}
 
-import SiteFooter from './SiteFooter.vue'
+const EN: Record<string, string> = {
+  'footer.brand.tagline': 'Buffet made to order',
+  'footer.brand.blurb':
+    "Sumo All You Can Eat is the buffet where you'll find sushi, wings, burgers, ramen and much more, all made to order and with a great variety of drinks and promotions for an experience full of flavor, variety and fun — you choose whether it's with family, friends or your partner.",
+  'footer.contact.whatsapp': 'WhatsApp',
+}
 
+function stubLocale(map: Record<string, string>) {
+  vi.stubGlobal('useI18n', () => ({ t: (key: string) => map[key] ?? key }))
+  vi.stubGlobal('useLocalePath', () => (p: string) => p)
+}
+
+// Real SiteLogo mounted so we can assert the footer still uses the unmodified
+// horizontal lockup (FR-009). NuxtLink is stubbed for both components.
 const stubs = {
-  SiteLogo: { template: '<a class="logo-stub" />' },
   UiKicker: { template: '<span class="kicker-stub"><slot /></span>' },
   NuxtLink: RouterLinkStub,
 }
 
-function mountFooter(props: Record<string, unknown> = {}) {
-  return mount(SiteFooter, { props, global: { stubs } })
+async function mountFooter(props: Record<string, unknown> = {}, map = ES) {
+  stubLocale(map)
+  const SiteFooter = (await import('./SiteFooter.vue')).default
+  const SiteLogo = (await import('./SiteLogo.vue')).default
+  return mount(SiteFooter, {
+    props,
+    global: { stubs, components: { SiteLogo } },
+  })
 }
 
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.resetModules()
+})
+
 describe('SiteFooter', () => {
-  it('renders a footer landmark', () => {
-    expect(mountFooter().find('footer').exists()).toBe(true)
+  it('renders a footer landmark', async () => {
+    expect((await mountFooter()).find('footer').exists()).toBe(true)
   })
 
-  it('reuses the shared SiteLogo badge', () => {
-    expect(mountFooter().find('.logo-stub').exists()).toBe(true)
+  it('keeps the unmodified horizontal logo (nav/footer logo unchanged)', async () => {
+    const img = (await mountFooter()).find('img')
+    expect(img.attributes('src')).toBe('/brand/sumo-horizontal.svg')
   })
 
-  it('renders the five navigation links pointing at header routes', () => {
-    const targets = mountFooter()
+  it('renders the new tagline and blurb in ES', async () => {
+    const text = (await mountFooter({}, ES)).text()
+    expect(text).toContain('Buffet preparado al instante')
+    expect(text).toContain('Sumo All You Can Eat es el buffet')
+  })
+
+  it('renders the new tagline and blurb in EN', async () => {
+    const text = (await mountFooter({}, EN)).text()
+    expect(text).toContain('Buffet made to order')
+    expect(text).toContain('Sumo All You Can Eat is the buffet')
+  })
+
+  it('renders the five navigation links pointing at header routes', async () => {
+    const targets = (await mountFooter())
       .findAllComponents(RouterLinkStub)
       .map(l => l.props('to'))
     expect(targets).toContain('/')
@@ -38,8 +75,8 @@ describe('SiteFooter', () => {
     expect(targets).toContain('/contact')
   })
 
-  it('renders the three external social links with real hrefs (no placeholders)', () => {
-    const anchors = mountFooter().findAll('a[target="_blank"]')
+  it('renders the three external social links with real hrefs (no placeholders)', async () => {
+    const anchors = (await mountFooter()).findAll('a[target="_blank"]')
     const hrefs = anchors.map(a => a.attributes('href'))
     expect(hrefs).toHaveLength(3)
     expect(hrefs).not.toContain('#')
@@ -51,20 +88,22 @@ describe('SiteFooter', () => {
     })
   })
 
-  it('links the Contacto column to the contact page internally', () => {
-    const contactLink = mountFooter()
+  it('links the Contacto column to the contact page internally', async () => {
+    const contactLink = (await mountFooter())
       .findAllComponents(RouterLinkStub)
-      .find(l => l.text() === 'footer.contact.whatsapp')
+      .find(l => l.text() === 'WhatsApp')
     expect(contactLink).toBeDefined()
     expect(contactLink?.props('to')).toBe('/contact')
   })
 
-  it('exposes three labelled nav landmarks (navegación + redes + contacto)', () => {
-    const navs = mountFooter().findAll('nav[aria-label]')
+  it('exposes three labelled nav landmarks (navegación + redes + contacto)', async () => {
+    const navs = (await mountFooter()).findAll('nav[aria-label]')
     expect(navs.length).toBe(3)
   })
 
-  it('renders the provided copyright year', () => {
-    expect(mountFooter({ year: 2031 }).text()).toContain('© SUMO AYCE 2031')
+  it('renders the provided copyright year', async () => {
+    expect((await mountFooter({ year: 2031 })).text()).toContain(
+      '© SUMO AYCE 2031'
+    )
   })
 })

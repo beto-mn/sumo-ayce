@@ -28,7 +28,7 @@ const meta = {
     template: `
       <Card v-bind="args">
         <h3 class="font-disp text-h-lg uppercase">All You Can Eat</h3>
-        <p class="text-soft">Estilo americano-japonés.</p>
+        <p class="text-soft">Buffet preparado al instante.</p>
         <span class="inline-block mt-3 px-3 py-1 rounded-pop-full border-pop-sm border-ink bg-accent text-bg font-disp uppercase text-kicker">Reservar</span>
       </Card>`,
   }),

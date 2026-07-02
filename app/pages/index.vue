@@ -16,10 +16,10 @@ const reviews = REVIEWS
 const topPromotions = computed(() => selectPromotions(promotions.value))
 
 useSeoMeta({
-  title: () => `SUMO · ${t('home.hero.headline')}`,
-  description: () => t('home.hero.kicker'),
-  ogTitle: () => `SUMO · ${t('home.hero.headline')}`,
-  ogDescription: () => t('home.hero.kicker'),
+  title: () => t('home.seo.title'),
+  description: () => t('home.seo.description'),
+  ogTitle: () => t('home.seo.title'),
+  ogDescription: () => t('home.seo.description'),
 })
 </script>
 

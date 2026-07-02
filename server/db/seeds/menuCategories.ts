@@ -134,8 +134,8 @@ const CATEGORIES: {
   },
   {
     key: 'drinks',
-    nameEs: 'Bebidas',
-    nameEn: 'Drinks',
+    nameEs: 'Bebidas y coctelería',
+    nameEn: 'Drinks & cocktails',
     displayOrder: 15,
     isActive: true,
   },
