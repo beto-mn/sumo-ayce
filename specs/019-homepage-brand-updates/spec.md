@@ -30,14 +30,14 @@ Verify the styled headline is real text (selectable, announced by screen readers
 
 **Acceptance Scenarios**:
 
-1. **Given** a visitor on `/`, **When** the hero renders, **Then** the headline shows two
-   staggered lines ("ALL YOU" / "CAN EAT"), each on a solid ink box with orange text, the
-   second line offset to the right, with a slight opposite static rotation per line, no
-   border and no drop-shadow, uppercase, in the Anton typeface.
+1. **Given** a visitor on `/`, **When** the hero renders, **Then** the headline shows
+   "ALL YOU CAN EAT" as real text in the Titan One typeface with a white fill and a thick
+   black outline (logo-style), uppercase and straight (no rotation): two staggered lines
+   ("ALL YOU" / "CAN EAT") on desktop and two large stacked lines on mobile/tablet.
 2. **Given** a screen-reader user, **When** the headline is focused/read, **Then** the full
    text "All You Can Eat" (from `home.hero.headline`) is announced as a single heading.
 3. **Given** a visitor with `prefers-reduced-motion: reduce`, **When** the hero renders,
-   **Then** no rotation *animation* plays (the static staggered rotation is still allowed).
+   **Then** the headline's settle animation does not play and the headline has no rotation.
 4. **Given** a visitor toggling ES ↔ EN, **When** the hero renders, **Then** the kicker and
    subtitle show the correct localized copy and the headline text is identical in both.
 5. **Given** the hero frame, **When** it renders, **Then** it displays `sumo.webp` in the
@@ -116,11 +116,11 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
 
 ### Edge Cases
 
-- **Missing/failed webfont**: If the self-hosted Anton font fails to load, the headline MUST
-  remain legible with a system-ui/sans-serif fallback and keep readable (AA-compliant)
-  orange-on-ink contrast. Layout MUST NOT collapse.
-- **Reduced motion**: Users with `prefers-reduced-motion: reduce` get no rotation animation
-  on the headline (static rotation is acceptable) and existing marquee/bounce reduced-motion
+- **Missing/failed webfont**: If the self-hosted Titan One font fails to load, the headline
+  MUST remain legible with a system-ui/sans-serif fallback and keep its readable white-fill /
+  black-outline treatment. Layout MUST NOT collapse.
+- **Reduced motion**: Users with `prefers-reduced-motion: reduce` get no settle animation on
+  the headline (the headline has no rotation) and existing marquee/bounce reduced-motion
   behavior is preserved.
 - **Long localized strings**: The richer subtitle and footer blurb are the longest strings;
   they MUST wrap without overflow at 360px and not push CTAs off-screen.
@@ -129,8 +129,10 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
 - **New logo aspect ratio**: `sumo.webp` (illustrated lockup) has a different aspect ratio
   than the previous `sumo-vertical.svg`; it MUST fit the existing tilted/rounded frame slot
   without distortion (no stretch/squash).
-- **Contrast of orange-on-ink**: The `--orange` on `--ink` combination used by the headline
-  boxes MUST be verified to meet WCAG AA for large text before merge.
+- **Contrast of the outlined headline**: The white fill relies on the thick `--ink` outline
+  (not the background) for legibility. Automated `color-contrast` (axe) does not measure the
+  stroke, so it MUST be scoped-off for the headline node in its Storybook story with a
+  documented justification; the treatment MUST remain visually legible.
 
 ## Requirements *(mandatory)*
 
@@ -141,16 +143,17 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
 - **FR-001**: The hero headline MUST be rendered as CSS-styled real text (selectable,
   machine-readable), NOT as an image, and MUST keep the existing `home.hero.headline` i18n
   key for the `<h1>` / aria-label.
-- **FR-002**: The headline MUST use the "Variant A — Plana" (flat) treatment: two lines
-  "ALL YOU" and "CAN EAT", each on a solid `--ink` box with `--orange` text, the second line
-  offset to the right, a slight *opposite* static rotation per line (staggered look), NO
-  border, NO drop-shadow, uppercase.
-- **FR-003**: The headline MUST use the Anton typeface (Google Fonts, OFL license),
-  self-hosted via `@font-face` (woff2 preferred). Anton MUST be applied ONLY to the hero
+- **FR-002**: The headline MUST use a logo-style lettering treatment: two lines "ALL YOU" and
+  "CAN EAT" with a white fill (`--panel`) and a thick black outline (`--ink`) via
+  `-webkit-text-stroke` + `paint-order: stroke fill`, uppercase and straight (no rotation).
+  Responsive: two staggered lines on desktop (>1024px) and two large stacked lines on
+  mobile/tablet (≤1024px), scaled to fill the width without horizontal overflow.
+- **FR-003**: The headline MUST use the Titan One typeface (Google Fonts, OFL license),
+  self-hosted via `@font-face` (woff2 preferred). Titan One MUST be applied ONLY to the hero
   headline; Bricolage Grotesque remains the general display font site-wide.
-- **FR-004**: The headline MUST NOT play a rotation animation when the user prefers reduced
-  motion; a static staggered rotation is permitted in that mode.
-- **FR-005**: Colors used by the headline MUST come from design tokens (`--ink`, `--orange`)
+- **FR-004**: The headline MUST NOT play its settle animation when the user prefers reduced
+  motion; the headline has no rotation in any mode.
+- **FR-005**: Colors used by the headline MUST come from design tokens (`--panel`, `--ink`)
   — no inline hex values.
 - **FR-006**: The hero kicker (`home.hero.kicker`) MUST read:
   - ES: `Come sin límites · Buffet preparado al instante`
@@ -277,7 +280,7 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
   value, EN value. This feature adds keys (`home.seo.title`, `home.seo.description`,
   `home.featured` heading) and updates existing keys.
 - **Brand assets**: `sumo.webp` (hero-frame illustrated lockup, new), `sumo-horizontal.svg`
-  (nav/footer, unchanged), and the self-hosted Anton woff2 font file.
+  (nav/footer, unchanged), and the self-hosted Titan One woff2 font file.
 - **Menu category seed row (drinks)**: `nameEs`/`nameEn` in `menuCategories.ts` — aligned for
   consistency only (no migration).
 
@@ -290,8 +293,9 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
 - **SC-002**: The hero headline is real, selectable text (a text selection tool can select
   "All You Can Eat") and screen readers announce it as a single heading via the `<h1>` /
   aria-label.
-- **SC-003**: The orange-on-ink color combination used by the headline passes WCAG AA for
-  its text size (verified with a contrast tool before merge).
+- **SC-003**: The headline's white fill + thick black (`--ink`) outline is visually legible;
+  the axe `color-contrast` rule (which cannot measure the stroke) is scoped-off for the
+  headline node in its Storybook story with a documented justification.
 - **SC-004**: Zero occurrences of "Estilo americano-japonés" / "American-Japanese style"
   remain anywhere in the rendered site or the i18n files.
 - **SC-005**: The Branches, Promotions and Reserve pages each show the new title in BOTH the
@@ -299,8 +303,8 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
   verified).
 - **SC-006**: The hero frame shows the new illustrated logo while the nav and footer logos
   are visually unchanged.
-- **SC-007**: With `prefers-reduced-motion: reduce`, the headline plays no rotation
-  animation.
+- **SC-007**: With `prefers-reduced-motion: reduce`, the headline plays no settle animation
+  (and the headline has no rotation in any mode).
 - **SC-008**: The homepage still meets its performance budget (Lighthouse 90+); adding the
   self-hosted font and the webp asset does not regress it.
 - **SC-009**: No production database migration runs for the drinks-label change; the label
@@ -312,11 +316,12 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
 
 - The existing homepage components, layout components, i18n files, and the affected pages
   already exist (delivered by features 010–018) and are only being edited here.
-- The design tokens `--ink` and `--orange` already exist in the global stylesheet and carry
-  the official brand values; the headline reuses them (no new color tokens introduced).
+- The design tokens `--panel` (white) and `--ink` (black) already exist in the global
+  stylesheet and carry the official brand values; the headline reuses them (no new color
+  tokens introduced).
 - The source asset `sumo.webp` exists at the client path and is suitable for web use as-is
   (correct size/quality); if not, it is optimized without changing the visible artwork.
-- The Anton font may be self-hosted under the OFL license; the woff2 file will be committed
+- The Titan One font may be self-hosted under the OFL license; the woff2 file will be committed
   under the app's font/public assets and referenced via `@font-face`.
 - "Prominent" card titles ("All You Can Eat" / "Express") reuse the existing type-selector
   card structure by re-mapping existing name/badge keys, not by adding a new card component.
@@ -331,7 +336,7 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
 - Existing features 010 (Homepage), 011 (Menu), 012 (Promotions), 013 (Branches), 014
   (Reservation) and the shared layout components from feature 007.
 - The Nuxt i18n setup (`@nuxtjs/i18n`) and the ES/EN locale files.
-- The design-token stylesheet (`--ink`, `--orange`, `--disp`).
+- The design-token stylesheet (`--panel`, `--ink`, `--disp`).
 
 ## Out of Scope
 
