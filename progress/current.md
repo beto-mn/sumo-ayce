@@ -91,7 +91,20 @@ All aspects of the feature were fully specified by the context. No clarification
 - Locale variants use direct prop passing (no i18n plugin decorator required)
 - ComponentDocs files use CSF3 `.stories.ts` with `tags: ['autodocs']`
 
+## Feature closed: 020 — storybook-full-coverage (2026-07-01)
+
+**Branch**: `chore/021-storybook-coverage` (+ fix branch `chore/021-storybook-coverage-fixes`, merged `--no-ff` to master)
+
+### Closure flow
+- First reviewer pass → **REJECTED** (7 missing ComponentDocs slice-index files falsely marked `[x]`; `ReservationForm.stories.ts` at 253 lines violating the 200-line Article VIII limit).
+- Implementer fix (commit `74ad683`): created the 7 ComponentDocs indexes (`app/features/{branches,contact,homepage,menu,promotions,reservation}/*.stories.ts` + `app/components/ui/UIPrimitives.stories.ts`), split `ReservationForm.stories.ts` (253 → 113) with overflow in `ReservationForm.variants.stories.ts` (127).
+- Second reviewer pass → **APPROVED**, marked `done` in `feature_list.json`, review set to APPROVED.
+- Merged to master (merge commit) and status commit `fe5e177`.
+
+### Final state
+- `./init.sh` — Environment ready (all green). Tests 759/759, biome + typecheck OK, `storybook:build` exit 0, zero image 404s.
+- No story file exceeds 200 lines.
+
 ## Pending
-- Feature **018** — mark `done` in `feature_list.json` (owner action required)
-- Feature **019 — homepage-brand-updates** (`pending`, `sdd: true`) — spec pending
-- Feature **020 — storybook-full-coverage** (`spec_ready`) — awaiting human approval before implementation
+- Feature **018** — mark `done` in `feature_list.json` (owner action required, still `in_progress`)
+- Feature **019 — homepage-brand-updates** (`pending`, `sdd: true`) — NEXT. Spec pending; awaiting client info (headline font, vertical logo asset, ES/EN text updates). Design decision in progress: AYCE headline as CSS-styled text (box-highlight) vs. image.
