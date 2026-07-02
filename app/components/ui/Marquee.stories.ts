@@ -33,7 +33,7 @@ const meta = {
       <Marquee v-bind="args">
         <span class="font-disp font-extrabold uppercase text-kicker">All You Can Eat</span>
         <span class="font-disp font-extrabold uppercase text-kicker text-orange" aria-hidden="true">✺</span>
-        <span class="font-disp font-extrabold uppercase text-kicker">Estilo americano-japonés</span>
+        <span class="font-disp font-extrabold uppercase text-kicker">Buffet preparado al instante</span>
         <span class="font-disp font-extrabold uppercase text-kicker text-orange" aria-hidden="true">✺</span>
         <span class="font-disp font-extrabold uppercase text-kicker">$269 todos los días</span>
         <span class="font-disp font-extrabold uppercase text-kicker text-orange" aria-hidden="true">✺</span>

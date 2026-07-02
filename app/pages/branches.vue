@@ -7,9 +7,9 @@ import type { SortedBranch } from '@/features/branches/types'
 const { t } = useI18n()
 
 useSeoMeta({
-  title: () => `SUMO · ${t('branches.page.title')}`,
+  title: () => t('branches.page.title'),
   description: () => t('branches.page.description'),
-  ogTitle: () => `SUMO · ${t('branches.page.title')}`,
+  ogTitle: () => t('branches.page.title'),
   ogDescription: () => t('branches.page.description'),
 })
 

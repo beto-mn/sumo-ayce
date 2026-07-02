@@ -30,8 +30,8 @@ export const FEATURED_DISHES: FeaturedDish[] = [
     id: 'd3',
     name: 'Alitas Sumo',
     description: {
-      es: 'Alitas crujientes estilo americano-japonés.',
-      en: 'Crispy wings, American-Japanese style.',
+      es: 'Alitas crujientes preparadas al instante.',
+      en: 'Crispy wings, made to order.',
     },
     imageUrl: null,
     badge: 'Picante',

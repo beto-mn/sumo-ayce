@@ -17,8 +17,11 @@ const { t } = useI18n()
       <h2
         class="m-0 font-disp font-extrabold uppercase leading-none tracking-[-0.02em] text-h-lg text-ink"
       >
-        {{ t('home.featured.subtitle') }}
+        {{ t('home.featured.heading') }}
       </h2>
+      <p class="m-0 font-body text-lead text-soft">
+        {{ t('home.featured.subtitle') }}
+      </p>
     </header>
     <!-- Horizontal scroll is CONTAINED here: the track scrolls internally
          (overflow-x-auto) and never widens the page. -->
