@@ -105,6 +105,88 @@ All aspects of the feature were fully specified by the context. No clarification
 - `./init.sh` — Environment ready (all green). Tests 759/759, biome + typecheck OK, `storybook:build` exit 0, zero image 404s.
 - No story file exceeds 200 lines.
 
+## Feature spec authored: 019 — homepage-brand-updates (2026-07-01)
+
+**Feature id**: 19
+**Feature name**: homepage-brand-updates
+**Status change**: `pending` → `spec_ready`
+**Spec folder**: `specs/019-homepage-brand-updates/`
+**Branch**: `feat/019-homepage-brand-updates`
+
+### Skills invoked (in order)
+
+1. `/speckit-git-feature` — created branch `feat/019-homepage-brand-updates` (renamed from an accidental double-prefix; spec dir 019 already existed with client-brief.md + copy-audit.md)
+2. `/speckit-specify` — generated `spec.md` (+ `checklists/requirements.md`), all copy transcribed verbatim from `client-brief.md`
+3. `/speckit-plan` — generated `plan.md`, `research.md`, `data-model.md`, `contracts/i18n-keys.md`, `quickstart.md`; updated CLAUDE.md SPECKIT active-feature block
+4. `/speckit-tasks` — generated `tasks.md` (23 atomic tasks across Setup / Foundational / US1–US3 / Polish)
+
+### No [NEEDS CLARIFICATION] markers
+
+All design + copy decisions were pre-confirmed with the client in `client-brief.md` (source
+of truth): headline = CSS real text (Anton flat Variant A, no border/shadow); translate all
+copy to EN; sumo.webp replaces hero-frame logo only; page titles apply to H1 + SEO; kicker +
+site-wide tagline = "Buffet preparado al instante"; menu drinks label is i18n-only (align
+seed, no migration). `/speckit-clarify` was correctly skipped.
+
+### Main Phase -1 gates (from plan.md)
+
+- **Article I**: homepage components stay feature-scoped; type-selector cards remain ONE
+  component via re-mapped keys (no duplication).
+- **Article II**: TS strict, Composition API only.
+- **Article V**: `/` stays `isr: 3600`; no new route; Lighthouse 90+ preserved after adding
+  the Anton font + webp; no Neon/Drizzle import in `app/**`.
+- **Article VII**: design tokens as source of truth; mobile-first (880/520 breakpoints);
+  Storybook coverage (Default + variants + responsive) NON-NEGOTIABLE for every changed
+  component; nav/footer logo unmodified.
+- **Article VIII + a11y**: component + story files ≤200 lines; functions ≤30 lines; TOKENS
+  ONLY (headline uses `--ink`/`--orange`, no inline hex); WCAG AA contrast **verified =
+  6.30:1 (pass)**; real-text `<h1>` with accessible name = `home.hero.headline`;
+  `prefers-reduced-motion` disables rotation animation.
+- **Article IX/XI**: Biome + `vue-tsc --noEmit` + Vitest green; absolute imports via alias.
+- **Project gates**: ES↔EN key parity + equal marquee array length; story ≤200-line limit.
+
+### Notable research findings (research.md)
+
+- Source `sumo.webp` is ~1.76MB → MUST be optimized to `< ~200KB` at rendered size (artwork
+  unmodified) before commit, or it fails the perf budget.
+- orange-on-ink (`#F37021` on `#1A1209`) contrast = 6.30:1 → passes WCAG AA (even normal-text).
+- Anton self-hosted woff2, `font-display: swap` + preload, scoped to hero headline only.
+
+## Feature closed: 018 — vercel-blob-images (2026-07-01)
+
+Formal closure only (code was already delivered + merged in a prior session). Reviewer
+verified traceability + gates, `./init.sh` exit 0, marked `done`. Commit `0007c7e` on master.
+
+## Feature closed: 019 — homepage-brand-updates (2026-07-01)
+
+**Branch**: `feat/019-homepage-brand-updates` (merged `--no-ff` to master; branch deleted).
+
+### Flow
+- Human approved spec → leader flipped `spec_ready` → `in_progress` (after closing 018 to
+  respect one-feature-at-a-time).
+- Implementer: 5 commits, all 23 tasks `[x]`.
+- Reviewer → **APPROVED** (commit `f99e279`), marked `done`. `review.md` written.
+
+### What was delivered
+- `public/brand/sumo.webp` — new illustrated hero logo, optimized by leader 1.76MB→121KB
+  (900px), wired into `HomeHero.vue` (hero frame only; nav/footer keep the horizontal SVG).
+- `public/fonts/anton-regular.woff2` (12KB, Latin subset) + `OFL-Anton.txt`; `@font-face` +
+  `.hero-headline` flat box treatment in `app/assets/css/base.css` (tokens only, reduced-motion
+  safe, WCAG AA 6.30:1); Anton preloaded via `nuxt.config.ts`.
+- Full ES+EN copy refresh in `i18n/locales/{es,en}.json`: hero kicker/subtitle, marquee items,
+  home SEO title/desc, type-selector title + AYCE/Express cards, featured section
+  (label/heading/subtitle), branches CTA "Más de 30 sucursales…", footer blurb, page titles
+  (Sucursales/Promociones/Reservas Sumo in H1 + SEO), menu drinks "Bebidas y coctelería".
+  "Estilo americano-japonés" → "Buffet preparado al instante" site-wide (grep = 0).
+- `server/db/seeds/menuCategories.ts` — drinks label aligned (seed only, NO migration).
+- Components touched: `HomeHero.vue` (+ spec/stories), `HomeFeaturedRail.vue` (+ spec),
+  `index.vue`, `branches.vue`; specs added for changed components.
+- Reference docs: `specs/019-homepage-brand-updates/{client-brief,copy-audit}.md`.
+
+### Final state
+- `./init.sh` — Environment ready (all green). **775 tests** (+16), biome + typecheck +
+  build + `storybook:build` all exit 0. 0 features `in_progress`.
+
 ## Pending
-- Feature **018** — mark `done` in `feature_list.json` (owner action required, still `in_progress`)
-- Feature **019 — homepage-brand-updates** (`pending`, `sdd: true`) — NEXT. Spec pending; awaiting client info (headline font, vertical logo asset, ES/EN text updates). Design decision in progress: AYCE headline as CSS-styled text (box-highlight) vs. image.
+- Feature **015 — loyalty-portal** (`pending`, `sdd: true`) — next candidate.
+- Feature **017 — contact-page** is `done`. Backlog 001–014, 016, 018–020 → `done`.

@@ -169,16 +169,16 @@
       "description": "Migrate menu image delivery from static public/ assets to Vercel Blob Storage. The file_name column in menu_items, menu_categories, and sauces tables already exists and currently stores bare filenames (e.g. wings.jpg). Change its semantic to store the full Blob-relative path (e.g. menu/ayce/wings.jpg — no base URL). Add a BLOB_BASE_URL runtime env var. Update resolveImageUrl() in server/api/v1/menu/index.get.ts to prefix BLOB_BASE_URL instead of building /public/ local paths. Update all seed files (server/db/seeds/ayceMenu.ts, alaCarta.ts, expressMenu.ts, kidsMenu.ts, desserts.ts, drinks.ts, sauces.ts, menuCategories.ts) so file_name values carry the full Blob path. No DB migration needed — column shape is already text nullable. No admin upload UI — the client uploads images manually through Vercel Dashboard or CLI and updates the file_name column directly in the DB. Document upload conventions and the BLOB_BASE_URL env var in docs/harness/vercel-blob.md (new).",
       "spec_path": "specs/018-vercel-blob-images",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 19,
       "name": "homepage-brand-updates",
-      "title": "Homepage Hero: Vertical Logo & AYCE Headline Redesign",
-      "description": "Two visual updates to the homepage hero section in app/features/homepage/components/HomeHero.vue: (1) Replace the current /brand/sumo-vertical.svg asset with a new client-provided vertical logo asset (same slot, same rounded/rotated frame). (2) Redesign the 'ALL YOU CAN EAT' h1 headline — either swap the text node for a branded image asset (e.g. /brand/ayce-headline.svg or .png) or apply a new typographic treatment (e.g. outlined/stroke text, layered shadow, gradient fill) while keeping the existing i18n key for the alt/aria-label. Decision between image vs. styled text is a spec-phase design call. Changes confined to HomeHero.vue and public/brand/. No backend, no new routes, no DB changes.",
+      "title": "Homepage & Global Brand/Copy Updates",
+      "description": "Broad brand + copy refresh across the homepage and shared layout, plus page-title updates. Full details, exact ES strings, EN translations and design decisions live in specs/019-homepage-brand-updates/client-brief.md (source of truth) and copy-audit.md (i18n key map). Scope: (1) HomeHero.vue — replace /brand/sumo-vertical.svg with the client's illustrated sumo.webp (hero frame only; nav/footer keep sumo-horizontal.svg); render the 'ALL YOU CAN EAT' h1 as CSS-styled real text (Variant A 'flat' box treatment: two staggered lines, ink boxes, orange text, no border/shadow) using the self-hosted Anton font (Google Fonts OFL, @font-face — new webfont dependency), keeping the i18n key for aria; new kicker ('Come sin límites · Buffet preparado al instante') and new subtitle. (2) SiteMarquee.vue — replace all home.marquee items. (3) Homepage SEO (index.vue) — dedicated home.seo.title/description keys. (4) HomeTypeSelector.vue — new kicker 'AYCE - EXPRESS', title 'Dos experiencias, la misma garantía Sumo.', and AYCE/Express card copy. (5) HomeFeaturedRail.vue — add heading; label 'Los favoritos de nuestros clientes' / heading 'Garantía Sumo' / subtitle 'Amado y recomendado por nuestros clientes'. (6) HomeBranchesCta.vue — home.branches.title to 'Más de 30 sucursales en CDMX, EDOMEX y Cuernavaca' (31 branches incl. Cuernavaca verified in seed). (7) SiteFooter.vue — new footer.brand.blurb. (8) Site-wide: replace 'Estilo americano-japonés' with 'Buffet preparado al instante' in brand.tagline + footer.brand.tagline. (9) Page titles (H1 + SEO): Sucursales Sumo / Promociones Sumo / Reservas Sumo. (10) Menu drinks label menu.category.drinks to 'Bebidas y coctelería' (i18n-driven, no prod DB migration; align seed for consistency). All strings updated in both es.json and en.json. Update/verify Storybook stories + Vitest specs for every changed component. No new routes, no DB migration.",
       "spec_path": "specs/019-homepage-brand-updates",
       "sdd": true,
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 20,
