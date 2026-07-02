@@ -7,6 +7,15 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
+        // Preload the self-hosted Titan One headline font (hero LCP text).
+        // Single Latin-subset woff2, font-display: swap declared in base.css.
+        {
+          rel: 'preload',
+          as: 'font',
+          type: 'font/woff2',
+          href: '/fonts/titan-one-regular.woff2',
+          crossorigin: '',
+        },
         // SVG favicon = the official vertical SUMO logo (modern browsers).
         {
           rel: 'icon',

@@ -92,7 +92,7 @@ export default {
         'h-xl': ['clamp(48px, 9vw, 108px)', { lineHeight: '0.86' }], // hero H1
         'h-lg': ['clamp(32px, 5vw, 60px)', { lineHeight: '1' }], // section H2
         lead: ['clamp(17px, 2vw, 20px)', { lineHeight: '1.5' }], // hero subtitle
-        price: ['34px', { lineHeight: '0.9' }], // hero price sticker <b>
+        price: ['40px', { lineHeight: '0.9' }], // hero price sticker <b>
         'card-title': ['30px', { lineHeight: '1' }], // type-selector card H3
         placeholder: ['28px', { lineHeight: '1' }], // dish image fallback "SUMO"
         'promo-title': ['22px', { lineHeight: '1.1' }], // promo card H3

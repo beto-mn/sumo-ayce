@@ -1,5 +1,19 @@
 @import url("./tokens.css");
 
+/*
+ * Self-hosted Titan One (Google Fonts, SIL OFL 1.1). Latin-subset WOFF2, single
+ * weight (400). Used ONLY by the hero headline utility (.hero-headline) — the
+ * general display font stays Bricolage Grotesque (--disp). License note:
+ * public/fonts/OFL-TitanOne.txt.
+ */
+@font-face {
+  font-family: "Titan One";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/titan-one-regular.woff2") format("woff2");
+}
+
 *,
 *::before,
 *::after {
@@ -43,4 +57,92 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   /* no motion on the texture — kept static for all users */
+}
+
+/*
+ * Hero headline — logo-style lettering (client chose Titan One).
+ * White fill (--panel) with a thick black outline (--ink) via -webkit-text-stroke
+ * + paint-order so the stroke sits behind the fill, plus a subtle ink drop
+ * shadow like the SUMO logo. No orange boxes. Tokens only, no inline hex.
+ * Real, selectable text (see HomeHero.vue). Legibility comes from the black
+ * stroke, not the white fill — see the a11y note in HomeHero.stories.ts.
+ *
+ * RESPONSIVE (mobile-first) — always TWO lines ("ALL YOU" / "CAN EAT") stacked,
+ * so each short line lets the type be BIG without horizontal overflow. The
+ * widest line ("CAN EAT") is ~4.6em incl. the 0.17em stroke.
+ * - Mobile (≤879px, single-column copy): 17vw, cap 120px (fills ~85% of width).
+ * - Tablet (880–1024px, narrower two-column copy): 8.8vw, cap 96px.
+ * - Desktop (>1024px): same two lines with the horizontal stagger + tighter
+ *   line-height 0.82.
+ * The outline is the same bold 0.17em at every breakpoint.
+ */
+.hero-headline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  margin: 0;
+  font-family: "Titan One", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: clamp(48px, 17vw, 120px);
+  /* No horizontal stagger on mobile/tablet (lines sit directly stacked), so keep
+     a touch more line-height than desktop to clear the thick 0.17em strokes. */
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.hero-headline__line {
+  display: inline-block;
+  white-space: nowrap;
+  color: rgb(var(--panel));
+  /* Thick logo-style outline (same 0.17em at all breakpoints), em-relative so it
+     scales with the font-size; paint-order keeps the white --panel fill on top
+     of the --ink stroke so the letters stay open even at this weight. */
+  -webkit-text-stroke: 0.17em rgb(var(--ink));
+  paint-order: stroke fill;
+  text-shadow: 0.05em 0.06em 0 rgb(var(--ink) / 0.35);
+}
+
+.hero-headline__line--bottom {
+  animation: hero-headline-settle 600ms ease-out both;
+}
+
+/* Tablet: narrower two-column copy — scale to fill that column, cap 96px. */
+@media (min-width: 880px) and (max-width: 1024px) {
+  .hero-headline {
+    font-size: clamp(60px, 8.8vw, 96px);
+  }
+}
+
+/* Desktop: staggered two lines + tighter line-height (original design). */
+@media (min-width: 1025px) {
+  .hero-headline {
+    font-size: clamp(48px, 9vw, 108px);
+    /* ~0.82 pulls the two lines close together vertically; the horizontal
+       stagger on the bottom line keeps the thick strokes from overlapping. */
+    line-height: 0.82;
+  }
+
+  .hero-headline__line--bottom {
+    margin-left: 0.6em;
+  }
+}
+
+@keyframes hero-headline-settle {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The settle-in animation is disabled; lines are straight and static. */
+  .hero-headline__line--bottom {
+    animation: none;
+  }
 }
