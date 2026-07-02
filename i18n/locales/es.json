@@ -21,13 +21,13 @@
     "close": "Cerrar"
   },
   "brand": {
-    "tagline": "Estilo americano-japonés",
+    "tagline": "Buffet preparado al instante",
     "ayceBadge": "All You Can Eat"
   },
   "footer": {
     "brand": {
-      "tagline": "Estilo americano-japonés · All You Can Eat",
-      "blurb": "Come sin límites, estilo americano-japonés. Llega con hambre, vete feliz."
+      "tagline": "Buffet preparado al instante",
+      "blurb": "Sumo All You Can Eat es el buffet en donde encontrarás sushi, alitas, hamburguesas, ramen y mucho más, todo preparado al instante y con una gran variedad de bebidas y promociones para ofrecer una experiencia llena de sabor, variedad y diversión, tú eliges si es en familia, con amigos o en pareja."
     },
     "nav": {
       "title": "Navegación"
@@ -48,9 +48,9 @@
   },
   "branches": {
     "page": {
-      "title": "Sucursales",
+      "title": "Sucursales Sumo",
       "kicker": "Sucursales",
-      "heading": "Encuentra tu SUMO",
+      "heading": "Sucursales Sumo",
       "description": "Encuentra la sucursal SUMO más cercana. All You Can Eat en todo CDMX y Edomex."
     },
     "filter": {
@@ -93,7 +93,7 @@
       "title": "Promociones | SUMO AYCE",
       "description": "Descubre todas las promociones activas de SUMO All You Can Eat.",
       "badge": "Promociones",
-      "heading": "Promociones"
+      "heading": "Promociones Sumo"
     },
     "typeBadge": {
       "express": "Sumo Express",
@@ -101,7 +101,7 @@
     },
     "empty": "No hay promociones disponibles en este momento.",
     "seo": {
-      "title": "Promociones | SUMO AYCE",
+      "title": "Promociones Sumo",
       "description": "Descubre todas las promociones activas de SUMO All You Can Eat. Martes 2x1, cumpleañeros, jueves especiales y más."
     }
   },
@@ -149,8 +149,8 @@
   "home": {
     "hero": {
       "headline": "All You Can Eat",
-      "kicker": "Come sin límites · Estilo americano-japonés",
-      "subtitle": "Rolls, ramen, teppanyaki y smash burgers — ilimitados por un precio fijo. Llega con hambre, vete feliz.",
+      "kicker": "Come sin límites · Buffet preparado al instante",
+      "subtitle": "Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.",
       "priceLabel": "Desde",
       "imageAlt": "Selección de platillos SUMO All You Can Eat",
       "marquee": "Come sin límites",
@@ -158,33 +158,40 @@
       "stickerDays": "todos los días",
       "logoAlt": "SUMO — All You Can Eat"
     },
+    "seo": {
+      "title": "Sumo All You Can Eat | Buffet de sushi y comida americana",
+      "description": "Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito."
+    },
     "marquee": [
-      "Sushi ilimitado",
-      "Ramen 12 h de caldo",
-      "Teppanyaki en vivo",
-      "Smash burgers",
+      "Sushi",
+      "Boneless",
+      "Smash Burgers",
+      "Yakimeshi",
+      "Sumo Sandwich",
+      "Hot Dogs",
       "$269 todos los días"
     ],
     "typeSelector": {
-      "kicker": "Elige tu SUMO",
-      "title": "Dos formatos, la misma garantía SUMO.",
+      "kicker": "AYCE - EXPRESS",
+      "title": "Dos experiencias, la misma garantía Sumo.",
       "cta": "Ver menú",
       "ayce": {
-        "name": "SUMO AYCE",
-        "badge": "All You Can Eat",
-        "desc": "Todo el All You Can Eat + menú a la carta. La experiencia SUMO completa, para sentarte y repetir.",
+        "name": "All You Can Eat",
+        "badge": "AYCE",
+        "desc": "La experiencia completa para disfrutar sin límites: buffet, variedad de platillos a la carta y el sabor sumo que ya conoces.",
         "chips": ["All You Can Eat", "A la carta"]
       },
       "express": {
-        "name": "SUMO Express",
-        "badge": "Formato compacto",
-        "desc": "El mismo All You Can Eat de SUMO en un formato más chico y ágil. Mismo sabor, espacio compacto.",
+        "name": "Express",
+        "badge": "Express",
+        "desc": "La opción práctica y rápida para disfrutar tus favoritos de Sumo de forma más ágil, sin perder sabor ni calidad (con platillos exclusivos).",
         "chips": ["All You Can Eat"]
       }
     },
     "featured": {
-      "title": "Antojos del momento",
-      "subtitle": "Una probadita de lo que te espera en el All You Can Eat."
+      "title": "Los favoritos de nuestros clientes",
+      "heading": "Garantía Sumo",
+      "subtitle": "Amado y recomendado por nuestros clientes"
     },
     "promotions": {
       "kicker": "Esta semana en SUMO",
@@ -199,7 +206,7 @@
     },
     "branches": {
       "kicker": "Sucursales",
-      "title": "10 sucursales en CDMX y Edomex",
+      "title": "Más de 30 sucursales en CDMX, EDOMEX y Cuernavaca",
       "desc": "Encuentra la sucursal más cercana o reserva sin filas.",
       "findBranch": "Encuentra la tuya",
       "reserve": "Reservar"
@@ -229,7 +236,7 @@
       "desserts": "Postres",
       "wings": "Alitas & Boneless",
       "kids": "Menú Kids",
-      "drinks": "Bebidas",
+      "drinks": "Bebidas y coctelería",
       "empty": "Sin platillos en esta categoría"
     },
     "dish": {
@@ -259,7 +266,7 @@
     }
   },
   "reservation": {
-    "page_title": "Reservar mesa | SUMO AYCE",
+    "page_title": "Reservas Sumo",
     "form": {
       "label": {
         "branch": "Sucursal",

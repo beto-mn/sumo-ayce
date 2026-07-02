@@ -2,29 +2,51 @@
 
 **Status:** APPROVED
 
-**Branch**: chore/021-storybook-coverage
-**Date**: 2026-06-29
-**Reviewer**: reviewer agent (re-review after fixes)
+**Fix branch**: `chore/021-storybook-coverage-fixes` (commit 74ad683)
+**Date**: 2026-07-01
+**Reviewer**: reviewer agent (closure re-review — verified the two prior blocking reasons)
 
 ---
 
-## Verifications
+## Previously-blocking reasons — now resolved
 
-- Phase -1 gates unchecked in plan.md: 0/0 remaining — PASS
-- Unchecked tasks in tasks.md: 0 remaining — PASS
-- `pnpm typecheck`: 0 errors — PASS
-- `pnpm biome check --error-on-warnings`: 347 files, no fixes, clean — PASS
-- `pnpm storybook:build`: "Storybook build completed successfully" — PASS
-- `./init.sh`: only failure is "2 features in_progress" warning (explicitly excluded per review instructions) — PASS
-- Broken `/menu/` image refs in `*.stories.ts`: 0 matches — PASS
+- [x] **FR-016 / FR-017 / SC-007 / User Story 6 / T126–T132 — 7 ComponentDocs
+      slice-index story files now exist and are real.** All present in the tree and
+      diffed vs `master`, each a docs-only CSF3 `Meta` (no `component:`), with
+      `tags: ['autodocs']`, an `Overview` render, and ≤200 lines:
+      - `app/features/branches/Branches.stories.ts` (32) — Features/Branches
+      - `app/features/contact/Contact.stories.ts` (31) — Features/Contact
+      - `app/features/homepage/Homepage.stories.ts` (37) — Features/Homepage
+      - `app/features/menu/Menu.stories.ts` (37) — Features/Menu
+      - `app/features/promotions/Promotions.stories.ts` (30) — Features/Promotions
+      - `app/features/reservation/Reservation.stories.ts` (34) — Features/Reservation
+      - `app/components/ui/UIPrimitives.stories.ts` (63) — UI Primitives
+      All 7 titles verified as `docs` entries in the built `storybook-static/index.json`.
 
-All 3 blockers from the first review are resolved:
-- R1 (plan.md gates): all marked `[x]`
-- R2 (tasks.md): all marked `[x]`
-- R3 (TypeScript errors in MapView.stories.ts, BranchList.stories.ts, MenuShell.stories.ts, ReservationForm.stories.ts): 0 errors
+- [x] **Article VIII / FR-012 / T116 — `ReservationForm.stories.ts` split below 200 lines.**
+      Base file reduced 253 → 113 lines; overflow (`Loading`, `WithApiError` play stories,
+      via a shared `fillAndSubmit()` helper) moved to
+      `app/features/reservation/components/ReservationForm.variants.stories.ts` (127 lines).
+      Both files share title `Reservation/ReservationForm`; stories merge cleanly in the
+      build (9 unique story ids + 1 docs entry, no name collisions, no duplicate warnings).
 
-## Notes
+## No story file exceeds 200 lines
 
-- `./init.sh` reports `[FAIL] There are 2 features in_progress — only 1 is allowed`. This predates feature 020 and is explicitly excluded from this review scope per verification instructions.
-- Storybook build produces chunk-size warnings; these are non-blocking Rollup advisories, not errors.
-- All 759 tests pass (101 test files).
+`find app -name '*.stories.ts' -exec wc -l {} + | awk '$1>200'` → empty.
+
+## Verification suite (all exit 0)
+
+- `pnpm check` (biome --error-on-warnings): exit 0.
+- `pnpm typecheck`: exit 0.
+- `pnpm test`: 759 passed / 101 files, exit 0.
+- `pnpm storybook:build`: "Storybook build completed successfully", exit 0.
+  Zero `/menu/**.webp` refs in output, zero duplicate/conflict warnings, no image 404s.
+
+## No regressions
+
+Diff vs `master` is scoped to the 8 story files + 2 progress reports only — no `.vue`,
+`server/`, `types/` or `tests/` changes (FR-018 respected).
+
+## Next step
+
+Feature 020 marked `status: "done"` in `feature_list.json`.
