@@ -10,7 +10,7 @@ Every string MUST match exactly (punctuation, accents, "·", "—", "..."). Sour
 |-----|----|----|
 | `home.hero.headline` (unchanged) | `All You Can Eat` | `All You Can Eat` |
 | `home.hero.kicker` | `Come sin límites · Buffet preparado al instante` | `Eat without limits · Buffet made to order` |
-| `home.hero.subtitle` | `Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.` | `Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca.` |
+| `home.hero.subtitle` | `Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito.` | `45+ dishes for a single price... Discover your new favorite place.` |
 | `home.hero.logoAlt` (unchanged) | `SUMO — All You Can Eat` | `SUMO — All You Can Eat` |
 
 ## Marquee — `SiteMarquee.vue` (`home.marquee` array, order matters)
@@ -30,7 +30,7 @@ Every string MUST match exactly (punctuation, accents, "·", "—", "..."). Sour
 | Key | ES | EN |
 |-----|----|----|
 | `home.seo.title` | `Sumo All You Can Eat \| Buffet de sushi y comida americana` | `Sumo All You Can Eat \| Sushi & American Food Buffet` |
-| `home.seo.description` | `Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito.` | `45+ dishes for a single price... Discover your new favorite place.` |
+| `home.seo.description` | `Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.` | `Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca.` |
 
 ## Type Selector — `HomeTypeSelector.vue`
 

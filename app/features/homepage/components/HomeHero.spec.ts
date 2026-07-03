@@ -5,7 +5,7 @@ const ES: Record<string, string> = {
   'home.hero.headline': 'All You Can Eat',
   'home.hero.kicker': 'Come sin límites · Buffet preparado al instante',
   'home.hero.subtitle':
-    'Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.',
+    'Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito.',
   'home.hero.logoAlt': 'SUMO — All You Can Eat',
   'home.hero.stickerLabel': 'All You Can Eat',
   'home.hero.stickerDays': 'todos los días',
@@ -17,7 +17,7 @@ const EN: Record<string, string> = {
   'home.hero.headline': 'All You Can Eat',
   'home.hero.kicker': 'Eat without limits · Buffet made to order',
   'home.hero.subtitle':
-    'Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca.',
+    '45+ dishes for a single price... Discover your new favorite place.',
   'home.hero.logoAlt': 'SUMO — All You Can Eat',
   'home.hero.stickerLabel': 'All You Can Eat',
   'home.hero.stickerDays': 'every day',
@@ -87,13 +87,13 @@ describe('HomeHero', () => {
   it('renders the new Spanish kicker and subtitle', async () => {
     const text = (await mountHero(ES)).text()
     expect(text).toContain('Come sin límites · Buffet preparado al instante')
-    expect(text).toContain('Disfruta de tu buffet Sumo')
+    expect(text).toContain('Más de 45 platillos por un solo precio')
   })
 
   it('renders the new English kicker and subtitle', async () => {
     const text = (await mountHero(EN)).text()
     expect(text).toContain('Eat without limits · Buffet made to order')
-    expect(text).toContain('Enjoy your Sumo buffet')
+    expect(text).toContain('45+ dishes for a single price')
   })
 
   it('swaps the hero-frame logo to the illustrated sumo.webp with the logo alt', async () => {
