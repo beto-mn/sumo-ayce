@@ -159,8 +159,8 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
   - ES: `Come sin límites · Buffet preparado al instante`
   - EN: `Eat without limits · Buffet made to order`
 - **FR-007**: The hero subtitle (`home.hero.subtitle`) MUST read:
-  - ES: `Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.`
-  - EN: `Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca.`
+  - ES: `Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito.`
+  - EN: `45+ dishes for a single price... Discover your new favorite place.`
 - **FR-008**: The hero frame logo MUST be swapped from `/brand/sumo-vertical.svg` to a new
   `/brand/sumo.webp` (the client's illustrated three-sumos lockup), keeping the existing
   tilted/rounded frame slot and the existing `home.hero.logoAlt` alt-text key. This swap
@@ -187,8 +187,8 @@ any remaining "Estilo americano-japonés" / "American-Japanese style".
   - ES: `Sumo All You Can Eat | Buffet de sushi y comida americana`
   - EN: `Sumo All You Can Eat | Sushi & American Food Buffet`
 - **FR-014**: The homepage SEO description MUST read:
-  - ES: `Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito.`
-  - EN: `45+ dishes for a single price... Discover your new favorite place.`
+  - ES: `Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.`
+  - EN: `Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca.`
 
 #### Type Selector (`app/features/homepage/components/HomeTypeSelector.vue`)
 

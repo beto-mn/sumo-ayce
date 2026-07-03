@@ -42,8 +42,8 @@ translations — refine wording but keep meaning; ES is the client's exact text.
 - **Headline** `home.hero.headline`: stays `All You Can Eat` (ES = EN). Now rendered with
   the Anton box treatment (see decision 1).
 - **Subtitle** `home.hero.subtitle`:
-  - ES: `Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.`
-  - EN: `Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca.`
+  - ES: `Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito.`
+  - EN: `45+ dishes for a single price... Discover your new favorite place.`
 - **Logo** — swap `src` to the new `sumo.webp`; keep `home.hero.logoAlt`.
 
 ### 2. Marquee — `app/components/layout/SiteMarquee.vue` (`home.marquee` array)
@@ -57,8 +57,8 @@ Currently derives title/description from `home.hero.headline` / `home.hero.kicke
 **Add dedicated keys** `home.seo.title` + `home.seo.description` and point `useSeoMeta` at them:
 - Title ES: `Sumo All You Can Eat | Buffet de sushi y comida americana`
   - EN: `Sumo All You Can Eat | Sushi & American Food Buffet`
-- Description ES: `Más de 45 platillos por un solo precio... Descubre tu nuevo lugar favorito.`
-  - EN: `45+ dishes for a single price... Discover your new favorite place.`
+- Description ES: `Disfruta de tu buffet Sumo y menú a la carta con sushi, hamburguesas, boneless y más. Vive la experiencia en nuestras más de 30 sucursales en CDMX, EDOMEX y Cuernavaca.`
+  - EN: `Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca.`
 
 ### 4. Type Selector — `app/features/homepage/components/HomeTypeSelector.vue`
 - **Kicker** `home.typeSelector.kicker`: ES/EN `AYCE - EXPRESS`
