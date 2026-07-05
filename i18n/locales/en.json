@@ -90,7 +90,7 @@
   },
   "promotions": {
     "page": {
-      "title": "Promotions | SUMO AYCE",
+      "title": "Promotions {'|'} SUMO AYCE",
       "description": "Discover all active SUMO All You Can Eat promotions.",
       "badge": "Promotions",
       "heading": "Sumo Promotions"
@@ -107,7 +107,7 @@
   },
   "contact": {
     "seo": {
-      "title": "Contact | SUMO AYCE",
+      "title": "Contact {'|'} SUMO AYCE",
       "description": "Message us directly on WhatsApp at any SUMO branch. Also find us on Instagram, Facebook and TikTok."
     },
     "page": {
@@ -159,7 +159,7 @@
       "logoAlt": "SUMO — All You Can Eat"
     },
     "seo": {
-      "title": "Sumo All You Can Eat | Sushi & American Food Buffet",
+      "title": "Sumo All You Can Eat {'|'} Sushi & American Food Buffet",
       "description": "Enjoy your Sumo buffet and à la carte menu with sushi, burgers, boneless and more. Live the experience at our 30+ locations across CDMX, EDOMEX and Cuernavaca."
     },
     "marquee": [
