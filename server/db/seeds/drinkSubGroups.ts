@@ -1,15 +1,6 @@
 import { db } from '../../utils/db'
 import { drinkGroups, drinkSubGroups } from '../schema'
 
-const SPIRIT_SUBTITLE_ES =
-  '2x1 Todos los días • Recibe 2 copas de 60 ml del mismo destilado o licor con un mezclador de 355 ml.'
-const SPIRIT_SUBTITLE_EN =
-  '2x1 Every day • Get 2 glasses of 60 ml of the same spirit or liqueur with a 355 ml mixer.'
-const SPIRIT_PROMO_ES =
-  'Combo Mezcladores $189: incluye 2 sabores y 2 minerales de 355 ml cada lata.'
-const SPIRIT_PROMO_EN =
-  'Mixer Combo $189: includes 2 flavors and 2 mineral waters of 355 ml each can.'
-
 type SubGroupSeed = {
   drinkGroupKey: string
   key: string
@@ -22,132 +13,103 @@ type SubGroupSeed = {
   displayOrder: number
 }
 
-const SUB_GROUPS: SubGroupSeed[] = [
-  // ─── Cervezas ───────────────────────────────────────────────────────────────
+// Per-spirit-sub-group subtitle/promo are intentionally NULL: the "2x1 / Combo
+// Mezcladores $189" note is now carried ONCE at the `destilados` GROUP level
+// (see drinkGroups.ts) instead of repeated per sub-group.
+export const SUB_GROUPS: SubGroupSeed[] = [
+  // ─── Cervezas (group `beers`) — Caguamón first ───────────────────────────────
   {
-    drinkGroupKey: 'beers_spirits',
-    key: 'cerveza_nacional',
-    nameEs: 'Cerveza Nacional',
-    nameEn: 'National Beer',
-    displayOrder: 0,
-  },
-  {
-    drinkGroupKey: 'beers_spirits',
-    key: 'cerveza_premium',
-    nameEs: 'Cerveza Premium',
-    nameEn: 'Premium Beer',
-    displayOrder: 1,
-  },
-  {
-    drinkGroupKey: 'beers_spirits',
-    key: 'cerveza',
-    nameEs: 'Cerveza',
-    nameEn: 'Beer',
-    displayOrder: 2,
-  },
-  {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'beers',
     key: 'caguamon',
     nameEs: 'Caguamón',
     nameEn: 'Beer Bag',
+    displayOrder: 0,
+  },
+  {
+    drinkGroupKey: 'beers',
+    key: 'cerveza_nacional',
+    nameEs: 'Cerveza Nacional',
+    nameEn: 'National Beer',
+    displayOrder: 1,
+  },
+  {
+    drinkGroupKey: 'beers',
+    key: 'cerveza_premium',
+    nameEs: 'Cerveza Premium',
+    nameEn: 'Premium Beer',
+    displayOrder: 2,
+  },
+  {
+    drinkGroupKey: 'beers',
+    key: 'cerveza',
+    nameEs: 'Cerveza',
+    nameEn: 'Beer',
     displayOrder: 3,
   },
-  // ─── Destilados (2x1) ───────────────────────────────────────────────────────
+  // ─── Destilados (group `destilados`) ─────────────────────────────────────────
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'ron',
     nameEs: 'Ron',
     nameEn: 'Rum',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 4,
+    displayOrder: 0,
   },
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'vodka',
     nameEs: 'Vodka',
     nameEn: 'Vodka',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 5,
+    displayOrder: 1,
   },
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'brandy',
     nameEs: 'Brandy',
     nameEn: 'Brandy',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 6,
+    displayOrder: 2,
   },
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'mezcal',
     nameEs: 'Mezcal',
     nameEn: 'Mezcal',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 7,
+    displayOrder: 3,
   },
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'ginebra',
     nameEs: 'Ginebra',
     nameEn: 'Gin',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 8,
+    displayOrder: 4,
   },
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'tequila',
     nameEs: 'Tequila',
     nameEn: 'Tequila',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 9,
+    displayOrder: 5,
   },
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'whisky',
     nameEs: 'Whisky',
     nameEn: 'Whisky',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 10,
+    displayOrder: 6,
   },
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'destilados',
     key: 'cremas_licores',
     nameEs: 'Cremas y Licores',
     nameEn: 'Cream Liqueurs',
-    subtitleEs: SPIRIT_SUBTITLE_ES,
-    subtitleEn: SPIRIT_SUBTITLE_EN,
-    promoEs: SPIRIT_PROMO_ES,
-    promoEn: SPIRIT_PROMO_EN,
-    displayOrder: 11,
+    displayOrder: 7,
   },
-  // ─── Extras de bebidas ──────────────────────────────────────────────────────
+  // ─── Extras de bebidas (stay under Cervezas) ─────────────────────────────────
   {
-    drinkGroupKey: 'beers_spirits',
+    drinkGroupKey: 'beers',
     key: 'extras_bebidas',
     nameEs: 'Extras de Bebidas',
     nameEn: 'Drink Add-ons',
-    displayOrder: 12,
+    displayOrder: 4,
   },
 ]
 
@@ -184,6 +146,7 @@ export async function seedDrinkSubGroups() {
       .onConflictDoUpdate({
         target: drinkSubGroups.key,
         set: {
+          drinkGroupId,
           nameEs: sg.nameEs,
           nameEn: sg.nameEn,
           subtitleEs: sg.subtitleEs ?? null,

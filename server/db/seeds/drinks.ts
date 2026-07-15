@@ -10,10 +10,10 @@ import {
 type DrinkGroup =
   | 'jumbo_cocktails'
   | 'cantaritos_sumo_cups'
-  | 'non_alcoholic'
   | 'sodas'
   | 'coffee_digestifs'
-  | 'beers_spirits'
+  | 'beers'
+  | 'destilados'
 
 type DrinkSeed = {
   nameEs: string
@@ -121,74 +121,22 @@ const CANTARITOS: DrinkSeed[] = [
     badgeEn: 'Choose your flavor',
   },
   {
-    nameEs: 'Vaso Sumo Ron',
-    nameEn: 'Sumo Cup Rum',
+    // Consolidated: the six Vaso Sumo bases (Ron, Tequila, Vodka, Whisky,
+    // New Mix, Jack Daniel's — all $159, same cup image) are ONE card whose
+    // base is chosen with the flavour selector (i18n keys
+    // `menu.vaso_sumo.flavor.*`). No per-base detail is shown; the card uses one
+    // generic description for every base.
+    nameEs: 'Vaso Sumo',
+    nameEn: 'Sumo Cup',
     descriptionEs:
-      'Bebida preparada con mezclador en vaso SUMO 960 ml. 120 ml de Bacardí blanco.',
+      'Bebida preparada con mezclador en vaso SUMO 960 ml. 120 ml de tu base a elegir.',
     descriptionEn:
-      'Drink prepared with mixer in SUMO cup 960 ml. 120 ml Bacardí Blanco.',
+      'Drink prepared with mixer in SUMO cup 960 ml. 120 ml of your chosen base.',
     price: '159.00',
     drinkGroup: 'cantaritos_sumo_cups',
     fileName: 'menu/drinks/sumo_cup.webp',
-  },
-  {
-    nameEs: 'Vaso Sumo Tequila',
-    nameEn: 'Sumo Cup Tequila',
-    descriptionEs:
-      'Bebida preparada con mezclador en vaso SUMO 960 ml. 120 ml de Jose Cuervo Especial.',
-    descriptionEn:
-      'Drink prepared with mixer in SUMO cup 960 ml. 120 ml Jose Cuervo Especial.',
-    price: '159.00',
-    drinkGroup: 'cantaritos_sumo_cups',
-    fileName: 'menu/drinks/sumo_cup.webp',
-  },
-  {
-    nameEs: 'Vaso Sumo Vodka',
-    nameEn: 'Sumo Cup Vodka',
-    descriptionEs:
-      'Bebida preparada con mezclador en vaso SUMO 960 ml. 120 ml de Skyy.',
-    descriptionEn:
-      'Drink prepared with mixer in SUMO cup 960 ml. 120 ml Skyy Vodka.',
-    price: '159.00',
-    drinkGroup: 'cantaritos_sumo_cups',
-    fileName: 'menu/drinks/sumo_cup.webp',
-  },
-  {
-    nameEs: 'Vaso Sumo Whisky',
-    nameEn: 'Sumo Cup Whisky',
-    descriptionEs:
-      'Bebida preparada con mezclador en vaso SUMO 960 ml. 120 ml de Black and White.',
-    descriptionEn:
-      'Drink prepared with mixer in SUMO cup 960 ml. 120 ml Black and White Whisky.',
-    price: '159.00',
-    drinkGroup: 'cantaritos_sumo_cups',
-    fileName: 'menu/drinks/sumo_cup.webp',
-  },
-  {
-    nameEs: 'Vaso New Mix',
-    nameEn: 'New Mix Cup',
-    descriptionEs:
-      'Vaso SUMO 960 ml con 120 ml de New Mix (elige entre pikosito o paloma). Servido con 2 latas de New Mix de 355 ml.',
-    descriptionEn:
-      'SUMO cup 960 ml with 120 ml New Mix (choose pikosito or paloma). Served with 2 New Mix cans of 355 ml.',
-    price: '159.00',
-    drinkGroup: 'cantaritos_sumo_cups',
-    fileName: 'menu/drinks/sumo_cup.webp',
-    badgeEs: 'Pikosito o paloma',
-    badgeEn: 'Pikosito or Paloma',
-  },
-  {
-    nameEs: "Vaso Jack Daniel's",
-    nameEn: "Jack Daniel's Cup",
-    descriptionEs:
-      "Vaso SUMO 960 ml con 120 ml de Jack Daniel's (elige entre mineral, ginger o manzana). Servido con 2 latas de Jack Daniel's de 355 ml.",
-    descriptionEn:
-      "SUMO cup 960 ml with 120 ml Jack Daniel's (choose mineral, ginger or apple). Served with 2 Jack Daniel's cans of 355 ml.",
-    price: '159.00',
-    drinkGroup: 'cantaritos_sumo_cups',
-    fileName: 'menu/drinks/sumo_cup.webp',
-    badgeEs: 'Mineral, ginger o manzana',
-    badgeEn: 'Mineral, ginger or apple',
+    badgeEs: 'Base a elegir',
+    badgeEn: 'Choose your base',
   },
   {
     nameEs: 'Tropical Sumo',
@@ -213,7 +161,7 @@ const NON_ALCOHOLIC: DrinkSeed[] = [
     descriptionEs: 'Piña colada sin alcohol. 440 ml.',
     descriptionEn: 'Non-alcoholic piña colada. 440 ml.',
     price: '79.00',
-    drinkGroup: 'non_alcoholic',
+    drinkGroup: 'sodas',
     fileName: 'menu/drinks/piñada.webp',
     badgeEs: 'Jumbo $139 | +alcohol $164',
     badgeEn: 'Jumbo $139 | +alcohol $164',
@@ -225,7 +173,7 @@ const NON_ALCOHOLIC: DrinkSeed[] = [
     descriptionEn:
       'Pineapple juice, passion fruit juice, lime, grenadine. 440 ml.',
     price: '79.00',
-    drinkGroup: 'non_alcoholic',
+    drinkGroup: 'sodas',
     fileName: 'menu/drinks/bora_bora.webp',
     badgeEs: 'Jumbo $139 | +alcohol $164',
     badgeEn: 'Jumbo $139 | +alcohol $164',
@@ -238,7 +186,7 @@ const NON_ALCOHOLIC: DrinkSeed[] = [
     descriptionEn:
       'Blend of cranberry, apple, lime juice and grenadine. 440 ml.',
     price: '79.00',
-    drinkGroup: 'non_alcoholic',
+    drinkGroup: 'sodas',
     fileName: 'menu/drinks/punch.webp',
     badgeEs: 'Jumbo $139 | +alcohol $164',
     badgeEn: 'Jumbo $139 | +alcohol $164',
@@ -251,7 +199,7 @@ const NON_ALCOHOLIC: DrinkSeed[] = [
     descriptionEn:
       'Lemon float, grape juice, lemon soda, cherry syrup and grenadine. 960 ml.',
     price: '139.00',
-    drinkGroup: 'non_alcoholic',
+    drinkGroup: 'sodas',
     fileName: 'menu/drinks/iceberg_lemon.webp',
     badgeEs: '+$25 vino tinto (300 ml)',
     badgeEn: '+$25 red wine (300 ml)',
@@ -264,7 +212,7 @@ const NON_ALCOHOLIC: DrinkSeed[] = [
     descriptionEn:
       'Strawberry float, lime juice, cherry, syrup, mint and lemon soda. 960 ml.',
     price: '139.00',
-    drinkGroup: 'non_alcoholic',
+    drinkGroup: 'sodas',
     fileName: 'menu/drinks/sakura_fresa.webp',
     badgeEs: '+$25 ron (90 ml)',
     badgeEn: '+$25 rum (90 ml)',
@@ -277,7 +225,7 @@ const NON_ALCOHOLIC: DrinkSeed[] = [
     descriptionEn:
       'Lychee float, cranberry juice, lime juice, syrup and kiwi soda. 960 ml.',
     price: '139.00',
-    drinkGroup: 'non_alcoholic',
+    drinkGroup: 'sodas',
     fileName: 'menu/drinks/lychee_cooler.webp',
     badgeEs: '+$25 vodka (90 ml)',
     badgeEn: '+$25 vodka (90 ml)',
@@ -371,31 +319,9 @@ const SODAS: DrinkSeed[] = [
 // ─── CAFÉ Y DIGESTIVOS (BEBIDAS_03) ───────────────────────────────────────────
 // Café americano, espresso and bunny shot are text-only; carajillos have photos
 
+// Image-having items (the carajillos) are listed FIRST, then the text-only
+// items (Café Americano, Espresso, Bunny Shot) — FR-017.
 const COFFEE_DIGESTIFS: DrinkSeed[] = [
-  {
-    nameEs: 'Café Americano',
-    nameEn: 'Americano Coffee',
-    descriptionEs: '270 ml.',
-    descriptionEn: '270 ml.',
-    price: '59.00',
-    drinkGroup: 'coffee_digestifs',
-  },
-  {
-    nameEs: 'Espresso',
-    nameEn: 'Espresso',
-    descriptionEs: '60 ml.',
-    descriptionEn: '60 ml.',
-    price: '49.00',
-    drinkGroup: 'coffee_digestifs',
-  },
-  {
-    nameEs: 'Bunny Shot',
-    nameEn: 'Bunny Shot',
-    descriptionEs: '145 ml.',
-    descriptionEn: '145 ml.',
-    price: '115.00',
-    drinkGroup: 'coffee_digestifs',
-  },
   {
     nameEs: 'Carajillo Mazapán',
     nameEn: 'Marzipan Carajillo',
@@ -423,6 +349,30 @@ const COFFEE_DIGESTIFS: DrinkSeed[] = [
     drinkGroup: 'coffee_digestifs',
     fileName: 'menu/drinks/baileys.webp',
   },
+  {
+    nameEs: 'Café Americano',
+    nameEn: 'Americano Coffee',
+    descriptionEs: '270 ml.',
+    descriptionEn: '270 ml.',
+    price: '59.00',
+    drinkGroup: 'coffee_digestifs',
+  },
+  {
+    nameEs: 'Espresso',
+    nameEn: 'Espresso',
+    descriptionEs: '60 ml.',
+    descriptionEn: '60 ml.',
+    price: '49.00',
+    drinkGroup: 'coffee_digestifs',
+  },
+  {
+    nameEs: 'Bunny Shot',
+    nameEn: 'Bunny Shot',
+    descriptionEs: '145 ml.',
+    descriptionEn: '145 ml.',
+    price: '115.00',
+    drinkGroup: 'coffee_digestifs',
+  },
 ]
 
 // ─── CERVEZA DE BOTELLA (BEBIDAS_04) ──────────────────────────────────────────
@@ -436,7 +386,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella nacional. 325 ml.',
     descriptionEn: 'National bottled beer. 325 ml.',
     price: '59.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_nacional',
   },
   {
@@ -445,7 +395,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella nacional. 325 ml.',
     descriptionEn: 'National bottled beer. 325 ml.',
     price: '59.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_nacional',
   },
   {
@@ -454,7 +404,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella nacional. 325 ml.',
     descriptionEn: 'National bottled beer. 325 ml.',
     price: '59.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_nacional',
   },
   {
@@ -463,7 +413,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella nacional. 325 ml.',
     descriptionEn: 'National bottled beer. 325 ml.',
     price: '59.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_nacional',
   },
   {
@@ -472,7 +422,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella nacional. 325 ml.',
     descriptionEn: 'National bottled beer. 325 ml.',
     price: '59.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_nacional',
   },
   {
@@ -481,7 +431,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella nacional. 355 ml.',
     descriptionEn: 'National bottled beer. 355 ml.',
     price: '59.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_nacional',
   },
   // Tamaños especiales
@@ -491,7 +441,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: '850 ml.',
     descriptionEn: '850 ml.',
     price: '99.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza',
   },
   {
@@ -500,7 +450,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: '1.8 L.',
     descriptionEn: '1.8 L.',
     price: '179.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza',
   },
   // Premium
@@ -510,7 +460,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella premium. 355 ml.',
     descriptionEn: 'Premium bottled beer. 355 ml.',
     price: '79.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_premium',
   },
   {
@@ -519,7 +469,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella premium. 355 ml.',
     descriptionEn: 'Premium bottled beer. 355 ml.',
     price: '79.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_premium',
   },
   {
@@ -528,7 +478,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella premium. 355 ml.',
     descriptionEn: 'Premium bottled beer. 355 ml.',
     price: '79.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_premium',
   },
   {
@@ -537,7 +487,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza de botella premium. 355 ml.',
     descriptionEn: 'Premium bottled beer. 355 ml.',
     price: '79.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_premium',
   },
   {
@@ -546,7 +496,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza sin alcohol en lata. 355 ml.',
     descriptionEn: 'Non-alcoholic beer can. 355 ml.',
     price: '79.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'cerveza_premium',
     badgeEs: 'Sin alcohol',
     badgeEn: 'Non-alcoholic',
@@ -558,7 +508,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Cerveza Indio o XX Lager en bolsa.',
     descriptionEn: 'Indio or XX Lager beer served in a bag.',
     price: '149.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'caguamon',
     fileName: 'menu/drinks/caguamon_en_bolsa.webp',
     badgeEs: 'Indio o XX Lager',
@@ -571,7 +521,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Adicional para tu bebida. 30 ml.',
     descriptionEn: 'Add-on for your drink. 30 ml.',
     price: '20.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'extras_bebidas',
   },
   {
@@ -580,7 +530,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Adicional para tu bebida. 60 ml.',
     descriptionEn: 'Add-on for your drink. 60 ml.',
     price: '39.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'extras_bebidas',
   },
   {
@@ -589,7 +539,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Adicional para tu bebida. 35 ml.',
     descriptionEn: 'Add-on for your drink. 35 ml.',
     price: '28.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'extras_bebidas',
   },
   {
@@ -598,7 +548,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Adicional para tu bebida. 70 ml.',
     descriptionEn: 'Add-on for your drink. 70 ml.',
     price: '48.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'extras_bebidas',
   },
   {
@@ -607,7 +557,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Adicional para tu bebida. 120 ml.',
     descriptionEn: 'Add-on for your drink. 120 ml.',
     price: '32.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'extras_bebidas',
   },
   {
@@ -616,7 +566,7 @@ const BEERS: DrinkSeed[] = [
     descriptionEs: 'Adicional para tu bebida. 240 ml.',
     descriptionEn: 'Add-on for your drink. 240 ml.',
     price: '54.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'beers',
     drinkSubGroupKey: 'extras_bebidas',
   },
 ]
@@ -634,7 +584,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Ron. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Rum. 2 glasses of 60 ml + 355 ml mixer.',
     price: '119.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'ron',
     badgeEs: '700 ml · Botella $699',
     badgeEn: '700 ml · Bottle $699',
@@ -645,7 +595,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Ron. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Rum. 2 glasses of 60 ml + 355 ml mixer.',
     price: '139.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'ron',
     badgeEs: '750 ml · Botella $799',
     badgeEn: '750 ml · Bottle $799',
@@ -656,7 +606,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Ron. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Rum. 2 glasses of 60 ml + 355 ml mixer.',
     price: '139.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'ron',
     badgeEs: '750 ml · Botella $799',
     badgeEn: '750 ml · Bottle $799',
@@ -668,7 +618,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Vodka. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Vodka. 2 glasses of 60 ml + 355 ml mixer.',
     price: '139.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'vodka',
     badgeEs: '750 ml · Botella $699',
     badgeEn: '750 ml · Bottle $699',
@@ -679,7 +629,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Vodka. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Vodka. 2 glasses of 60 ml + 355 ml mixer.',
     price: '139.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'vodka',
     badgeEs: '750 ml · Botella $699',
     badgeEn: '750 ml · Bottle $699',
@@ -691,7 +641,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Brandy. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Brandy. 2 glasses of 60 ml + 355 ml mixer.',
     price: '169.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'brandy',
     badgeEs: '700 ml · Botella $1,199',
     badgeEn: '700 ml · Bottle $1,199',
@@ -702,7 +652,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Brandy. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Brandy. 2 glasses of 60 ml + 355 ml mixer.',
     price: '169.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'brandy',
     badgeEs: '700 ml · Botella $1,199',
     badgeEn: '700 ml · Bottle $1,199',
@@ -714,7 +664,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Mezcal. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Mezcal. 2 glasses of 60 ml + 355 ml mixer.',
     price: '249.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'mezcal',
     badgeEs: '700 ml · Botella $1,899',
     badgeEn: '700 ml · Bottle $1,899',
@@ -725,7 +675,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Mezcal. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Mezcal. 2 glasses of 60 ml + 355 ml mixer.',
     price: '249.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'mezcal',
     badgeEs: '700 ml · Botella $1,899',
     badgeEn: '700 ml · Bottle $1,899',
@@ -737,7 +687,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Ginebra. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Gin. 2 glasses of 60 ml + 355 ml mixer.',
     price: '249.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'ginebra',
     badgeEs: '750 ml · Botella $1,499',
     badgeEn: '750 ml · Bottle $1,499',
@@ -749,7 +699,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Tequila. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Tequila. 2 glasses of 60 ml + 355 ml mixer.',
     price: '159.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'tequila',
     badgeEs: '695 ml · Botella $999',
     badgeEn: '695 ml · Bottle $999',
@@ -760,7 +710,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Tequila. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Tequila. 2 glasses of 60 ml + 355 ml mixer.',
     price: '159.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'tequila',
     badgeEs: '695 ml · Botella $999',
     badgeEn: '695 ml · Bottle $999',
@@ -771,7 +721,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Tequila. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Tequila. 2 glasses of 60 ml + 355 ml mixer.',
     price: '149.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'tequila',
     badgeEs: '950 ml · Botella $999',
     badgeEn: '950 ml · Bottle $999',
@@ -782,7 +732,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Tequila. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Tequila. 2 glasses of 60 ml + 355 ml mixer.',
     price: '159.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'tequila',
     badgeEs: '700 ml · Botella $999',
     badgeEn: '700 ml · Bottle $999',
@@ -794,7 +744,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Whisky. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Whisky. 2 glasses of 60 ml + 355 ml mixer.',
     price: '229.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'whisky',
     badgeEs: '750 ml · Botella $999',
     badgeEn: '750 ml · Bottle $999',
@@ -805,7 +755,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Whisky. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Whisky. 2 glasses of 60 ml + 355 ml mixer.',
     price: '229.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'whisky',
     badgeEs: '700 ml · Botella $899',
     badgeEn: '700 ml · Bottle $899',
@@ -816,7 +766,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Whisky. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Whisky. 2 glasses of 60 ml + 355 ml mixer.',
     price: '249.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'whisky',
     badgeEs: '700 ml · Botella $1,499',
     badgeEn: '700 ml · Bottle $1,499',
@@ -827,7 +777,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Whisky. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Whisky. 2 glasses of 60 ml + 355 ml mixer.',
     price: '169.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'whisky',
     badgeEs: '700 ml · Botella $899',
     badgeEn: '700 ml · Bottle $899',
@@ -839,7 +789,7 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Crema y licor. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Cream liqueur. 2 glasses of 60 ml + 355 ml mixer.',
     price: '189.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'cremas_licores',
     badgeEs: '750 ml · Botella $1,499',
     badgeEn: '750 ml · Bottle $1,499',
@@ -850,14 +800,14 @@ const SPIRITS: DrinkSeed[] = [
     descriptionEs: 'Crema y licor. 2 copas de 60 ml + mezclador 355 ml.',
     descriptionEn: 'Cream liqueur. 2 glasses of 60 ml + 355 ml mixer.',
     price: '169.00',
-    drinkGroup: 'beers_spirits',
+    drinkGroup: 'destilados',
     drinkSubGroupKey: 'cremas_licores',
     badgeEs: '700 ml · Botella $999',
     badgeEn: '700 ml · Bottle $999',
   },
 ]
 
-const ALL_DRINKS: DrinkSeed[] = [
+export const ALL_DRINKS: DrinkSeed[] = [
   ...JUMBO_COCKTAILS,
   ...CANTARITOS,
   ...NON_ALCOHOLIC,
@@ -896,6 +846,9 @@ export async function seedDrinks() {
     subGroupRows.map((r: { key: string; id: string }) => [r.key, r.id])
   )
 
+  // Bebidas menu_items are already cleared upstream by resetDrinkChildren()
+  // (in seedDrinkGroups) in FK-safe child→parent order; re-clear here so this
+  // seed is also safe to run standalone / re-run without duplicating rows.
   await db.delete(menuItems).where(eq(menuItems.categoryId, bebidasCategory.id))
 
   const rows = ALL_DRINKS.map((d, i) => ({

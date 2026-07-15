@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { FullMenuDish, FullMenuSauce, MenuModality } from '@/types/menu'
+import type { FullMenuDish, MenuModality } from '@/types/menu'
 
 const props = defineProps<{
   dish: FullMenuDish
-  sauces: FullMenuSauce[]
   modality: MenuModality
 }>()
 
@@ -32,10 +31,22 @@ const showIncluido = computed(
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 rounded-pop border-pop border-ink bg-panel p-4 shadow-pop-sm">
+  <div class="relative flex flex-col gap-2 rounded-pop border-pop border-ink bg-panel p-4 shadow-pop-sm transition-transform duration-300 ease-out hover:z-10 hover:scale-105 motion-reduce:transform-none">
+    <!-- "Garantía Sumo" star badge for featured (curated) dishes. Top-LEFT so it
+         never overlaps the pink badgeEs sticker (which sits top-right inside the
+         image). Shown regardless of whether the dish has an image. -->
+    <img
+      v-if="dish.featured"
+      data-testid="guarantee-badge"
+      class="absolute left-2 top-2 z-10 size-16"
+      src="/brand/garantia-sumo.webp"
+      :alt="t('menu.guarantee_alt')"
+      loading="lazy"
+      decoding="async"
+    />
     <div
       v-if="dish.imageUrl"
-      class="relative h-44 overflow-hidden rounded-pop-sm border-pop-sm border-ink bg-accent/20 p-4"
+      class="group relative h-44 overflow-hidden rounded-pop-sm border-pop-sm border-ink bg-accent/20 p-4"
     >
       <img
         class="block h-full w-full object-contain"
@@ -61,6 +72,5 @@ const showIncluido = computed(
         {{ t('menu.dish.price_prefix') }}{{ dish.price }}
       </span>
     </div>
-    <MenuSaucePicker v-if="dish.requiresSauce" :sauces="sauces" />
   </div>
 </template>

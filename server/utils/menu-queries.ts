@@ -1,5 +1,7 @@
 import { and, asc, eq, inArray, or } from 'drizzle-orm'
 import type {
+  DrinkGroup,
+  DrinkGroupMeta,
   FeaturedDishRow,
   FullMenuCategory,
   FullMenuDish,
@@ -17,6 +19,8 @@ import {
   sauces,
 } from '../db/schema'
 import { db } from './db'
+import { isTransientDbError, withDbRetry } from './db-retry'
+import { DatabaseUnavailableError } from './error-handler'
 
 // ─── Featured dishes (homepage rail) ────────────────────────────────────────────
 
@@ -30,6 +34,8 @@ interface FeaturedQueryRow {
   badgeEs: string | null
   badgeEn: string | null
   category: string
+  locationType: string
+  includedInAyce: boolean
 }
 
 function toFeaturedDishRow(row: FeaturedQueryRow): FeaturedDishRow {
@@ -43,40 +49,76 @@ function toFeaturedDishRow(row: FeaturedQueryRow): FeaturedDishRow {
         ? { es: row.badgeEs ?? '', en: row.badgeEn ?? '' }
         : null,
     category: row.category as MenuCategoryKey,
+    locationType: row.locationType as FeaturedDishRow['locationType'],
+    includedInAyce: row.includedInAyce,
   }
 }
 
 /**
- * Returns the featured + active subset of the menu (food and drinks), shaped so
- * the homepage route maps each row 1:1 to feature 010's `FeaturedDish`. Throws on
- * DB failure — the calling route categorizes and degrades (Article XII).
+ * Collapses the featured rows to one per dish name. A Garantía Sumo dish is
+ * flagged `featured` on EVERY location/modality row (so the star shows in every
+ * menu view), but the homepage rail must list each dish exactly once. Rows arrive
+ * ordered by `displayOrder` (the dish's featuredOrder), so the first row seen per
+ * name is the canonical one — later duplicate rows are dropped.
+ */
+function dedupeByName(rows: FeaturedQueryRow[]): FeaturedQueryRow[] {
+  const seen = new Set<string>()
+  const unique: FeaturedQueryRow[] = []
+  for (const row of rows) {
+    if (seen.has(row.nameEs)) continue
+    seen.add(row.nameEs)
+    unique.push(row)
+  }
+  return unique
+}
+
+/**
+ * Returns the featured + active subset of the menu (food and drinks), deduped to
+ * one row per dish name and ordered by rail position, shaped so the homepage route
+ * maps each row 1:1 to feature 010's `FeaturedDish`. Reads are retried on transient
+ * Neon errors; if the DB stays unavailable it throws a `DatabaseUnavailableError`
+ * (handled: WARN + graceful fallback), otherwise the original error.
  */
 export async function getFeaturedDishes(): Promise<FeaturedDishRow[]> {
-  const rows: FeaturedQueryRow[] = await db
-    .select({
-      id: menuItems.id,
-      nameEs: menuItems.nameEs,
-      nameEn: menuItems.nameEn,
-      descriptionEs: menuItems.descriptionEs,
-      descriptionEn: menuItems.descriptionEn,
-      fileName: menuItems.fileName,
-      badgeEs: menuItems.badgeEs,
-      badgeEn: menuItems.badgeEn,
-      category: menuCategories.key,
-    })
-    .from(menuItems)
-    .innerJoin(menuCategories, eq(menuItems.categoryId, menuCategories.id))
-    .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
-    .where(
-      and(
-        eq(menuItems.featured, true),
-        eq(menuItems.isActive, true),
-        eq(menuCategories.isActive, true)
-      )
+  try {
+    const rows: FeaturedQueryRow[] = await withDbRetry(
+      'getFeaturedDishes',
+      () =>
+        db
+          .select({
+            id: menuItems.id,
+            nameEs: menuItems.nameEs,
+            nameEn: menuItems.nameEn,
+            descriptionEs: menuItems.descriptionEs,
+            descriptionEn: menuItems.descriptionEn,
+            fileName: menuItems.fileName,
+            badgeEs: menuItems.badgeEs,
+            badgeEn: menuItems.badgeEn,
+            category: menuCategories.key,
+            locationType: menuItems.locationType,
+            includedInAyce: menuItems.includedInAyce,
+          })
+          .from(menuItems)
+          .innerJoin(
+            menuCategories,
+            eq(menuItems.categoryId, menuCategories.id)
+          )
+          .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
+          .where(
+            and(
+              eq(menuItems.featured, true),
+              eq(menuItems.isActive, true),
+              eq(menuCategories.isActive, true)
+            )
+          )
+          .orderBy(asc(menuItems.displayOrder), asc(menuItems.createdAt))
     )
-    .orderBy(asc(menuItems.displayOrder), asc(menuItems.createdAt))
-
-  return rows.map(toFeaturedDishRow)
+    return dedupeByName(rows).map(toFeaturedDishRow)
+  } catch (error) {
+    if (isTransientDbError(error))
+      throw new DatabaseUnavailableError('getFeaturedDishes', error)
+    throw error
+  }
 }
 
 // ─── Full menu (menu page) ──────────────────────────────────────────────────────
@@ -85,6 +127,8 @@ interface MenuQueryRow {
   categoryKey: string
   categoryNameEs: string
   categoryNameEn: string
+  categoryNoteEs: string | null
+  categoryNoteEn: string | null
   categoryOrder: number
   dishId: string
   nameEs: string
@@ -104,7 +148,9 @@ interface MenuQueryRow {
   drinkSubGroupSubtitleEn: string | null
   drinkSubGroupPromoEs: string | null
   drinkSubGroupPromoEn: string | null
+  drinkSubGroupOrder: number | null
   requiresSauce: boolean
+  featured: boolean
 }
 
 interface SauceQueryRow {
@@ -148,6 +194,7 @@ function toFullMenuDish(
                   en: row.drinkSubGroupPromoEn ?? '',
                 }
               : null,
+          displayOrder: row.drinkSubGroupOrder ?? 0,
         }
       : null
   return {
@@ -161,9 +208,11 @@ function toFullMenuDish(
         : null,
     price: isCarta || row.drinkGroup !== null ? row.price : null,
     incluido: isCarta || row.drinkGroup !== null ? false : row.includedInAyce,
+    includedInAyce: row.includedInAyce,
     drinkGroup: row.drinkGroup as FullMenuDish['drinkGroup'],
     drinkSubGroup,
     requiresSauce: row.requiresSauce,
+    featured: row.featured,
   }
 }
 
@@ -178,6 +227,10 @@ function groupByCategory(
       category = {
         key: row.categoryKey as MenuCategoryKey,
         name: { es: row.categoryNameEs, en: row.categoryNameEn },
+        note:
+          row.categoryNoteEs != null || row.categoryNoteEn != null
+            ? { es: row.categoryNoteEs ?? '', en: row.categoryNoteEn ?? '' }
+            : null,
         displayOrder: row.categoryOrder,
         dishes: [],
       }
@@ -188,36 +241,43 @@ function groupByCategory(
   return [...byKey.values()]
 }
 
+/** Shared column projection for the full-menu and kids-view row queries. */
+const MENU_ROW_SELECTION = {
+  categoryKey: menuCategories.key,
+  categoryNameEs: menuCategories.nameEs,
+  categoryNameEn: menuCategories.nameEn,
+  categoryNoteEs: menuCategories.noteEs,
+  categoryNoteEn: menuCategories.noteEn,
+  categoryOrder: menuCategories.displayOrder,
+  dishId: menuItems.id,
+  nameEs: menuItems.nameEs,
+  nameEn: menuItems.nameEn,
+  descriptionEs: menuItems.descriptionEs,
+  descriptionEn: menuItems.descriptionEn,
+  fileName: menuItems.fileName,
+  badgeEs: menuItems.badgeEs,
+  badgeEn: menuItems.badgeEn,
+  price: menuItems.price,
+  includedInAyce: menuItems.includedInAyce,
+  drinkGroup: drinkGroups.groupKey,
+  drinkSubGroupKey: drinkSubGroups.key,
+  drinkSubGroupNameEs: drinkSubGroups.nameEs,
+  drinkSubGroupNameEn: drinkSubGroups.nameEn,
+  drinkSubGroupSubtitleEs: drinkSubGroups.subtitleEs,
+  drinkSubGroupSubtitleEn: drinkSubGroups.subtitleEn,
+  drinkSubGroupPromoEs: drinkSubGroups.promoEs,
+  drinkSubGroupPromoEn: drinkSubGroups.promoEn,
+  drinkSubGroupOrder: drinkSubGroups.displayOrder,
+  requiresSauce: menuItems.requiresSauce,
+  featured: menuItems.featured,
+}
+
 async function queryMenuRows(
   locationType: 'ayce' | 'express',
   modality: MenuModality
 ): Promise<MenuQueryRow[]> {
   return db
-    .select({
-      categoryKey: menuCategories.key,
-      categoryNameEs: menuCategories.nameEs,
-      categoryNameEn: menuCategories.nameEn,
-      categoryOrder: menuCategories.displayOrder,
-      dishId: menuItems.id,
-      nameEs: menuItems.nameEs,
-      nameEn: menuItems.nameEn,
-      descriptionEs: menuItems.descriptionEs,
-      descriptionEn: menuItems.descriptionEn,
-      fileName: menuItems.fileName,
-      badgeEs: menuItems.badgeEs,
-      badgeEn: menuItems.badgeEn,
-      price: menuItems.price,
-      includedInAyce: menuItems.includedInAyce,
-      drinkGroup: drinkGroups.groupKey,
-      drinkSubGroupKey: drinkSubGroups.key,
-      drinkSubGroupNameEs: drinkSubGroups.nameEs,
-      drinkSubGroupNameEn: drinkSubGroups.nameEn,
-      drinkSubGroupSubtitleEs: drinkSubGroups.subtitleEs,
-      drinkSubGroupSubtitleEn: drinkSubGroups.subtitleEn,
-      drinkSubGroupPromoEs: drinkSubGroups.promoEs,
-      drinkSubGroupPromoEn: drinkSubGroups.promoEn,
-      requiresSauce: menuItems.requiresSauce,
-    })
+    .select(MENU_ROW_SELECTION)
     .from(menuItems)
     .innerJoin(menuCategories, eq(menuItems.categoryId, menuCategories.id))
     .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
@@ -231,6 +291,28 @@ async function queryMenuRows(
       )
     )
     .orderBy(asc(menuCategories.displayOrder), asc(menuItems.displayOrder))
+}
+
+/**
+ * The Kids view: every active item under the `kids` category, independent of
+ * locationType/includedInAyce/modality — Kids is a cross-cutting standalone view,
+ * not a food category inside AYCE or Express.
+ */
+async function queryKidsRows(): Promise<MenuQueryRow[]> {
+  return db
+    .select(MENU_ROW_SELECTION)
+    .from(menuItems)
+    .innerJoin(menuCategories, eq(menuItems.categoryId, menuCategories.id))
+    .leftJoin(drinkGroups, eq(menuItems.drinkGroupId, drinkGroups.id))
+    .leftJoin(drinkSubGroups, eq(menuItems.drinkSubGroupId, drinkSubGroups.id))
+    .where(
+      and(
+        eq(menuItems.isActive, true),
+        eq(menuCategories.isActive, true),
+        eq(menuCategories.key, 'kids')
+      )
+    )
+    .orderBy(asc(menuItems.displayOrder))
 }
 
 /** `location_type IN (requested, 'both')` — shared dishes surface in both menus. */
@@ -276,22 +358,102 @@ async function querySauces(): Promise<FullMenuSauce[]> {
   }))
 }
 
+interface DrinkGroupQueryRow {
+  groupKey: string
+  nameEs: string | null
+  nameEn: string | null
+  displayOrder: number
+  promoEs: string | null
+  promoEn: string | null
+}
+
 /**
- * Returns the full menu for a location type + modality, grouped by category in
- * display order. Express is coerced to the buffet view; price-vs-"incluido" is
- * derived per the resolved modality. Throws on DB failure (route categorizes).
+ * Returns the drink-group metadata (DB display label + deterministic display
+ * order + a single group-level promo note) in display order. The `name` is the
+ * single source of truth for the Bebidas chip + section heading. Carries the
+ * Destilados "2x1 / Combo Mezcladores" note once at the group level.
+ */
+async function queryDrinkGroups(): Promise<DrinkGroupMeta[]> {
+  const rows: DrinkGroupQueryRow[] = await db
+    .select({
+      groupKey: drinkGroups.groupKey,
+      nameEs: drinkGroups.nameEs,
+      nameEn: drinkGroups.nameEn,
+      displayOrder: drinkGroups.displayOrder,
+      promoEs: drinkGroups.promoEs,
+      promoEn: drinkGroups.promoEn,
+    })
+    .from(drinkGroups)
+    .orderBy(asc(drinkGroups.displayOrder))
+
+  return rows.map(row => ({
+    key: row.groupKey as DrinkGroup,
+    name: { es: row.nameEs ?? '', en: row.nameEn ?? row.nameEs ?? '' },
+    displayOrder: row.displayOrder,
+    promo:
+      row.promoEs != null || row.promoEn != null
+        ? { es: row.promoEs ?? '', en: row.promoEn ?? '' }
+        : null,
+  }))
+}
+
+/**
+ * Returns the full menu for a view type + modality, grouped by category in
+ * display order. Express is coerced to the buffet view; the Kids view returns the
+ * kids-category items regardless of location scope and always uses 'carta' pricing
+ * (each combo has a fixed price). Throws on DB failure (route categorizes).
  */
 export async function getFullMenu(params: {
-  locationType: 'ayce' | 'express'
+  locationType: 'ayce' | 'express' | 'kids'
   modality: MenuModality
 }): Promise<FullMenuResult> {
-  const modality = resolveModality(params.locationType, params.modality)
-  const rows = await queryMenuRows(params.locationType, modality)
-  const sauceCatalog = await querySauces()
+  try {
+    return await withDbRetry('getFullMenu', async () => {
+      if (params.locationType === 'kids') {
+        const rows = await queryKidsRows()
+        const sauceCatalog = await querySauces()
+        const drinkGroupMeta = await queryDrinkGroups()
+        return {
+          locationType: 'kids' as const,
+          modality: 'carta' as const,
+          categories: groupByCategory(rows, 'carta'),
+          sauces: sauceCatalog,
+          drinkGroups: drinkGroupMeta,
+        }
+      }
+
+      const modality = resolveModality(params.locationType, params.modality)
+      const rows = await queryMenuRows(params.locationType, modality)
+      const sauceCatalog = await querySauces()
+      const drinkGroupMeta = await queryDrinkGroups()
+      return {
+        locationType: params.locationType,
+        modality,
+        categories: groupByCategory(rows, modality),
+        sauces: sauceCatalog,
+        drinkGroups: drinkGroupMeta,
+      }
+    })
+  } catch (error) {
+    if (isTransientDbError(error))
+      throw new DatabaseUnavailableError('getFullMenu', error)
+    throw error
+  }
+}
+
+/**
+ * An empty menu result the /menu API + page render as a friendly "temporarily
+ * unavailable" state when Neon is down (instead of a raw 500).
+ */
+export function emptyMenuResult(
+  locationType: 'ayce' | 'express' | 'kids',
+  modality: MenuModality
+): FullMenuResult {
   return {
-    locationType: params.locationType,
-    modality,
-    categories: groupByCategory(rows, modality),
-    sauces: sauceCatalog,
+    locationType,
+    modality: locationType === 'express' ? 'buffet' : modality,
+    categories: [],
+    sauces: [],
+    drinkGroups: [],
   }
 }

@@ -12,12 +12,14 @@ type DessertItem = {
   badgeEs?: string
   badgeEn?: string
   featured?: boolean
+  /** Explicit rail order when featured (Garantías Sumo). */
+  featuredOrder?: number
 }
 
 // ─── POSTRES / DESSERTS ───────────────────────────────────────────────────────
 // À la carte — not included in AYCE, charged separately.
 
-const DESSERTS: DessertItem[] = [
+export const DESSERTS: DessertItem[] = [
   {
     nameEs: 'Sumo Fries',
     nameEn: 'Sumo Fries',
@@ -27,6 +29,8 @@ const DESSERTS: DessertItem[] = [
       'Sweet potato fries topped with maple bacon dressing and served with vanilla ice cream.',
     fileName: 'menu/desserts/sumo_fries.webp',
     price: '149.00',
+    featured: true,
+    featuredOrder: 10,
   },
   {
     nameEs: 'Camelado',
@@ -48,7 +52,6 @@ const DESSERTS: DessertItem[] = [
     descriptionEn:
       'Donut holes, sprinkled with sugar and cinnamon, served with vanilla ice cream, drizzled with chocolate sauce and topped with whipped cream.',
     fileName: 'menu/desserts/sumo_bites.webp',
-    featured: true,
     price: '129.00',
   },
   {
@@ -115,7 +118,7 @@ export async function seedDesserts() {
     drinkGroup: null,
     requiresSauce: false,
     isActive: true,
-    displayOrder: i,
+    displayOrder: item.featuredOrder ?? i,
   }))
 
   await db.insert(menuItems).values(rows)

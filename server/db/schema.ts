@@ -260,6 +260,10 @@ export const menuCategories = pgTable(
     key: menuCategoryKey('key').notNull().unique(),
     nameEs: varchar('name_es', { length: 80 }).notNull(),
     nameEn: varchar('name_en', { length: 80 }).notNull(),
+    // Optional section note rendered at the TOP of the category (e.g. the Kids
+    // "Combo incluye…" box), mirroring the drink_group promo note.
+    noteEs: text('note_es'),
+    noteEn: text('note_en'),
     displayOrder: integer('display_order').notNull(),
     isActive: boolean('is_active').notNull().default(true),
     fileName: text('file_name'),
@@ -331,10 +335,14 @@ export const sauces = pgTable(
 export const drinkGroups = pgTable('drink_group', {
   id: uuid('id').primaryKey().defaultRandom(),
   groupKey: varchar('group_key', { length: 60 }).notNull().unique(),
+  // Display labels (single source of truth for the Bebidas chip + heading).
+  nameEs: text('name_es'),
+  nameEn: text('name_en'),
   subtitleEs: text('subtitle_es'),
   subtitleEn: text('subtitle_en'),
   promoEs: text('promo_es'),
   promoEn: text('promo_en'),
+  displayOrder: integer('display_order').notNull().default(0),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
