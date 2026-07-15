@@ -112,7 +112,8 @@ fi
 
 echo ""
 echo "── 4. Running lint (biome) ─────────────────────────────"
-if pnpm check 2>&1 | tail -5; then
+pnpm check 2>&1 | tail -5
+if [ "${PIPESTATUS[0]}" -eq 0 ]; then
   ok "Biome check OK"
 else
   fail "Biome check failed"
@@ -121,7 +122,8 @@ fi
 
 echo ""
 echo "── 5. Running typecheck ────────────────────────────────"
-if pnpm typecheck 2>&1 | tail -5; then
+pnpm typecheck 2>&1 | tail -5
+if [ "${PIPESTATUS[0]}" -eq 0 ]; then
   ok "Typecheck OK"
 else
   fail "Typecheck failed"
@@ -130,10 +132,21 @@ fi
 
 echo ""
 echo "── 6. Running tests ────────────────────────────────────"
-if pnpm test 2>&1 | tail -10; then
+pnpm test 2>&1 | tail -10
+if [ "${PIPESTATUS[0]}" -eq 0 ]; then
   ok "Tests OK"
 else
   fail "Tests failed"
+  EXIT_CODE=1
+fi
+
+echo ""
+echo "── 6.5 Building Storybook ──────────────────────────────"
+pnpm storybook:build 2>&1 | tail -5
+if [ "${PIPESTATUS[0]}" -eq 0 ]; then
+  ok "Storybook build OK"
+else
+  fail "Storybook build failed"
   EXIT_CODE=1
 fi
 
