@@ -115,7 +115,7 @@ const trackStyle = computed(() => {
         v-for="copy in copyCount"
         :key="copy"
         :ref="copy === 1 ? (el => { groupRef = el as HTMLElement }) : undefined"
-        class="marquee-content flex shrink-0 items-center gap-8 px-4"
+        class="marquee-content flex shrink-0 items-center gap-8"
         :aria-hidden="copy === 1 ? undefined : 'true'"
       >
         <slot />
