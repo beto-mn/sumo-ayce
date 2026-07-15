@@ -1,55 +1,46 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { FullMenuSauce } from '@/types/menu'
+import type { PickerOption } from '@/features/menu/types'
 import MenuSaucePicker from './MenuSaucePicker.vue'
 
-const sauces: FullMenuSauce[] = [
-  {
-    id: 's1',
-    name: { es: 'Honey Mustard', en: 'Honey Mustard' },
-    imageUrl: null,
-    spiceLevel: 0,
-  },
-  {
-    id: 's2',
-    name: { es: 'BBQ Suave', en: 'Mild BBQ' },
-    imageUrl: null,
-    spiceLevel: 1,
-  },
-  {
-    id: 's3',
-    name: { es: 'Buffalo', en: 'Buffalo' },
-    imageUrl: null,
-    spiceLevel: 2,
-  },
-  {
-    id: 's4',
-    name: { es: 'Thai Chili', en: 'Thai Chili' },
-    imageUrl: null,
-    spiceLevel: 3,
-  },
-  {
-    id: 's5',
-    name: { es: 'Habanero', en: 'Habanero' },
-    imageUrl: null,
-    spiceLevel: 4,
-  },
-  {
-    id: 's6',
-    name: { es: 'Ghost Pepper', en: 'Ghost Pepper' },
-    imageUrl: null,
-    spiceLevel: 5,
-  },
+const sauceOptions: PickerOption[] = [
+  { id: 's1', label: 'Honey Mustard', spiceLevel: 0 },
+  { id: 's2', label: 'BBQ Suave', spiceLevel: 1 },
+  { id: 's3', label: 'Buffalo', spiceLevel: 2 },
+  { id: 's4', label: 'Thai Chili', spiceLevel: 3 },
+  { id: 's5', label: 'Habanero', spiceLevel: 4 },
+]
+
+const flavorOptions: PickerOption[] = [
+  { id: 'ron', label: 'Ron' },
+  { id: 'tequila', label: 'Tequila' },
+  { id: 'vodka', label: 'Vodka' },
+  { id: 'whisky', label: 'Whisky' },
+  { id: 'new_mix', label: 'New Mix' },
 ]
 
 const meta = {
   title: 'Menu/MenuSaucePicker',
   component: MenuSaucePicker,
   tags: ['autodocs'],
+  args: {
+    options: flavorOptions,
+    pickerLabel: 'Elige tu base',
+    sortBySpice: false,
+  },
   argTypes: {
-    sauces: {
-      description:
-        'Array of sauce objects with id, localized name, imageUrl, and spiceLevel (0-5)',
+    options: {
+      description: 'Single-active choices (Wings sauces OR Vaso Sumo flavours)',
       control: { type: 'object' },
+    },
+    pickerLabel: {
+      description:
+        'Heading above the choices ("Elige tu salsa" / "Elige tu base")',
+      control: { type: 'text' },
+    },
+    sortBySpice: {
+      description:
+        'Sort by spice level ascending and show the chili indicator (sauces)',
+      control: { type: 'boolean' },
     },
   },
 } satisfies Meta<typeof MenuSaucePicker>
@@ -57,31 +48,18 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: { sauces },
-}
+/** Vaso Sumo flavour selector — reuses the picker for a base choice. */
+export const FlavorMode: Story = {}
 
-export const SelectedState: Story = {
-  args: { sauces },
-  play: async ({ canvasElement }) => {
-    const btns = canvasElement.querySelectorAll('button')
-    if (btns[2]) (btns[2] as HTMLButtonElement).click()
+/** Wings sauce selector — sorted by spice with a chili indicator. */
+export const SauceMode: Story = {
+  args: {
+    options: sauceOptions,
+    pickerLabel: 'Elige tu salsa',
+    sortBySpice: true,
   },
 }
 
-export const LocaleES: Story = {
-  name: 'Locale ES (español)',
-  args: { sauces },
-  parameters: { globals: { locale: 'es' } },
-}
-
-export const LocaleEN: Story = {
-  name: 'Locale EN (English)',
-  args: { sauces },
-  parameters: { globals: { locale: 'en' } },
-}
-
 export const Mobile: Story = {
-  args: { sauces },
   parameters: { viewport: { defaultViewport: 'mobile1' } },
 }

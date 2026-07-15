@@ -1,40 +1,30 @@
 <script setup lang="ts">
-import type { FullMenuCategory } from '@/types/menu'
+/** An ordered chip: its stable `key` plus the display `label` to render. */
+export interface CategoryChip {
+  key: string
+  label: string
+}
 
-const props = defineProps<{
-  categories: FullMenuCategory[]
-  activeCategory: string | null
-  hasDrinks?: boolean
-  translationPrefix?: string
+defineProps<{
+  /** Ordered curated set of chips with their resolved (DB-sourced) labels. */
+  items: CategoryChip[]
+  activeCategory: string
 }>()
 
 const emit = defineEmits<{
-  'update:active-category': [key: string | null]
+  'update:active-category': [key: string]
 }>()
-
-const { t } = useI18n()
-
-function handleClick(key: string): void {
-  emit('update:active-category', props.activeCategory === key ? null : key)
-}
 </script>
 
 <template>
   <div class="flex flex-wrap gap-2">
     <UiChip
-      v-for="cat in categories"
-      :key="cat.key"
-      :active="activeCategory === cat.key"
-      @click="handleClick(cat.key)"
+      v-for="item in items"
+      :key="item.key"
+      :active="activeCategory === item.key"
+      @click="emit('update:active-category', item.key)"
     >
-      {{ t(`${props.translationPrefix ?? 'menu.category'}.${cat.key}`) }}
-    </UiChip>
-    <UiChip
-      v-if="hasDrinks"
-      :active="activeCategory === 'drinks'"
-      @click="handleClick('drinks')"
-    >
-      {{ t('menu.category.drinks') }}
+      {{ item.label }}
     </UiChip>
   </div>
 </template>

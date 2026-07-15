@@ -28,10 +28,12 @@ const { t } = useI18n()
     <ul
       class="featured-rail__track m-0 flex min-w-0 list-none gap-5 overflow-x-auto px-0 pt-2 pb-3 [scroll-snap-type:x_mandatory] [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] [scrollbar-color:rgb(var(--ink)/0.4)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-bg2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-ink/40 hover:[&::-webkit-scrollbar-thumb]:bg-ink/60"
     >
+      <!-- `flex` so the card can stretch to the row height; the track defaults
+           to items-stretch, so every card equalizes to the tallest one. -->
       <li
         v-for="dish in dishes"
         :key="dish.id"
-        class="flex-none [scroll-snap-align:start]"
+        class="flex flex-none [scroll-snap-align:start]"
       >
         <DishCard :dish="dish" />
       </li>

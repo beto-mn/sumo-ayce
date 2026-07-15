@@ -15,6 +15,14 @@ vi.stubGlobal('useI18n', () => ({
       'contact.socialInstagram': 'https://www.instagram.com/sumo_allyoucaneat',
       'contact.socialFacebook': 'https://www.facebook.com/sumoallyoucaneat',
       'contact.socialTiktok': 'https://www.tiktok.com/@sumooficial',
+      'contact.jobs.heading': 'Bolsa de trabajo',
+      'contact.jobs.lead':
+        '¡Únete a nuestro equipo! No te pierdas la oportunidad de trabajar con nosotros.',
+      'contact.jobs.body':
+        '¿Cómo puedes ser parte? Buscamos chicos Sumo proactivos, responsables y con la mejor actitud en servicio, si crees cumplir con esos requisitos ya solamente tienes que llenar con tus datos personales el siguiente formulario y esperar a que un encargado se comunique contigo.',
+      'contact.jobs.phoneLabel': 'Contáctanos por WhatsApp',
+      'contact.jobs.phone': '+525584406639',
+      'contact.jobs.phoneDisplay': '+52 55 8440 6639',
     }
     return map[k] ?? k
   },
@@ -200,6 +208,49 @@ describe('ContactInfo', () => {
       const hasText = pill.text().trim().length > 0
       expect(hasAriaLabel || hasText).toBeTruthy()
     }
+  })
+
+  // ── Bolsa de trabajo (job card) ──────────────────────────────────────────────
+
+  it('renders the job card heading, lead and body from i18n', () => {
+    const wrapper = mount(ContactInfo, {
+      props: { selectedBranch: null, name: '', message: '' },
+    })
+    const card = wrapper.find('[data-testid="jobs-card"]')
+    expect(card.exists()).toBe(true)
+    expect(card.text()).toContain('Bolsa de trabajo')
+    expect(card.text()).toContain('¡Únete a nuestro equipo!')
+    expect(card.text()).toContain('Buscamos chicos Sumo proactivos')
+  })
+
+  it('renders a job phone pill linking to the RH WhatsApp URL (digits only)', () => {
+    const wrapper = mount(ContactInfo, {
+      props: { selectedBranch: null, name: '', message: '' },
+    })
+    const pill = wrapper.find('[data-testid="jobs-phone-pill"]')
+    expect(pill.exists()).toBe(true)
+    expect(pill.attributes('href')).toBe('https://wa.me/525584406639')
+    expect(pill.attributes('target')).toBe('_blank')
+    expect(pill.attributes('rel')).toBe('noopener noreferrer')
+  })
+
+  it('renders the RH phone number as visible, copyable text in the job card', () => {
+    const wrapper = mount(ContactInfo, {
+      props: { selectedBranch: null, name: '', message: '' },
+    })
+    const phoneText = wrapper.find('[data-testid="jobs-phone-text"]')
+    expect(phoneText.exists()).toBe(true)
+    expect(phoneText.text()).toBe('+52 55 8440 6639')
+  })
+
+  it('renders NO form fields in the job card (text + phone CTA only)', () => {
+    const wrapper = mount(ContactInfo, {
+      props: { selectedBranch: null, name: '', message: '' },
+    })
+    const card = wrapper.find('[data-testid="jobs-card"]')
+    expect(card.findAll('input')).toHaveLength(0)
+    expect(card.findAll('textarea')).toHaveLength(0)
+    expect(card.findAll('form')).toHaveLength(0)
   })
 
   // ── i18n EN ──────────────────────────────────────────────────────────────────

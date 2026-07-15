@@ -2,148 +2,243 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMenuFilters } from './useMenuFilters'
 
 const mockReplace = vi.fn()
+let routeQuery: Record<string, string> = { type: 'ayce', modality: 'buffet' }
 
 vi.stubGlobal('useRouter', () => ({ replace: mockReplace }))
-vi.stubGlobal('useRoute', () => ({
-  query: { type: 'ayce', modality: 'buffet' },
-}))
+vi.stubGlobal('useRoute', () => ({ query: routeQuery }))
 
 beforeEach(() => {
   mockReplace.mockClear()
+  routeQuery = { type: 'ayce', modality: 'buffet' }
 })
 
-describe('useMenuFilters — default state', () => {
-  it('sets activeType from initialType', () => {
-    const { activeType } = useMenuFilters('ayce', 'buffet')
-    expect(activeType.value).toBe('ayce')
-  })
-
-  it('sets activeModality from initialModality', () => {
-    const { activeModality } = useMenuFilters('ayce', 'carta')
-    expect(activeModality.value).toBe('carta')
-  })
-
-  it('sets activeCategory to null initially', () => {
-    const { activeCategory } = useMenuFilters('ayce', 'buffet')
-    expect(activeCategory.value).toBeNull()
-  })
-})
-
-describe('useMenuFilters — showModalityToggle', () => {
-  it('is true when type is ayce', () => {
-    const { showModalityToggle } = useMenuFilters('ayce', 'buffet')
-    expect(showModalityToggle.value).toBe(true)
-  })
-
-  it('is false when type is express', () => {
-    const { showModalityToggle } = useMenuFilters('express', 'buffet')
-    expect(showModalityToggle.value).toBe(false)
-  })
-})
-
-describe('useMenuFilters — accentStyle', () => {
-  it('returns orange accent for ayce', () => {
-    const { accentStyle } = useMenuFilters('ayce', 'buffet')
-    expect(accentStyle.value).toEqual({ '--accent': 'var(--orange)' })
-  })
-
-  it('returns express-blue accent for express', () => {
-    const { accentStyle } = useMenuFilters('express', 'buffet')
-    expect(accentStyle.value).toEqual({ '--accent': 'var(--blue)' })
-  })
-})
-
-describe('useMenuFilters — setType', () => {
-  it('updates activeType', () => {
-    const { activeType, setType } = useMenuFilters('ayce', 'buffet')
-    setType('express')
-    expect(activeType.value).toBe('express')
-  })
-
-  it('resets activeModality to buffet when switching to express', () => {
-    const { activeModality, setType } = useMenuFilters('ayce', 'carta')
-    setType('express')
-    expect(activeModality.value).toBe('buffet')
-  })
-
-  it('resets activeCategory to null on type change', () => {
-    const { activeCategory, setType, setCategory } = useMenuFilters(
+describe('useMenuFilters — default landing', () => {
+  it('defaults to AYCE · buffet · Entradas (never null, no show-all)', () => {
+    const { activeSelection, activeModality, activeCategory } = useMenuFilters(
       'ayce',
       'buffet'
     )
-    setCategory('sushi')
-    setType('express')
-    expect(activeCategory.value).toBeNull()
+    expect(activeSelection.value).toBe('ayce')
+    expect(activeModality.value).toBe('buffet')
+    expect(activeCategory.value).toBe('appetizers')
   })
 
-  it('showModalityToggle is false after setType("express")', () => {
-    const { showModalityToggle, setType } = useMenuFilters('ayce', 'buffet')
-    setType('express')
-    expect(showModalityToggle.value).toBe(false)
+  it('parses type=bebidas from the URL and defaults to Coctelería Jumbo', () => {
+    routeQuery = { type: 'bebidas' }
+    const { activeSelection, activeCategory } = useMenuFilters('ayce', 'buffet')
+    expect(activeSelection.value).toBe('drinks')
+    expect(activeCategory.value).toBe('jumbo_cocktails')
   })
 
-  it('showModalityToggle is true after setType("ayce")', () => {
-    const { showModalityToggle, setType } = useMenuFilters('express', 'buffet')
-    setType('ayce')
-    expect(showModalityToggle.value).toBe(true)
+  it('parses type=kids from the URL and resolves the kids view', () => {
+    routeQuery = { type: 'kids' }
+    const { activeSelection, activeCategory, activeModality } = useMenuFilters(
+      'ayce',
+      'buffet'
+    )
+    expect(activeSelection.value).toBe('kids')
+    expect(activeCategory.value).toBe('kids')
+    expect(activeModality.value).toBe('buffet')
   })
 
-  it('calls router.replace with updated type and buffet modality', () => {
-    const { setType } = useMenuFilters('ayce', 'buffet')
-    setType('express')
+  it('restores a valid deep-linked category', () => {
+    routeQuery = { type: 'ayce', modality: 'buffet', category: 'sandwiches' }
+    const { activeCategory } = useMenuFilters('ayce', 'buffet')
+    expect(activeCategory.value).toBe('sandwiches')
+  })
+
+  it('restores a valid deep-linked carta category', () => {
+    routeQuery = { type: 'ayce', modality: 'carta', category: 'ramen' }
+    const { activeModality, activeCategory } = useMenuFilters('ayce', 'buffet')
+    expect(activeModality.value).toBe('carta')
+    expect(activeCategory.value).toBe('ramen')
+  })
+
+  it('restores a valid deep-linked express category', () => {
+    routeQuery = { type: 'express', category: 'burritos' }
+    const { activeSelection, activeCategory } = useMenuFilters('ayce', 'buffet')
+    expect(activeSelection.value).toBe('express')
+    expect(activeCategory.value).toBe('burritos')
+  })
+
+  it('restores a valid deep-linked drink group', () => {
+    routeQuery = { type: 'bebidas', category: 'destilados' }
+    const { activeCategory } = useMenuFilters('ayce', 'buffet')
+    expect(activeCategory.value).toBe('destilados')
+  })
+
+  it('falls back to the default when category is omitted', () => {
+    routeQuery = { type: 'ayce', modality: 'buffet' }
+    const { activeCategory } = useMenuFilters('ayce', 'buffet')
+    expect(activeCategory.value).toBe('appetizers')
+  })
+
+  it('falls back to the default for an out-of-set deep-link key (no empty view)', () => {
+    // Sándwiches is buffet-only; opening it under Express must resolve to default.
+    routeQuery = { type: 'express', category: 'sandwiches' }
+    const { activeCategory } = useMenuFilters('ayce', 'buffet')
+    expect(activeCategory.value).toBe('appetizers')
+  })
+
+  it('ignores modality for express/bebidas', () => {
+    routeQuery = { type: 'express', modality: 'carta' }
+    const { activeModality } = useMenuFilters('ayce', 'buffet')
+    expect(activeModality.value).toBe('buffet')
+  })
+})
+
+describe('useMenuFilters — showModalityToggle, chips & accent', () => {
+  it('shows the modality toggle only for AYCE', () => {
+    expect(useMenuFilters('ayce', 'buffet').showModalityToggle.value).toBe(true)
+    routeQuery = { type: 'express' }
+    expect(useMenuFilters('express', 'buffet').showModalityToggle.value).toBe(
+      false
+    )
+    routeQuery = { type: 'bebidas' }
+    expect(useMenuFilters('drinks', 'buffet').showModalityToggle.value).toBe(
+      false
+    )
+    routeQuery = { type: 'kids' }
+    expect(useMenuFilters('kids', 'buffet').showModalityToggle.value).toBe(
+      false
+    )
+  })
+
+  it('exposes isKids and hides the category chips for the Kids view', () => {
+    routeQuery = { type: 'kids' }
+    const kids = useMenuFilters('kids', 'buffet')
+    expect(kids.isKids.value).toBe(true)
+    expect(kids.showCategoryChips.value).toBe(false)
+    routeQuery = { type: 'ayce', modality: 'buffet' }
+    const ayce = useMenuFilters('ayce', 'buffet')
+    expect(ayce.isKids.value).toBe(false)
+    expect(ayce.showCategoryChips.value).toBe(true)
+  })
+
+  it('maps accent to orange / blue / soft (Bebidas AND Kids share soft)', () => {
+    expect(useMenuFilters('ayce', 'buffet').accentStyle.value).toEqual({
+      '--accent': 'var(--orange)',
+    })
+    routeQuery = { type: 'express' }
+    expect(useMenuFilters('express', 'buffet').accentStyle.value).toEqual({
+      '--accent': 'var(--blue)',
+    })
+    routeQuery = { type: 'bebidas' }
+    expect(useMenuFilters('drinks', 'buffet').accentStyle.value).toEqual({
+      '--accent': 'var(--soft)',
+    })
+    routeQuery = { type: 'kids' }
+    expect(useMenuFilters('kids', 'buffet').accentStyle.value).toEqual({
+      '--accent': 'var(--soft)',
+    })
+  })
+})
+
+describe('useMenuFilters — setSelection', () => {
+  it('switches to express and resets category to Entradas', () => {
+    const { activeSelection, activeCategory, setSelection } = useMenuFilters(
+      'ayce',
+      'buffet'
+    )
+    setSelection('express')
+    expect(activeSelection.value).toBe('express')
+    expect(activeCategory.value).toBe('appetizers')
+  })
+
+  it('switches to drinks and resets category to Coctelería Jumbo', () => {
+    const { activeCategory, setSelection } = useMenuFilters('ayce', 'buffet')
+    setSelection('drinks')
+    expect(activeCategory.value).toBe('jumbo_cocktails')
+  })
+
+  it('switches to kids and writes type=kids with the kids category to the URL', () => {
+    const { activeSelection, activeCategory, setSelection } = useMenuFilters(
+      'ayce',
+      'buffet'
+    )
+    setSelection('kids')
+    expect(activeSelection.value).toBe('kids')
+    expect(activeCategory.value).toBe('kids')
     expect(mockReplace).toHaveBeenCalledWith({
-      query: { type: 'express', modality: 'buffet' },
+      query: expect.objectContaining({ type: 'kids', category: 'kids' }),
+    })
+    // Kids has no modality param.
+    expect(mockReplace).toHaveBeenCalledWith({
+      query: expect.not.objectContaining({ modality: expect.anything() }),
+    })
+  })
+
+  it('resets modality to buffet on selection change', () => {
+    const { activeModality, setModality, setSelection } = useMenuFilters(
+      'ayce',
+      'buffet'
+    )
+    setModality('carta')
+    setSelection('express')
+    expect(activeModality.value).toBe('buffet')
+  })
+
+  it('writes type=bebidas (not drinks) to the URL via replace', () => {
+    const { setSelection } = useMenuFilters('ayce', 'buffet')
+    setSelection('drinks')
+    expect(mockReplace).toHaveBeenCalledWith({
+      query: expect.objectContaining({
+        type: 'bebidas',
+        category: 'jumbo_cocktails',
+      }),
+    })
+  })
+
+  it('omits the modality param for non-AYCE selections', () => {
+    const { setSelection } = useMenuFilters('ayce', 'buffet')
+    setSelection('express')
+    expect(mockReplace).toHaveBeenCalledWith({
+      query: expect.not.objectContaining({ modality: expect.anything() }),
     })
   })
 })
 
 describe('useMenuFilters — setModality', () => {
-  it('updates activeModality', () => {
-    const { activeModality, setModality } = useMenuFilters('ayce', 'buffet')
+  it('updates modality and resets category to the set default', () => {
+    const { activeModality, activeCategory, setCategory, setModality } =
+      useMenuFilters('ayce', 'buffet')
+    setCategory('burgers')
     setModality('carta')
     expect(activeModality.value).toBe('carta')
+    expect(activeCategory.value).toBe('appetizers')
   })
 
-  it('calls router.replace with updated modality', () => {
+  it('replaces the URL with modality + default category', () => {
     const { setModality } = useMenuFilters('ayce', 'buffet')
     setModality('carta')
     expect(mockReplace).toHaveBeenCalledWith({
-      query: expect.objectContaining({ modality: 'carta' }),
-    })
-  })
-
-  it('resets activeCategory to null', () => {
-    const { activeCategory, setCategory, setModality } = useMenuFilters(
-      'ayce',
-      'buffet'
-    )
-    setCategory('burgers')
-    setModality('carta')
-    expect(activeCategory.value).toBeNull()
-  })
-
-  it('removes ?category from URL when switching modality', () => {
-    const { setCategory, setModality } = useMenuFilters('ayce', 'buffet')
-    setCategory('burgers')
-    mockReplace.mockClear()
-    setModality('carta')
-    expect(mockReplace).toHaveBeenCalledWith({
-      query: expect.not.objectContaining({ category: expect.anything() }),
+      query: expect.objectContaining({
+        type: 'ayce',
+        modality: 'carta',
+        category: 'appetizers',
+      }),
     })
   })
 })
 
 describe('useMenuFilters — setCategory', () => {
-  it('updates activeCategory', () => {
+  it('sets a valid in-set category', () => {
     const { activeCategory, setCategory } = useMenuFilters('ayce', 'buffet')
     setCategory('wings')
     expect(activeCategory.value).toBe('wings')
   })
 
-  it('can reset activeCategory to null', () => {
+  it('resolves an out-of-set key to the default', () => {
     const { activeCategory, setCategory } = useMenuFilters('ayce', 'buffet')
+    setCategory('burritos') // Burritos is Express-only
+    expect(activeCategory.value).toBe('appetizers')
+  })
+
+  it('writes the category to the URL via replace (no history spam)', () => {
+    const { setCategory } = useMenuFilters('ayce', 'buffet')
     setCategory('wings')
-    setCategory(null)
-    expect(activeCategory.value).toBeNull()
+    expect(mockReplace).toHaveBeenCalledWith({
+      query: expect.objectContaining({ category: 'wings' }),
+    })
   })
 })

@@ -29,36 +29,40 @@ const PROMO_RESPONSE: PromotionsResult = {
     {
       id: '1',
       badge: { es: 'Martes', en: 'Tuesday' },
-      title: { es: 'Martes 2x1', en: 'Tuesday 2for1' },
-      description: {
-        es: 'Trae a un amigo gratis.',
-        en: 'Bring a friend free.',
-      },
-      validity: { es: 'Solo martes', en: 'Tuesdays only' },
+      title: 'Martes 2x1',
       color: 'orange',
       type: 'ayce',
       active: true,
       publishedAt: '2026-06-01T00:00:00Z',
-      imageUrl: 'https://cdn.example.com/promo.jpg',
+      imageDesktopUrl: 'https://cdn.example.com/promo.jpg',
+      imageTabletUrl: null,
+      imageMovilUrl: null,
     },
     {
       id: '2',
       badge: { es: 'Express', en: 'Express' },
-      title: { es: 'SUMO Express', en: 'SUMO Express' },
-      description: { es: 'Formato compacto.', en: 'Compact format.' },
-      validity: { es: 'Todos los días', en: 'Every day' },
+      title: 'SUMO Express',
       color: 'blue',
       type: 'express',
       active: true,
       publishedAt: '2026-06-02T00:00:00Z',
-      imageUrl: null,
+      imageDesktopUrl: null,
+      imageTabletUrl: null,
+      imageMovilUrl: null,
     },
   ],
 }
 
-import PromotionCard from '@/components/ui/PromotionCard.vue'
-import PromotionsGrid from '@/features/promotions/components/PromotionsGrid.vue'
 import PromotionsPage from './promotions.vue'
+
+const stubs = {
+  UiPageHeader: { props: ['badge', 'title', 'badgeTone'], template: '<div />' },
+  UiPromotionsCarousel: {
+    name: 'UiPromotionsCarousel',
+    props: ['promotions'],
+    template: '<div class="carousel-stub" :data-count="promotions.length" />',
+  },
+}
 
 /** Mount PromotionsPage inside a Suspense boundary to support async setup. */
 function mountPage() {
@@ -66,11 +70,7 @@ function mountPage() {
     components: { PromotionsPage },
     template: '<Suspense><PromotionsPage /></Suspense>',
   })
-  return mount(Wrapper, {
-    global: {
-      components: { PromotionsGrid, UiPromotionCard: PromotionCard },
-    },
-  })
+  return mount(Wrapper, { global: { stubs } })
 }
 
 describe('promotions.vue', () => {
@@ -85,41 +85,26 @@ describe('promotions.vue', () => {
     expect(mockFetch).toHaveBeenCalledWith('/api/v1/content/promotions?all=1')
   })
 
-  it('renders the PromotionsGrid component', async () => {
+  it('renders the shared carousel with the fetched promotions', async () => {
     const wrapper = mountPage()
     await flushPromises()
-    expect(wrapper.findComponent(PromotionsGrid).exists()).toBe(true)
+    const carousel = wrapper.find('.carousel-stub')
+    expect(carousel.exists()).toBe(true)
+    expect(carousel.attributes('data-count')).toBe('2')
   })
 
-  it('passes promotions data to PromotionsGrid', async () => {
-    const wrapper = mountPage()
-    await flushPromises()
-    const grid = wrapper.findComponent(PromotionsGrid)
-    expect(grid.props('promotions')).toHaveLength(2)
-  })
-
-  it('passes ok=true to PromotionsGrid when fetch succeeds', async () => {
-    const wrapper = mountPage()
-    await flushPromises()
-    const grid = wrapper.findComponent(PromotionsGrid)
-    expect(grid.props('ok')).toBe(true)
-  })
-
-  it('passes ok=false to PromotionsGrid when fetch returns ok=false', async () => {
+  it('shows the empty state (not the carousel) when ok=false', async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, promotions: [] })
     const wrapper = mountPage()
     await flushPromises()
-    const grid = wrapper.findComponent(PromotionsGrid)
-    expect(grid.props('ok')).toBe(false)
+    expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(true)
+    expect(wrapper.find('.carousel-stub').exists()).toBe(false)
   })
 
-  it('opens the lightbox when PromotionsGrid emits open-lightbox', async () => {
+  it('shows the empty state when there are zero promotions', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, promotions: [] })
     const wrapper = mountPage()
     await flushPromises()
-    const grid = wrapper.findComponent(PromotionsGrid)
-    await grid.vm.$emit('open-lightbox', 'https://cdn.example.com/promo.jpg')
-    await wrapper.vm.$nextTick()
-    // After open-lightbox, the lightbox should be open with the URL
-    expect(wrapper.text()).not.toContain('error')
+    expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(true)
   })
 })

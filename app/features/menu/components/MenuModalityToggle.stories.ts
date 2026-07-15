@@ -8,7 +8,7 @@ const meta = {
   argTypes: {
     activeModality: {
       description:
-        'Currently active menu modality: buffet (all-inclusive) or carta (a la carte)',
+        'Active AYCE modality: buffet ("All You Can Eat") or carta ("Carta" ES / "Menu" EN). Only rendered for the AYCE selection.',
       control: { type: 'select' },
       options: ['buffet', 'carta'],
     },
@@ -38,6 +38,12 @@ export const LocaleEN: Story = {
   parameters: { globals: { locale: 'en' } },
 }
 
+/**
+ * Mobile (360px): the single segmented rounded-pill FILLS the row (segments
+ * share the width via flex-1); the font is unchanged and the labels stay on one
+ * line (whitespace-nowrap) with no cut-off and no horizontal scroll. At sm
+ * (520px+) it sits at natural inline width and wraps as a whole pill.
+ */
 export const Mobile: Story = {
   args: { activeModality: 'buffet' },
   parameters: { viewport: { defaultViewport: 'mobile1' } },

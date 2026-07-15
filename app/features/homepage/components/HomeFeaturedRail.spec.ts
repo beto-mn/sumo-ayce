@@ -33,7 +33,9 @@ function makeDish(id: string): FeaturedDish {
     description: { es: 'd', en: 'd' },
     imageUrl: null,
     badge: null,
-    category: 'frio',
+    category: 'cold_rolls',
+    locationType: 'ayce',
+    includedInAyce: true,
   }
 }
 
@@ -57,6 +59,19 @@ describe('HomeFeaturedRail', () => {
     ])
     expect(wrapper.findAll('.dish-stub')).toHaveLength(3)
     expect(wrapper.find('.featured-rail__track').exists()).toBe(true)
+  })
+
+  it('stretches each rail item to equal height (flex li on an items-stretch track)', async () => {
+    const wrapper = await mountRail([makeDish('1'), makeDish('2')])
+    // The track is a default flex row (items-stretch); each li is `flex` so the
+    // card can fill the row height → all cards equalize to the tallest.
+    const track = wrapper.find('.featured-rail__track')
+    expect(track.classes()).toContain('flex')
+    expect(track.classes()).not.toContain('items-start')
+    expect(track.classes()).not.toContain('items-center')
+    for (const li of wrapper.findAll('li')) {
+      expect(li.classes()).toContain('flex')
+    }
   })
 
   it('renders the three header lines (label, heading, subtitle) in ES', async () => {

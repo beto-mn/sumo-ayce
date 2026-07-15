@@ -27,7 +27,23 @@ vi.mock('../api/v1/menu/resolveImageUrl', () => ({
     filePath ? `https://blob.example.com/${filePath}` : null,
 }))
 
+import { DatabaseUnavailableError } from './error-handler'
 import { getFeaturedDishes, getFullMenu, locationScope } from './menu-queries'
+
+/** Builds a featured-query chain whose terminal `orderBy` runs `onOrderBy` each call. */
+function mockFeaturedChainWith(onOrderBy: () => Promise<unknown>): void {
+  mockDbSelect.mockReturnValue({
+    from: vi.fn().mockReturnValue({
+      innerJoin: vi.fn().mockReturnValue({
+        leftJoin: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            orderBy: vi.fn().mockImplementation(onOrderBy),
+          }),
+        }),
+      }),
+    }),
+  })
+}
 
 // A joined menu_items×menu_categories row as the SQL select returns it.
 type FeaturedQueryRow = {
@@ -101,11 +117,25 @@ describe('getFeaturedDishes', () => {
 
   it('preserves the SQL-filtered order returned by the query (display order)', async () => {
     mockFeaturedChain([
-      featuredRow({ id: 'first' }),
-      featuredRow({ id: 'second' }),
+      featuredRow({ id: 'first', nameEs: 'Bora Bora' }),
+      featuredRow({ id: 'second', nameEs: 'Coco Roll' }),
     ])
     const dishes = await getFeaturedDishes()
     expect(dishes.map(d => d.id)).toEqual(['first', 'second'])
+  })
+
+  it('dedupes multiple rows of the same dish to one (keeps the first by order)', async () => {
+    // The same garantía dish is featured on several location/modality rows; the
+    // rail must list it once, keeping the first (lowest-displayOrder) row.
+    mockFeaturedChain([
+      featuredRow({ id: 'bora-ayce', nameEs: 'Bora Bora' }),
+      featuredRow({ id: 'coco', nameEs: 'Coco Roll' }),
+      featuredRow({ id: 'bora-carta', nameEs: 'Bora Bora' }),
+      featuredRow({ id: 'bora-express', nameEs: 'Bora Bora' }),
+    ])
+    const dishes = await getFeaturedDishes()
+    expect(dishes.map(d => d.id)).toEqual(['bora-ayce', 'coco'])
+    expect(dishes.map(d => d.name.es)).toEqual(['Bora Bora', 'Coco Roll'])
   })
 
   it('includes a featured drink (bebidas category) identically to food', async () => {
@@ -122,19 +152,35 @@ describe('getFeaturedDishes', () => {
     expect(await getFeaturedDishes()).toEqual([])
   })
 
-  it('propagates DB errors instead of swallowing them', async () => {
-    mockDbSelect.mockReturnValue({
-      from: vi.fn().mockReturnValue({
-        innerJoin: vi.fn().mockReturnValue({
-          leftJoin: vi.fn().mockReturnValue({
-            where: vi.fn().mockReturnValue({
-              orderBy: vi.fn().mockRejectedValue(new Error('db down')),
-            }),
-          }),
-        }),
-      }),
-    })
+  it('propagates non-transient DB errors instead of swallowing them', async () => {
+    mockFeaturedChainWith(() => Promise.reject(new Error('db down')))
     await expect(getFeaturedDishes()).rejects.toThrow('db down')
+  })
+
+  it('retries a transient connection error and succeeds on the second attempt', async () => {
+    let attempts = 0
+    mockFeaturedChainWith(() => {
+      attempts += 1
+      if (attempts === 1) return Promise.reject(new Error('fetch failed'))
+      return Promise.resolve([featuredRow({ id: 'recovered' })])
+    })
+    const dishes = await getFeaturedDishes()
+    expect(attempts).toBe(2)
+    expect(dishes[0]?.id).toBe('recovered')
+  })
+
+  it('throws a handled DatabaseUnavailableError when every attempt is transiently down', async () => {
+    let attempts = 0
+    mockFeaturedChainWith(() => {
+      attempts += 1
+      return Promise.reject(
+        new Error('Error connecting to database: fetch failed')
+      )
+    })
+    await expect(getFeaturedDishes()).rejects.toBeInstanceOf(
+      DatabaseUnavailableError
+    )
+    expect(attempts).toBe(3)
   })
 })
 
@@ -144,6 +190,8 @@ type MenuQueryRow = {
   categoryKey: string
   categoryNameEs: string
   categoryNameEn: string
+  categoryNoteEs: string | null
+  categoryNoteEn: string | null
   categoryOrder: number
   dishId: string
   nameEs: string
@@ -157,6 +205,7 @@ type MenuQueryRow = {
   includedInAyce: boolean
   drinkGroup: string | null
   requiresSauce: boolean
+  featured: boolean
 }
 
 type SauceRow = {
@@ -167,9 +216,23 @@ type SauceRow = {
   fileName: string | null
 }
 
-// First select(...) → dishes-with-category; second select(...) → sauces.
+type DrinkGroupRow = {
+  groupKey: string
+  nameEs: string | null
+  nameEn: string | null
+  displayOrder: number
+  promoEs: string | null
+  promoEn: string | null
+}
+
+// First select(...) → dishes-with-category; second select(...) → sauces;
+// third select(...) → drink groups (.from → .orderBy).
 // The dishes query chains: .from → .innerJoin → .leftJoin (drinkGroups) → .leftJoin (drinkSubGroups) → .where → .orderBy
-function mockMenuChains(menuRows: MenuQueryRow[], sauceRows: SauceRow[]): void {
+function mockMenuChains(
+  menuRows: MenuQueryRow[],
+  sauceRows: SauceRow[],
+  drinkGroupRows: DrinkGroupRow[] = []
+): void {
   const innerChain = {
     where: vi.fn().mockReturnValue({
       orderBy: vi.fn().mockResolvedValue(menuRows),
@@ -192,12 +255,19 @@ function mockMenuChains(menuRows: MenuQueryRow[], sauceRows: SauceRow[]): void {
         }),
       }),
     })
+    .mockReturnValueOnce({
+      from: vi.fn().mockReturnValue({
+        orderBy: vi.fn().mockResolvedValue(drinkGroupRows),
+      }),
+    })
 }
 
 const menuRow = (over: Partial<MenuQueryRow> = {}): MenuQueryRow => ({
   categoryKey: 'alitas',
   categoryNameEs: 'Alitas',
   categoryNameEn: 'Wings',
+  categoryNoteEs: null,
+  categoryNoteEn: null,
   categoryOrder: 0,
   dishId: 'wings-1',
   nameEs: 'Boneless',
@@ -211,6 +281,7 @@ const menuRow = (over: Partial<MenuQueryRow> = {}): MenuQueryRow => ({
   includedInAyce: true,
   drinkGroup: null,
   requiresSauce: true,
+  featured: false,
   ...over,
 })
 
@@ -265,6 +336,99 @@ describe('getFullMenu', () => {
     })
     expect(result.categories.map(c => c.key)).toEqual(['entradas', 'alitas'])
     expect(result.categories[1]?.dishes[0]?.id).toBe('b')
+  })
+
+  it('returns the kids category items (with per-item includedInAyce + note) for the kids view', async () => {
+    mockMenuChains(
+      [
+        // Query orders by displayOrder; the $179 AYCE Niños item is displayOrder 0.
+        menuRow({
+          categoryKey: 'kids',
+          categoryNameEs: 'Menú Kids',
+          categoryNameEn: 'Kids Menu',
+          categoryNoteEs: 'Incluye papas a la francesa…',
+          categoryNoteEn: 'Includes french fries…',
+          dishId: 'kids-ayce',
+          price: '179.00',
+          includedInAyce: true,
+        }),
+        menuRow({
+          categoryKey: 'kids',
+          categoryNameEs: 'Menú Kids',
+          categoryNameEn: 'Kids Menu',
+          categoryNoteEs: 'Incluye papas a la francesa…',
+          categoryNoteEn: 'Includes french fries…',
+          dishId: 'kid-burger',
+          price: '149.00',
+          includedInAyce: false,
+        }),
+      ],
+      []
+    )
+    const result = await getFullMenu({
+      locationType: 'kids',
+      modality: 'buffet',
+    })
+    // Kids resolves to a single 'kids' category, always priced (carta) regardless
+    // of the requested modality.
+    expect(result.locationType).toBe('kids')
+    expect(result.modality).toBe('carta')
+    expect(result.categories).toHaveLength(1)
+    expect(result.categories[0]?.key).toBe('kids')
+    // The category carries the bilingual inclusion note again.
+    expect(result.categories[0]?.note).toEqual({
+      es: 'Incluye papas a la francesa…',
+      en: 'Includes french fries…',
+    })
+    const dishes = result.categories[0]?.dishes ?? []
+    // All You Can Eat Kids ($179) comes FIRST, then the combos.
+    expect(dishes.map(d => d.id)).toEqual(['kids-ayce', 'kid-burger'])
+    expect(dishes.map(d => d.price)).toEqual(['179.00', '149.00'])
+    // Raw includedInAyce splits the two sub-sections: buffet (true) vs combos (false).
+    expect(dishes.map(d => d.includedInAyce)).toEqual([true, false])
+  })
+
+  it('exposes the bilingual category note when present (e.g. Kids inclusions)', async () => {
+    mockMenuChains(
+      [
+        menuRow({
+          categoryKey: 'kids',
+          categoryNoteEs: 'Incluye papas…',
+          categoryNoteEn: 'Includes fries…',
+        }),
+      ],
+      []
+    )
+    const category = (
+      await getFullMenu({ locationType: 'ayce', modality: 'carta' })
+    ).categories[0]
+    expect(category?.note).toEqual({
+      es: 'Incluye papas…',
+      en: 'Includes fries…',
+    })
+  })
+
+  it('returns note=null for a category without a note', async () => {
+    mockMenuChains([menuRow({ categoryKey: 'alitas' })], [])
+    const category = (
+      await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
+    ).categories[0]
+    expect(category?.note).toBeNull()
+  })
+
+  it('exposes the featured (Garantía Sumo) flag per dish', async () => {
+    mockMenuChains(
+      [
+        menuRow({ dishId: 'star', featured: true }),
+        menuRow({ dishId: 'plain', featured: false }),
+      ],
+      []
+    )
+    const dishes = (
+      await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
+    ).categories.flatMap(c => c.dishes)
+    expect(dishes.find(d => d.id === 'star')?.featured).toBe(true)
+    expect(dishes.find(d => d.id === 'plain')?.featured).toBe(false)
   })
 
   it('shows price and incluido=false in the AYCE carta (a-la-carte) view', async () => {
@@ -425,6 +589,90 @@ describe('getFullMenu', () => {
     expect(valuesAyce).toEqual(['ayce', 'both'])
   })
 
+  it('exposes drink groups in ascending display order with their DB name', async () => {
+    mockMenuChains(
+      [],
+      [],
+      [
+        {
+          groupKey: 'jumbo_cocktails',
+          nameEs: 'Coctelería Jumbo',
+          nameEn: 'Jumbo Cocktails',
+          displayOrder: 0,
+          promoEs: null,
+          promoEn: null,
+        },
+        {
+          groupKey: 'beers',
+          nameEs: 'Cervezas',
+          nameEn: 'Beers',
+          displayOrder: 3,
+          promoEs: null,
+          promoEn: null,
+        },
+        {
+          groupKey: 'destilados',
+          nameEs: 'Destilados',
+          nameEn: 'Spirits',
+          displayOrder: 4,
+          promoEs: null,
+          promoEn: null,
+        },
+      ]
+    )
+    const result = await getFullMenu({
+      locationType: 'ayce',
+      modality: 'buffet',
+    })
+    expect(result.drinkGroups.map(g => g.key)).toEqual([
+      'jumbo_cocktails',
+      'beers',
+      'destilados',
+    ])
+    // Each group carries its DB-sourced bilingual display name.
+    expect(result.drinkGroups.map(g => g.name)).toEqual([
+      { es: 'Coctelería Jumbo', en: 'Jumbo Cocktails' },
+      { es: 'Cervezas', en: 'Beers' },
+      { es: 'Destilados', en: 'Spirits' },
+    ])
+  })
+
+  it('carries the Destilados group-level promo once (beers has none)', async () => {
+    mockMenuChains(
+      [],
+      [],
+      [
+        {
+          groupKey: 'beers',
+          nameEs: 'Cervezas',
+          nameEn: 'Beers',
+          displayOrder: 3,
+          promoEs: null,
+          promoEn: null,
+        },
+        {
+          groupKey: 'destilados',
+          nameEs: 'Destilados',
+          nameEn: 'Spirits',
+          displayOrder: 4,
+          promoEs: 'Combo Mezcladores $189',
+          promoEn: 'Mixer Combo $189',
+        },
+      ]
+    )
+    const result = await getFullMenu({
+      locationType: 'ayce',
+      modality: 'buffet',
+    })
+    expect(result.drinkGroups.find(g => g.key === 'destilados')?.promo).toEqual(
+      {
+        es: 'Combo Mezcladores $189',
+        en: 'Mixer Combo $189',
+      }
+    )
+    expect(result.drinkGroups.find(g => g.key === 'beers')?.promo).toBeNull()
+  })
+
   it('propagates DB errors from the dishes query', async () => {
     const errorChain = {
       where: vi.fn().mockReturnValue({
@@ -443,5 +691,24 @@ describe('getFullMenu', () => {
     await expect(
       getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     ).rejects.toThrow('db down')
+  })
+
+  it('degrades to a handled DatabaseUnavailableError when Neon stays down (transient, all attempts)', async () => {
+    // Every attempt's dishes query rejects with a transient connection error.
+    const rejectingChain = {
+      where: vi.fn().mockReturnValue({
+        orderBy: vi.fn().mockRejectedValue(new Error('fetch failed')),
+      }),
+    }
+    const leftJoin2Err = vi.fn().mockReturnValue(rejectingChain)
+    const leftJoin1Err = vi.fn().mockReturnValue({ leftJoin: leftJoin2Err })
+    mockDbSelect.mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        innerJoin: vi.fn().mockReturnValue({ leftJoin: leftJoin1Err }),
+      }),
+    })
+    await expect(
+      getFullMenu({ locationType: 'ayce', modality: 'buffet' })
+    ).rejects.toBeInstanceOf(DatabaseUnavailableError)
   })
 })

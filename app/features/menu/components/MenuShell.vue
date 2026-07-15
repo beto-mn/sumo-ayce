@@ -1,34 +1,57 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import type { CategoryChip } from '@/features/menu/components/MenuCategoryChips.vue'
 import { useMenuFilters } from '@/features/menu/composables/useMenuFilters'
-import type { MenuType } from '@/features/menu/types'
-import type {
-  FullMenuCategory,
-  FullMenuResult,
-  MenuCategoryKey,
-} from '@/types/menu'
+import type { PrimarySelection } from '@/features/menu/menu-sets'
+import type { FullMenuCategory, FullMenuResult } from '@/types/menu'
 
 const props = defineProps<{
   menuData: FullMenuResult
-  initialType: MenuType
+  initialSelection: PrimarySelection
   initialModality: 'buffet' | 'carta'
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const {
-  activeType,
+  activeSelection,
   activeModality,
   activeCategory,
   showModalityToggle,
+  isDrinks,
+  isKids,
+  showCategoryChips,
+  curatedSet,
   accentStyle,
-  setType,
+  setSelection,
   setModality,
   setCategory,
-} = useMenuFilters(props.initialType, props.initialModality)
+} = useMenuFilters(props.initialSelection, props.initialModality)
 
-const foodCategories = computed(() =>
-  props.menuData.categories.filter(c => c.key !== 'drinks')
+/** DB category name for a key (single source of truth for FOOD chip labels). */
+function foodCategoryLabel(key: string): string {
+  const category = props.menuData.categories.find(c => c.key === key)
+  if (!category) return key
+  return category.name[locale.value as 'es' | 'en'] || category.name.es || key
+}
+
+/** DB drink-group name for a key (single source of truth for DRINK chip labels). */
+function drinkGroupLabel(key: string): string {
+  const group = props.menuData.drinkGroups.find(g => g.key === key)
+  if (!group) return key
+  return group.name[locale.value as 'es' | 'en'] || group.name.es || key
+}
+
+/**
+ * The ordered chips with their display labels. Both FOOD and DRINK labels come
+ * from the DB (`menuData.categories[].name` / `menuData.drinkGroups[].name`, by
+ * active locale) — the DB is the single source of truth; nothing reads i18n.
+ */
+const chipItems = computed<CategoryChip[]>(() =>
+  curatedSet.value.map(key => ({
+    key,
+    label: isDrinks.value ? drinkGroupLabel(key) : foodCategoryLabel(key),
+  }))
 )
 
 const drinkItems = computed(() => {
@@ -36,125 +59,117 @@ const drinkItems = computed(() => {
   return drinkCat?.dishes ?? []
 })
 
-const hasDrinks = computed(() => drinkItems.value.length > 0)
-
-const activeDrinkGroup = ref<string | null>(null)
-
-const availableDrinkGroups = computed((): FullMenuCategory[] => {
-  const seen = new Set<string>()
-  const groups: FullMenuCategory[] = []
-  for (const d of drinkItems.value) {
-    if (d.drinkGroup && !seen.has(d.drinkGroup)) {
-      seen.add(d.drinkGroup)
-      groups.push({
-        key: d.drinkGroup as MenuCategoryKey,
-        name: { es: d.drinkGroup, en: d.drinkGroup },
-        displayOrder: 0,
-        dishes: [],
-      })
+/** The single active food category (empty-state safe: always a section). */
+const activeFoodCategory = computed((): FullMenuCategory => {
+  const found = props.menuData.categories.find(
+    c => c.key === activeCategory.value
+  )
+  return (
+    found ?? {
+      key: activeCategory.value as FullMenuCategory['key'],
+      name: { es: '', en: '' },
+      note: null,
+      displayOrder: 0,
+      dishes: [],
     }
-  }
-  return groups
+  )
 })
 
-function toggleDrinks(): void {
-  if (activeCategory.value === 'drinks') {
-    setCategory(null)
-    activeDrinkGroup.value = null
-  } else {
-    setCategory('drinks')
-    activeDrinkGroup.value = null
-  }
-}
+/**
+ * Kids items carry a fixed price ($149 combos, $179 AYCE Niños), so the Kids
+ * view always renders in price ("carta") mode regardless of the AYCE modality.
+ */
+const gridModality = computed<'buffet' | 'carta'>(() =>
+  isKids.value ? 'carta' : activeModality.value
+)
 
-function setDrinkGroup(key: string | null): void {
-  activeDrinkGroup.value = key
-}
-
-const visibleFoodCategories = computed(() => {
-  if (!activeCategory.value || activeCategory.value === 'drinks')
-    return foodCategories.value
-  return foodCategories.value.filter(c => c.key === activeCategory.value)
+/**
+ * The Kids view splits its single `kids` category into TWO ordered sub-sections
+ * by `includedInAyce`:
+ *   1) "All You Can Eat Kids" — the $179 buffet item (includedInAyce = true).
+ *   2) "Combo Infantil" — the 6 $149 combos (includedInAyce = false), carrying the
+ *      DB category note (inclusion text) at the top of the section.
+ * Headings are i18n (fixed nav copy); the note is DB-driven.
+ */
+const kidsSections = computed<FullMenuCategory[]>(() => {
+  const kidsCategory = props.menuData.categories.find(c => c.key === 'kids')
+  const dishes = kidsCategory?.dishes ?? []
+  return [
+    {
+      key: 'kids',
+      name: {
+        es: t('menu.kids.ayce_heading'),
+        en: t('menu.kids.ayce_heading'),
+      },
+      note: null,
+      displayOrder: 0,
+      dishes: dishes.filter(dish => dish.includedInAyce),
+    },
+    {
+      key: 'kids',
+      name: {
+        es: t('menu.kids.combo_heading'),
+        en: t('menu.kids.combo_heading'),
+      },
+      note: kidsCategory?.note ?? null,
+      displayOrder: 1,
+      dishes: dishes.filter(dish => !dish.includedInAyce),
+    },
+  ]
 })
-
-const showFoods = computed(
-  () => !activeCategory.value || activeCategory.value !== 'drinks'
-)
-const showDrinks = computed(
-  () => !activeCategory.value || activeCategory.value === 'drinks'
-)
-
-const inDrinksMode = computed(() => activeCategory.value === 'drinks')
 
 const showScrollTop = ref(false)
-
-function onScroll() {
+function onScroll(): void {
   showScrollTop.value = window.scrollY > 300
 }
-
-function scrollToTop() {
+function scrollToTop(): void {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
-
 onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </script>
 
 <template>
-  <div :style="inDrinksMode ? { '--accent': 'var(--soft)' } : accentStyle">
+  <div :style="accentStyle">
     <div class="container-pop pt-8">
-      <div class="mb-8 flex flex-wrap items-center gap-4">
+      <div class="mb-8">
         <MenuTypeToggle
-          :active-type="activeType"
-          @update:active-type="setType"
-        />
-        <MenuModalityToggle
-          v-if="showModalityToggle"
-          :active-modality="activeModality"
-          @update:active-modality="setModality"
-        />
-        <button
-          v-if="hasDrinks"
-          type="button"
-          class="inline-flex min-h-[44px] items-center rounded-pop-full border-pop border-ink px-5 py-2 font-disp font-extrabold uppercase text-kicker transition-colors duration-150"
-          :class="inDrinksMode ? 'bg-ink text-panel' : 'bg-panel text-ink shadow-pop-sm hover:bg-bg2'"
-          @click="toggleDrinks"
+          :active-selection="activeSelection"
+          @update:selection="setSelection"
         >
-          {{ t('menu.category.drinks') }}
-        </button>
+          <template #modality>
+            <MenuModalityToggle
+              v-if="showModalityToggle"
+              :active-modality="activeModality"
+              @update:active-modality="setModality"
+            />
+          </template>
+        </MenuTypeToggle>
       </div>
     </div>
 
-    <div class="w-full bg-bg py-3">
+    <div v-if="showCategoryChips" class="w-full bg-bg py-3">
       <div class="container-pop">
         <MenuCategoryChips
-          v-if="!inDrinksMode"
-          :categories="foodCategories"
+          :items="chipItems"
           :active-category="activeCategory"
           @update:active-category="setCategory"
-        />
-        <MenuCategoryChips
-          v-else
-          :categories="availableDrinkGroups"
-          :active-category="activeDrinkGroup"
-          translation-prefix="menu.drink_group"
-          @update:active-category="setDrinkGroup"
         />
       </div>
     </div>
 
     <div class="container-pop pb-8">
       <div class="mt-8 flex flex-col gap-16">
-        <MenuDishGrid
-          v-if="showFoods"
-          :categories="visibleFoodCategories"
-          :sauces="menuData.sauces"
-          :modality="activeModality"
-        />
         <MenuDrinkSection
-          v-if="showDrinks && hasDrinks"
+          v-if="isDrinks"
           :drinks="drinkItems"
-          :active-group="activeDrinkGroup"
+          :drink-groups="menuData.drinkGroups"
+          :active-group="activeCategory"
+        />
+        <MenuDishGrid
+          v-else
+          :categories="isKids ? kidsSections : [activeFoodCategory]"
+          :modality="gridModality"
         />
       </div>
     </div>
@@ -163,8 +178,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
       v-if="showScrollTop"
       type="button"
       aria-label="Volver al inicio"
-      class="fixed bottom-6 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-pop-full border-pop border-ink shadow-pop-sm transition-opacity duration-200"
-      :class="inDrinksMode ? 'bg-panel text-ink' : 'bg-accent text-ink'"
+      class="fixed bottom-6 right-4 z-30 flex h-12 w-12 cursor-pointer items-center justify-center rounded-pop-full border-pop border-ink shadow-pop-sm transition-opacity duration-200"
+      :class="isDrinks || isKids ? 'bg-panel text-ink' : 'bg-accent text-ink'"
       @click="scrollToTop"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">

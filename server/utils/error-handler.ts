@@ -51,6 +51,21 @@ export class ExternalServiceError extends Error {
   }
 }
 
+/**
+ * The Neon database is transiently unavailable (cold start / connection blip)
+ * and stayed unavailable after retries. This is an EXPECTED degradation — the
+ * caller falls back to an empty result — so it is logged at WARN (not the
+ * alarming "Unhandled server error") and returns 503 Service Unavailable.
+ */
+export class DatabaseUnavailableError extends Error {
+  readonly statusCode = 503
+  constructor(operation: string, cause?: unknown) {
+    super(`Database unavailable: ${operation}`)
+    this.name = 'DatabaseUnavailableError'
+    this.cause = cause
+  }
+}
+
 export function handleError(error: unknown): H3Error {
   if (error instanceof H3Error) return error
 
@@ -70,6 +85,28 @@ export function handleError(error: unknown): H3Error {
     error instanceof ForbiddenError ||
     error instanceof AuthError
   ) {
+    return createError({
+      statusCode: error.statusCode,
+      statusMessage: error.message,
+    })
+  }
+
+  // Expected upstream-dependency unavailability (e.g. WordPress timeout). This
+  // is a HANDLED degradation — callers fall back gracefully — so it must NOT be
+  // logged as an alarming "Unhandled server error". Log at WARN with the
+  // service name/cause and return the 502 it carries.
+  if (error instanceof ExternalServiceError) {
+    logger.warn({ err: error }, 'External service unavailable')
+    return createError({
+      statusCode: error.statusCode,
+      statusMessage: error.message,
+    })
+  }
+
+  // Transient Neon unavailability that survived retries. HANDLED degradation —
+  // callers return an empty result — so WARN, never ERROR "Unhandled server error".
+  if (error instanceof DatabaseUnavailableError) {
+    logger.warn({ err: error }, 'Database unavailable')
     return createError({
       statusCode: error.statusCode,
       statusMessage: error.message,

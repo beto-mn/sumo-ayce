@@ -188,6 +188,24 @@
       "spec_path": "specs/020-storybook-full-coverage",
       "sdd": true,
       "status": "done"
+    },
+    {
+      "id": 21,
+      "name": "menu-experience-overhaul",
+      "title": "Menu Experience Overhaul (data + UI)",
+      "description": "3-way primary selector (AYCE | Express | Bebidas y coctelería) with AYCE modality (All You Can Eat | Carta); curated ordered category sets per selection (buffet filters includedInAyce=true, carta false); deep-linking to any subcategory via URL query params (type/modality/category incl. drink groups) with defaults + fallback; Destilados split into its own drink group (beers_spirits renamed to beers), promo note rendered once, Caguamón-first, café image-first ordering; Vaso Sumo 5→1 consolidated card with flavour selector; non_alcoholic folded into sodas; 11 Garantías Sumo featured; sauces removed from Alitas & Boneless; hover-zoom, 'Carta'/'Menu' label, half-width no-image drink cards. Additive migration 0027 (drink_group.display_order). Full detail in specs/021-menu-experience-overhaul/.",
+      "spec_path": "specs/021-menu-experience-overhaul",
+      "sdd": true,
+      "status": "spec_ready"
+    },
+    {
+      "id": 22,
+      "name": "homepage-hero-promos-contact",
+      "title": "Homepage hero font + Promotions carousel + Contact job card (consolidated)",
+      "description": "Consolidated (former 022/023/024). PART A: hero 'ALL YOU CAN EAT' font Titan One → self-hosted Graphik Super (public/fonts/graphik-super.woff2, @font-face + .hero-headline + nuxt.config preload). PART B: WordPress promociones ACF migrated to new contract (badge_es/en, color, tipo, activa, imagen_desktop/tablet/movil media IDs; title from post title.rendered; no titulo/descripcion/vigencia/single imagen) — validators.ts + promotions.get.ts rewritten (3 images resolved with desktop fallback), UiPromotionsCarousel (embla-carousel-vue) shared by homepage + /promotions, <picture> by breakpoint, image + badge overlay; old grid/lightbox retired. Plus handleError: ExternalServiceError → WARN + 502 (graceful WP degradation). PART C: static Bolsa de trabajo card in ContactInfo.vue (ES+EN copy, test phone pill, no form). Full detail in specs/022-homepage-hero-promos-contact/.",
+      "spec_path": "specs/022-homepage-hero-promos-contact",
+      "sdd": true,
+      "status": "spec_ready"
     }
   ]
 }

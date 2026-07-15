@@ -34,6 +34,17 @@ export const NoBranchSelected: Story = {
   },
 }
 
+/**
+ * The static "Bolsa de trabajo" (job board) card is always present at the bottom
+ * of the contact info panel: heading + lead + body + the RH phone number shown as
+ * copyable text (+52 55 8440 6639) + a WhatsApp CTA pill linking to
+ * https://wa.me/525584406639. No form fields.
+ */
+export const JobBoardCard: Story = {
+  name: 'Job board card (Bolsa de trabajo)',
+  args: { selectedBranch: null, name: '', message: '' },
+}
+
 export const BranchSelected: Story = {
   name: 'Branch selected (WhatsApp pill visible)',
   args: {

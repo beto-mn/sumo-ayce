@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { db } from '../../utils/db'
 import { menuCategories, menuItems } from '../schema'
 
@@ -7,16 +7,44 @@ type KidsItem = {
   nameEn: string
   descriptionEs: string
   descriptionEn: string
-  fileName: string
+  fileName: string | null
+  /** Per-item price override; defaults to the standard $149 combo price. */
+  price?: string
+  /**
+   * Splits the Kids view into two sub-sections: `true` → "All You Can Eat Kids"
+   * (the $179 buffet), `false`/undefined → "Combo Infantil" (the $149 combos).
+   */
+  includedInAyce?: boolean
   featured?: boolean
 }
 
-// ─── KIDS COMBO ───────────────────────────────────────────────────────────────
-// À la carte — not included in AYCE, $149 per combo.
-// Each option includes: french fries (100g), soda (400ml), sushi kids (5 pcs)
-// and yakimeshi (240g). Child picks one main dish from the list below.
+// ─── KIDS MENU ──────────────────────────────────────────────────────────────
+// The Kids view is a cross-cutting standalone menu type (NOT a food category
+// inside AYCE or Express). Items carry `locationType='both'` for data coherence,
+// but they are surfaced ONLY via the dedicated Kids query (by category), never in
+// the AYCE/Express food lists. The 6 combos are $149 each; each combo includes
+// french fries (100g), soda (400ml), sushi kids (5 pcs) and yakimeshi (240g). The
+// "All You Can Eat Kids" item is the $179 kids buffet.
 
-const KIDS_ITEMS: KidsItem[] = [
+/** Kids items are stored with location scope 'both' (surfaced via the Kids view). */
+export const KIDS_LOCATION_TYPE = 'both' as const
+/** Standard combo price. */
+export const KIDS_PRICE = '149.00' as const
+/** All You Can Eat Kids price. */
+export const KIDS_AYCE_PRICE = '179.00' as const
+
+export const KIDS_ITEMS: KidsItem[] = [
+  {
+    nameEs: 'All You Can Eat Kids',
+    nameEn: 'All You Can Eat Kids',
+    descriptionEs:
+      'Buffet all you can eat para niños de 2 a 10 años. Precio por persona, promoción individual (no para compartir). Rollos y alitas se sirven de 5 piezas; los demás platillos en porciones individuales. Máximo 2 platillos por persona a la vez. Solo para consumo en restaurante.',
+    descriptionEn:
+      'All you can eat buffet for children ages 2 to 10. Price per person, individual promotion (not for sharing). Rolls and wings are served in portions of 5 pieces; all other dishes in individual portions. Maximum 2 dishes per person at a time. Dine-in only.',
+    fileName: null,
+    price: KIDS_AYCE_PRICE,
+    includedInAyce: true,
+  },
   {
     nameEs: 'Kid Burger',
     nameEn: 'Kid Burger',
@@ -25,7 +53,6 @@ const KIDS_ITEMS: KidsItem[] = [
     descriptionEn:
       '60g smash beef patty topped with an American cheese slice, lettuce and American dressing. Served with french fries.',
     fileName: 'menu/kids/kid_burger.webp',
-    featured: true,
   },
   {
     nameEs: 'Sushi Kids',
@@ -87,14 +114,9 @@ export async function seedKidsMenu() {
     )
   }
 
-  await db
-    .delete(menuItems)
-    .where(
-      and(
-        eq(menuItems.categoryId, catMap.kids),
-        eq(menuItems.locationType, 'ayce')
-      )
-    )
+  // Clear by category (not locationType) so a reseed is idempotent regardless of
+  // the items' current location scope.
+  await db.delete(menuItems).where(eq(menuItems.categoryId, catMap.kids))
 
   const rows = KIDS_ITEMS.map((item, i) => ({
     categoryId: catMap.kids,
@@ -102,9 +124,9 @@ export async function seedKidsMenu() {
     nameEn: item.nameEn,
     descriptionEs: item.descriptionEs,
     descriptionEn: item.descriptionEn,
-    locationType: 'ayce' as const,
-    price: '149.00',
-    includedInAyce: false,
+    locationType: KIDS_LOCATION_TYPE,
+    price: item.price ?? KIDS_PRICE,
+    includedInAyce: item.includedInAyce ?? false,
     fileName: item.fileName,
     badgeEs: null,
     badgeEn: null,
