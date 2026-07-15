@@ -9,6 +9,8 @@ const mockRows: FeaturedDishRow[] = [
     imageUrl: '/menu/ayce/edamame.webp',
     badge: null,
     category: 'appetizers',
+    locationType: 'ayce',
+    includedInAyce: true,
   },
 ]
 

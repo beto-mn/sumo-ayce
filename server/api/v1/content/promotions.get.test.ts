@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  DISTINCT_IMAGES_WP_PROMOTION,
   EMPTY_WP_PROMOTIONS,
   HOME_WP_PROMOTIONS,
+  HOME_WP_PROMOTIONS_NO_IMAGES,
   MALFORMED_WP_RESPONSE,
-  makeMediaResponse,
+  MIXED_IMAGE_WP_PROMOTIONS,
+  makeMediaBatchResponse,
   SINGLE_WP_PROMOTION,
   VALID_WP_PROMOTIONS,
 } from '../../../../tests/mocks/wordpress'
+import { logger } from '../../../utils/logger'
 
 const { mockFetch } = vi.hoisted(() => ({ mockFetch: vi.fn() }))
 
@@ -33,31 +37,22 @@ const run = (query: Record<string, string> = {}) =>
     _query: query,
   } as unknown)
 
-/** Convenience: run with ?all=1 query param. */
 const runAll = () => run({ all: '1' })
 
+/** True for the batched media collection URL (`/wp/v2/media?include=…`). */
+const isMediaBatch = (url: string) => url.includes('/wp/v2/media?include=')
+
 /**
- * Route mock: routes the `promociones` list URL by query —
- * `?…home=1…` → the PRIMARY (home-flagged) list; the plain `?activa=1` (no
- * `home=1`) → the FALLBACK list. Any `/wp/v2/media/<id>` URL returns the media
- * fixture. This mirrors the route's primary→fallback selection, then per-image
- * media resolution.
- *
- * Pass a single list to serve it for the home query (fallback unused unless the
- * home list is empty — then pass `fallback` explicitly).
+ * Route mock: serves the single `?activa=1` promociones list (both surfaces use
+ * it now — the `home=1` primary was removed) and the batched media collection
+ * URL. Each requested media ID maps to a deterministic per-ID URL.
  */
-function mockUpstream(
-  home: unknown,
-  { fallback = home, media = makeMediaResponse() } = {}
-) {
+function mockUpstream(list: unknown) {
   mockFetch.mockImplementation((url: string) => {
-    if (url.includes('/wp-json/wp/v2/media/')) {
-      return Promise.resolve(media)
+    if (isMediaBatch(url)) {
+      return Promise.resolve(makeMediaBatchResponse(url))
     }
-    if (url.includes('home=1')) {
-      return Promise.resolve(home)
-    }
-    return Promise.resolve(fallback)
+    return Promise.resolve(list)
   })
 }
 
@@ -66,166 +61,206 @@ describe('GET /api/v1/content/promotions', () => {
     vi.clearAllMocks()
   })
 
-  it('returns the home-flagged promos capped at 3, sorted by date desc', async () => {
+  it('returns ALL active promos (no cap), sorted by date desc — same as ?all=1', async () => {
     mockUpstream(VALID_WP_PROMOTIONS)
     const res = await run()
     expect(res.ok).toBe(true)
-    expect(res.promotions).toHaveLength(3)
-    const ids = res.promotions.map(p => p.id)
-    // any active type: 13(06-20) > 15-express(06-19) > 11(06-15); inactive(14)
-    // excluded; invalid(16) dropped during validation; 12/10 fall outside top 3.
-    expect(ids).toEqual(['13', '15', '11'])
+    // All 5 active image-bearing promos (10,11,12,13,15); inactive 14 + invalid
+    // 16 excluded. Newest-first: 13(06-20) 15(06-19) 11(06-15) 12(06-10) 10(06-01).
+    expect(res.promotions.map(p => p.id)).toEqual([
+      '13',
+      '15',
+      '11',
+      '12',
+      '10',
+    ])
   })
 
-  it('returns the PRIMARY home=1 set (capped 3) without a fallback fetch', async () => {
-    mockUpstream(HOME_WP_PROMOTIONS)
-    const res = await run()
-    expect(res.ok).toBe(true)
-    // both home-flagged promos, newest first (22:06-18 > 21:06-17).
-    expect(res.promotions.map(p => p.id)).toEqual(['22', '21'])
-    // only the home=1 query was issued (plus media); no activa=1 fallback.
+  it('queries ONLY the activa=1 list — never the stale home=1 filter', async () => {
+    mockUpstream(VALID_WP_PROMOTIONS)
+    await run()
     const listUrls = mockFetch.mock.calls
       .map(call => String(call[0]))
       .filter(url => url.includes('/wp-json/wp/v2/promociones'))
     expect(listUrls).toHaveLength(1)
-    expect(listUrls[0]).toContain('home=1')
+    expect(listUrls[0]).not.toContain('home=1')
+    expect(listUrls[0]).toContain('activa=1')
   })
 
-  it('FALLS BACK to activa=1 when the home=1 query returns []', async () => {
-    mockUpstream(EMPTY_WP_PROMOTIONS, { fallback: VALID_WP_PROMOTIONS })
-    const res = await run()
-    expect(res.ok).toBe(true)
-    // fallback (all active) capped to the 3 newest active.
-    expect(res.promotions.map(p => p.id)).toEqual(['13', '15', '11'])
-    // both list queries were issued: home=1 (empty) then activa=1 fallback.
-    const listUrls = mockFetch.mock.calls
-      .map(call => String(call[0]))
-      .filter(url => url.includes('/wp-json/wp/v2/promociones'))
-    expect(listUrls.some(url => url.includes('home=1'))).toBe(true)
-    expect(listUrls.some(url => !url.includes('home=1'))).toBe(true)
-  })
-
-  it('returns { promotions: [], ok: false } when both home=1 and activa=1 are empty', async () => {
-    mockUpstream(EMPTY_WP_PROMOTIONS, { fallback: EMPTY_WP_PROMOTIONS })
-    const res = await run()
-    expect(res).toEqual({ promotions: [], ok: false })
+  it('returns { promotions: [], ok: false } when the activa=1 list is empty', async () => {
+    mockUpstream(EMPTY_WP_PROMOTIONS)
+    expect(await run()).toEqual({ promotions: [], ok: false })
   })
 
   it('never includes inactive promotions but does include active express', async () => {
     mockUpstream(VALID_WP_PROMOTIONS)
-    const res = await run()
-    const promos = res.promotions as Array<{ active: boolean; type: string }>
+    const promos = (await run()).promotions as Array<{
+      active: boolean
+      type: string
+    }>
     expect(promos.every(p => p.active)).toBe(true)
-    // express(15) is active and recent enough to appear in the top 3.
     expect(promos.some(p => p.type === 'express')).toBe(true)
   })
 
   it('drops individually invalid items but keeps the valid ones', async () => {
     mockUpstream(VALID_WP_PROMOTIONS)
-    const res = await run()
-    const ids = res.promotions.map(p => p.id)
+    const ids = (await run()).promotions.map(p => p.id)
     expect(ids).not.toContain('16')
   })
 
-  it('maps the bilingual ACF fields into { es, en } view shapes', async () => {
+  it('projects badge {es,en}, decoded title string, type and color', async () => {
     mockUpstream(SINGLE_WP_PROMOTION)
     const res = await run()
     expect(res.promotions).toHaveLength(1)
     const promo = res.promotions[0] as {
-      title: { es: string; en: string }
+      title: string
       badge: { es: string; en: string }
-      validity: { es: string; en: string }
       type: string
       color: string
     }
-    expect(promo.title).toEqual({ es: 'Martes 2x1', en: 'Tuesday 2for1' })
+    expect(promo.title).toBe('2×1 en sushi')
     expect(promo.badge).toEqual({ es: '2x1', en: '2for1' })
-    expect(promo.validity).toEqual({ es: 'Solo martes', en: 'Tuesdays only' })
     expect(promo.type).toBe('ayce')
     expect(promo.color).toBe('orange')
   })
 
-  it('resolves acf.imagen media ID to a source_url', async () => {
-    mockUpstream(SINGLE_WP_PROMOTION)
-    const res = await run()
-    expect(res.promotions[0]?.imageUrl).toBe(
-      'https://cms.sumo.com.mx/wp-content/uploads/promo.jpg'
-    )
+  // ── Batched media resolution ────────────────────────────────────────────────
+
+  it('resolves all media in a SINGLE batched request (not one per image)', async () => {
+    mockUpstream(VALID_WP_PROMOTIONS)
+    await run()
+    const mediaCalls = mockFetch.mock.calls
+      .map(call => String(call[0]))
+      .filter(url => url.includes('/wp/v2/media'))
+    expect(mediaCalls).toHaveLength(1)
+    expect(mediaCalls[0]).toContain('/wp/v2/media?include=')
+    expect(mediaCalls[0]).toContain('per_page=100')
+    // No per-item /media/<id> requests.
+    expect(mediaCalls[0]).not.toMatch(/\/media\/\d+/)
   })
 
-  it('degrades to imageUrl=null when media resolution fails', async () => {
+  it('resolves three distinct media IDs to three distinct URLs', async () => {
+    mockUpstream(DISTINCT_IMAGES_WP_PROMOTION)
+    const promo = (await run()).promotions[0] as {
+      imageDesktopUrl: string
+      imageTabletUrl: string
+      imageMovilUrl: string
+    }
+    expect(promo.imageDesktopUrl).toBe('https://cdn.test/media/100.jpg')
+    expect(promo.imageTabletUrl).toBe('https://cdn.test/media/200.jpg')
+    expect(promo.imageMovilUrl).toBe('https://cdn.test/media/300.jpg')
+  })
+
+  it('falls back tablet/mobile to the desktop URL when IDs are identical', async () => {
+    mockUpstream(SINGLE_WP_PROMOTION)
+    const promo = (await run()).promotions[0] as {
+      imageDesktopUrl: string
+      imageTabletUrl: string
+      imageMovilUrl: string
+    }
+    expect(promo.imageDesktopUrl).toBe('https://cdn.test/media/29.jpg')
+    expect(promo.imageTabletUrl).toBe('https://cdn.test/media/29.jpg')
+    expect(promo.imageMovilUrl).toBe('https://cdn.test/media/29.jpg')
+  })
+
+  it('falls back tablet/mobile to desktop when their media ID is null', async () => {
     mockFetch.mockImplementation((url: string) => {
-      if (url.includes('/wp-json/wp/v2/media/')) {
-        return Promise.reject(new Error('404 not found'))
-      }
-      return Promise.resolve(SINGLE_WP_PROMOTION)
+      if (isMediaBatch(url)) return Promise.resolve(makeMediaBatchResponse(url))
+      return Promise.resolve(
+        HOME_WP_PROMOTIONS.map(p => ({
+          ...(p as Record<string, unknown>),
+          acf: {
+            ...(p as { acf: Record<string, unknown> }).acf,
+            imagen_desktop: 50,
+            imagen_tablet: null,
+            imagen_movil: null,
+          },
+        }))
+      )
+    })
+    const promo = (await run()).promotions[0] as {
+      imageDesktopUrl: string
+      imageTabletUrl: string
+      imageMovilUrl: string
+    }
+    expect(promo.imageDesktopUrl).toBe('https://cdn.test/media/50.jpg')
+    expect(promo.imageTabletUrl).toBe('https://cdn.test/media/50.jpg')
+    expect(promo.imageMovilUrl).toBe('https://cdn.test/media/50.jpg')
+  })
+
+  // ── Robustness: promos with IDs are NOT dropped on transient media failure ──
+
+  it('KEEPS promos that have configured image IDs even if the media batch FAILS', async () => {
+    const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+    const errorSpy = vi.spyOn(logger, 'error').mockImplementation(() => {})
+    mockFetch.mockImplementation((url: string) => {
+      if (isMediaBatch(url)) return Promise.reject(new Error('media timeout'))
+      return Promise.resolve(VALID_WP_PROMOTIONS)
     })
     const res = await run()
+    // Promos are retained (not permanently dropped) despite the media timeout.
     expect(res.ok).toBe(true)
-    expect(res.promotions[0]?.imageUrl).toBeNull()
+    expect(res.promotions.map(p => p.id)).toEqual([
+      '13',
+      '15',
+      '11',
+      '12',
+      '10',
+    ])
+    // Transient media failure logs at WARN, never ERROR.
+    expect(warnSpy).toHaveBeenCalled()
+    expect(errorSpy).not.toHaveBeenCalled()
+    warnSpy.mockRestore()
+    errorSpy.mockRestore()
   })
 
-  it('uses imageUrl=null without a media fetch when no image is attached', async () => {
-    mockUpstream(VALID_WP_PROMOTIONS)
+  it('SKIPS only promos with NO configured image IDs at all, quietly', async () => {
+    const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+    const errorSpy = vi.spyOn(logger, 'error').mockImplementation(() => {})
+    mockUpstream(MIXED_IMAGE_WP_PROMOTIONS)
     const res = await run()
-    expect(res.promotions.every(p => p.imageUrl === null)).toBe(true)
+    // Promo 60 has an image ID → kept; promo 58 has all-null IDs → skipped.
+    expect(res.promotions.map(p => p.id)).toEqual(['60'])
+    expect(res.ok).toBe(true)
+    expect(warnSpy).not.toHaveBeenCalled()
+    expect(errorSpy).not.toHaveBeenCalled()
+    warnSpy.mockRestore()
+    errorSpy.mockRestore()
   })
 
-  it('returns { promotions: [], ok: false } and HTTP 200 on upstream failure', async () => {
-    mockFetch.mockRejectedValue(new Error('ECONNREFUSED secret-host'))
+  it('returns [] when ALL promos have no configured image (surface hides)', async () => {
+    mockUpstream(HOME_WP_PROMOTIONS_NO_IMAGES)
     const res = await run()
-    expect(res).toEqual({ promotions: [], ok: false })
+    expect(res.promotions).toHaveLength(0)
+    expect(res.ok).toBe(true)
   })
 
-  it('never leaks the upstream error body on failure', async () => {
-    mockFetch.mockRejectedValue(new Error('500 internal: db password leaked'))
-    const res = await run()
-    expect(JSON.stringify(res)).not.toContain('password')
-  })
+  // ── URL shape + degradation ────────────────────────────────────────────────
 
-  it('requests the pretty-permalink PRIMARY URL with activa=1&home=1&per_page=100', async () => {
+  it('requests the pretty-permalink list URL with activa=1&per_page=100 (no home=1)', async () => {
     mockUpstream(VALID_WP_PROMOTIONS)
     await run()
     const listUrl = mockFetch.mock.calls
       .map(call => String(call[0]))
       .find(url => url.includes('/wp-json/wp/v2/promociones'))
     expect(listUrl).toBe(
-      'https://cms.example.test/wp-json/wp/v2/promociones?activa=1&home=1&per_page=100'
-    )
-    expect(listUrl).not.toContain('rest_route')
-  })
-
-  it('requests the pretty-permalink FALLBACK URL with activa=1&per_page=100', async () => {
-    mockUpstream(EMPTY_WP_PROMOTIONS, { fallback: VALID_WP_PROMOTIONS })
-    await run()
-    const fallbackUrl = mockFetch.mock.calls
-      .map(call => String(call[0]))
-      .find(
-        url =>
-          url.includes('/wp-json/wp/v2/promociones') && !url.includes('home=1')
-      )
-    expect(fallbackUrl).toBe(
       'https://cms.example.test/wp-json/wp/v2/promociones?activa=1&per_page=100'
     )
-    expect(fallbackUrl).not.toContain('rest_route')
   })
 
-  it('resolves media via the pretty-permalink media URL', async () => {
-    mockUpstream(SINGLE_WP_PROMOTION)
-    await run()
-    const mediaCall = mockFetch.mock.calls
-      .map(call => String(call[0]))
-      .find(url => url.includes('/wp/v2/media/'))
-    expect(mediaCall).toBe('https://cms.example.test/wp-json/wp/v2/media/29')
-    expect(mediaCall).not.toContain('rest_route')
+  it('returns { promotions: [], ok: false } and HTTP 200 on upstream failure', async () => {
+    mockFetch.mockRejectedValue(new Error('ECONNREFUSED secret-host'))
+    expect(await run()).toEqual({ promotions: [], ok: false })
+  })
+
+  it('never leaks the upstream error body on failure', async () => {
+    mockFetch.mockRejectedValue(new Error('500 internal: db password leaked'))
+    expect(JSON.stringify(await run())).not.toContain('password')
   })
 
   it('returns { promotions: [], ok: false } for a malformed (non-array) payload', async () => {
-    // A non-array payload parses to [] for BOTH the primary and the fallback
-    // (the fallback is served the same malformed body), so the section hides.
     mockUpstream(MALFORMED_WP_RESPONSE)
-    const res = await run()
-    expect(res).toEqual({ promotions: [], ok: false })
+    expect(await run()).toEqual({ promotions: [], ok: false })
   })
 })
 
@@ -236,66 +271,49 @@ describe('GET /api/v1/content/promotions?all=1', () => {
     vi.clearAllMocks()
   })
 
-  it('returns all 5 active promos (no 3-cap) when all=1', async () => {
-    // VALID_WP_PROMOTIONS has 5 active items (ids 10,11,12,13,15) + 1 inactive (14) + 1 invalid (16)
+  it('returns all 5 active promos (no cap) when all=1, newest-first', async () => {
     mockFetch.mockImplementation((url: string) => {
-      if (url.includes('/wp-json/wp/v2/media/')) {
-        return Promise.resolve(makeMediaResponse())
-      }
+      if (isMediaBatch(url)) return Promise.resolve(makeMediaBatchResponse(url))
       return Promise.resolve(VALID_WP_PROMOTIONS)
     })
     const res = await runAll()
     expect(res.ok).toBe(true)
-    // 5 active promos, no 3-cap applied
     expect(res.promotions).toHaveLength(5)
     const ids = res.promotions.map(p => p.id)
-    // includes all active items, not capped
-    expect(ids).toContain('10')
-    expect(ids).toContain('11')
-    expect(ids).toContain('12')
-    expect(ids).toContain('13')
-    expect(ids).toContain('15')
-    // inactive (14) excluded; invalid (16) dropped
+    for (const id of ['10', '11', '12', '13', '15']) {
+      expect(ids).toContain(id)
+    }
     expect(ids).not.toContain('14')
     expect(ids).not.toContain('16')
   })
 
-  it('returns { promotions: [], ok: false } when WP returns an error with all=1', async () => {
-    mockFetch.mockRejectedValue(new Error('ECONNREFUSED'))
-    const res = await runAll()
-    expect(res).toEqual({ promotions: [], ok: false })
+  it('resolves all media in ONE batched request with all=1', async () => {
+    mockFetch.mockImplementation((url: string) => {
+      if (isMediaBatch(url)) return Promise.resolve(makeMediaBatchResponse(url))
+      return Promise.resolve(VALID_WP_PROMOTIONS)
+    })
+    await runAll()
+    const mediaCalls = mockFetch.mock.calls
+      .map(call => String(call[0]))
+      .filter(url => url.includes('/wp/v2/media'))
+    expect(mediaCalls).toHaveLength(1)
+    expect(mediaCalls[0]).toContain('/wp/v2/media?include=')
   })
 
-  it('degrades to imageUrl=null for a single media failure without aborting the list', async () => {
-    // Item 29 has imagen=29; others have imagen=0 → null without a media fetch
-    const promoWithImage = makeMediaResponse(
-      'https://cms.sumo.com.mx/wp-content/uploads/promo.jpg'
-    )
-    mockFetch.mockImplementation((url: string) => {
-      if (url.includes('/wp-json/wp/v2/media/')) {
-        return Promise.reject(new Error('media 404'))
-      }
-      return Promise.resolve(SINGLE_WP_PROMOTION)
-    })
-    const res = await runAll()
-    expect(res.ok).toBe(true)
-    expect(res.promotions[0]?.imageUrl).toBeNull()
-    // Suppress the unused variable lint warning
-    void promoWithImage
+  it('returns { promotions: [], ok: false } when WP returns an error with all=1', async () => {
+    mockFetch.mockRejectedValue(new Error('ECONNREFUSED'))
+    expect(await runAll()).toEqual({ promotions: [], ok: false })
   })
 
   it('does NOT issue a home=1 query when all=1 is set', async () => {
     mockFetch.mockImplementation((url: string) => {
-      if (url.includes('/wp-json/wp/v2/media/')) {
-        return Promise.resolve(makeMediaResponse())
-      }
+      if (isMediaBatch(url)) return Promise.resolve(makeMediaBatchResponse(url))
       return Promise.resolve(VALID_WP_PROMOTIONS)
     })
     await runAll()
     const listUrls = mockFetch.mock.calls
       .map(call => String(call[0]))
       .filter(url => url.includes('/wp-json/wp/v2/promociones'))
-    // Should only issue one list query (activa=1, no home=1 filter)
     expect(listUrls).toHaveLength(1)
     expect(listUrls[0]).not.toContain('home=1')
     expect(listUrls[0]).toContain('activa=1')

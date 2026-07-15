@@ -7,8 +7,9 @@ const meta = {
   tags: ['autodocs'],
   parameters: {
     // A11Y EXCEPTION (brand lettering): the "ALL YOU CAN EAT" headline uses a
-    // logo-style treatment — white fill (--panel) over the cream hero with a
-    // thick black outline (--ink) via -webkit-text-stroke. axe's `color-contrast`
+    // logo-style treatment in the client-licensed Graphik Super font — white
+    // fill (--panel) over the cream hero with a thick black outline (--ink) via
+    // -webkit-text-stroke. axe's `color-contrast`
     // rule measures fill-vs-background only and cannot see the stroke, so it
     // would report a false positive; real legibility comes from the black
     // outline. We disable ONLY that one rule for this component (all other a11y

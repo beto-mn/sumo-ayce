@@ -2,80 +2,24 @@ import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { Promotion } from '@/types/content'
 import PromotionCard from './PromotionCard.vue'
 
-const AYCE_PROMO: Promotion = {
-  id: '1',
-  badge: { es: 'Martes', en: 'Tuesday' },
-  title: { es: 'Martes 2x1', en: 'Tuesday 2for1' },
-  description: {
-    es: 'Trae a un amigo y el segundo paga solo la mitad.',
-    en: 'Bring a friend and the second pays half price.',
-  },
-  validity: { es: 'Solo martes', en: 'Tuesdays only' },
-  color: 'orange',
-  type: 'ayce',
-  active: true,
-  publishedAt: '2026-06-01T00:00:00Z',
-  imageUrl: 'https://cms.sumo.com.mx/wp-content/uploads/martes-2x1.jpg',
-}
+const DESKTOP = 'https://placehold.co/1200x675/F37021/ffffff?text=Desktop'
+const TABLET = 'https://placehold.co/880x880/E85A9B/ffffff?text=Tablet'
+const MOVIL = 'https://placehold.co/520x650/F5C518/1A1209?text=Mobile'
 
-const EXPRESS_PROMO: Promotion = {
-  id: '2',
-  badge: { es: 'Express', en: 'Express' },
-  title: { es: 'SUMO Express', en: 'SUMO Express' },
-  description: {
-    es: 'All You Can Eat en formato compacto.',
-    en: 'All You Can Eat in a compact format.',
-  },
-  validity: { es: 'Todos los días', en: 'Every day' },
-  color: 'blue',
-  type: 'express',
-  active: true,
-  publishedAt: '2026-06-02T00:00:00Z',
-  imageUrl: 'https://cms.sumo.com.mx/wp-content/uploads/express.jpg',
-}
-
-const ALL_PROMO: Promotion = {
-  id: '3',
-  badge: { es: 'Sport Box', en: 'Sport Box' },
-  title: { es: 'Sumo Sport Box', en: 'Sumo Sport Box' },
-  description: {
-    es: 'Válido en AYCE y Express. Disfruta tu partido favorito.',
-    en: 'Valid at AYCE and Express. Enjoy your favorite match.',
-  },
-  validity: { es: 'Fines de semana', en: 'Weekends' },
-  color: 'blue',
-  type: 'all',
-  active: true,
-  publishedAt: '2026-06-03T00:00:00Z',
-  imageUrl: 'https://cms.sumo.com.mx/wp-content/uploads/sport-box.jpg',
-}
-
-const NO_IMAGE_PROMO: Promotion = {
-  ...AYCE_PROMO,
-  id: '4',
-  imageUrl: null,
-}
-
-const LONG_TEXT_PROMO: Promotion = {
-  id: '5',
-  badge: { es: 'Cumpleañeros', en: 'Birthday' },
-  title: {
-    es: 'Celebra tu cumpleaños con All You Can Eat gratis',
-    en: 'Celebrate your birthday with free All You Can Eat',
-  },
-  description: {
-    es: 'Presenta tu identificación oficial vigente el día de tu cumpleaños y disfruta tu AYCE sin costo. Válido solo en sucursales participantes.',
-    en: 'Present your valid official ID on your birthday and enjoy your AYCE for free. Valid only at participating locations.',
-  },
-  validity: {
-    es: 'El día de tu cumpleaños. Debe presentar identificación oficial.',
-    en: 'On your birthday only. Must present official ID.',
-  },
-  color: 'pink',
-  type: 'ayce',
-  active: true,
-  publishedAt: '2026-06-04T00:00:00Z',
-  imageUrl: 'https://cms.sumo.com.mx/wp-content/uploads/cumple.jpg',
+function promo(overrides: Partial<Promotion> = {}): Promotion {
+  return {
+    id: '1',
+    badge: { es: 'Martes', en: 'Tuesday' },
+    title: '2×1 en sushi',
+    color: 'orange',
+    type: 'ayce',
+    active: true,
+    publishedAt: '2026-06-01T00:00:00Z',
+    imageDesktopUrl: DESKTOP,
+    imageTabletUrl: TABLET,
+    imageMovilUrl: MOVIL,
+    ...overrides,
+  }
 }
 
 const meta = {
@@ -85,74 +29,114 @@ const meta = {
   argTypes: {
     promotion: {
       description:
-        'Full Promotion object including badge, title, description, validity, color, type, and optional imageUrl',
+        'Promotion object: badge (bilingual), decoded title, color, type, and the three responsive image URLs (desktop/tablet/mobile). The promo IMAGE is the full-bleed slide — no card frame. Two overlays: a labeled TYPE pill top-left (AYCE=orange, Express=blue, Ambos=orange→blue) and the WP color/day badge top-right.',
       control: { type: 'object' },
+      table: { category: 'Content' },
     },
   },
+  args: { promotion: promo() },
 } satisfies Meta<typeof PromotionCard>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  name: 'Default (AYCE, with image)',
-  args: { promotion: AYCE_PROMO },
+  name: 'Default (AYCE, orange)',
+}
+
+/** AYCE promo → orange type pill (top-left) labeled "AYCE". */
+export const TypeAyce: Story = {
+  name: 'Type: AYCE (orange pill)',
+  args: { promotion: promo({ type: 'ayce' }) },
+}
+
+/** Express promo → blue type pill (top-left) labeled "EXPRESS". */
+export const TypeExpress: Story = {
+  name: 'Type: Express (blue pill)',
+  args: {
+    promotion: promo({
+      type: 'express',
+      color: 'blue',
+      badge: { es: 'Express', en: 'Express' },
+    }),
+  },
+}
+
+/** Ambos ('all') → two-tone orange→blue pill labeled "AYCE + EXPRESS". */
+export const TypeAll: Story = {
+  name: 'Type: Ambos (two-tone pill)',
+  args: {
+    promotion: promo({
+      type: 'all',
+      color: 'yellow',
+      badge: { es: 'Todos', en: 'All' },
+    }),
+  },
+}
+
+export const Pink: Story = {
+  name: 'Pink badge',
+  args: {
+    promotion: promo({
+      color: 'pink',
+      badge: { es: 'Cumple', en: 'Birthday' },
+    }),
+  },
+}
+
+export const Blue: Story = {
+  name: 'Blue badge',
+  args: { promotion: promo({ color: 'blue' }) },
+}
+
+export const Yellow: Story = {
+  name: 'Yellow badge',
+  args: { promotion: promo({ color: 'yellow' }) },
+}
+
+export const Green: Story = {
+  name: 'Green badge',
+  args: { promotion: promo({ color: 'green' }) },
 }
 
 export const Express: Story = {
-  name: 'Express (blue accent)',
-  args: { promotion: EXPRESS_PROMO },
+  name: 'Express (blue scope)',
+  args: {
+    promotion: promo({
+      type: 'express',
+      color: 'blue',
+      badge: { es: 'Express', en: 'Express' },
+    }),
+  },
 }
 
-export const AllType: Story = {
-  name: 'All type (ink indicator)',
-  args: { promotion: ALL_PROMO },
+export const MissingResponsiveImages: Story = {
+  name: 'Missing tablet/mobile (desktop fallback)',
+  args: { promotion: promo({ imageTabletUrl: null, imageMovilUrl: null }) },
 }
 
 export const NoImage: Story = {
-  name: 'No image (non-interactive)',
-  args: { promotion: NO_IMAGE_PROMO },
+  name: 'No image (placeholder, not broken)',
+  args: {
+    promotion: promo({
+      imageDesktopUrl: null,
+      imageTabletUrl: null,
+      imageMovilUrl: null,
+    }),
+  },
 }
 
-export const LongText: Story = {
-  name: 'Long title & description',
-  args: { promotion: LONG_TEXT_PROMO },
+export const EmptyTitle: Story = {
+  name: 'Empty title (generic alt)',
+  args: { promotion: promo({ title: '' }) },
 }
 
-export const Mobile: Story = {
-  args: { promotion: AYCE_PROMO },
+export const MobileViewport: Story = {
+  name: 'Mobile viewport',
   parameters: { viewport: { defaultViewport: 'mobile1' } },
 }
 
-export const Desktop: Story = {
-  args: { promotion: AYCE_PROMO },
+export const DesktopViewport: Story = {
+  name: 'Desktop viewport',
   parameters: { viewport: { defaultViewport: 'desktop' } },
-}
-
-export const LocaleES: Story = {
-  name: 'Locale ES (español)',
-  args: { promotion: AYCE_PROMO },
-  parameters: { globals: { locale: 'es' } },
-}
-
-export const LocaleEN: Story = {
-  name: 'Locale EN (English)',
-  args: { promotion: AYCE_PROMO },
-  parameters: { globals: { locale: 'en' } },
-}
-
-export const MobileNarrow: Story = {
-  name: 'Narrow (360px)',
-  args: { promotion: LONG_TEXT_PROMO },
-  parameters: {
-    viewport: {
-      viewports: {
-        narrow: {
-          name: 'Narrow 360px',
-          styles: { width: '360px', height: '800px' },
-        },
-      },
-      defaultViewport: 'narrow',
-    },
-  },
 }

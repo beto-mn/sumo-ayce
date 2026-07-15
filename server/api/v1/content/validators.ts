@@ -6,30 +6,24 @@ import type {
   WpPromotionsResponse,
 } from '@/types/wordpress'
 import { logger } from '../../../utils/logger'
+import { decodeHtmlEntities } from './html-entities'
 
 /**
- * Zod schema for a single raw WordPress `promociones` item.
+ * Zod schema for a single raw WordPress `promociones` item (NEW model).
  *
  * The live endpoint (`GET /wp-json/wp/v2/promociones`) returns top-level WP
- * fields plus an `acf` group that holds the editorial content (see
- * {@link WpPromotion} / {@link WpPromotionAcf} for the upstream TS shape).
- * Bilingual values live under `acf.*_es` / `acf.*_en`; `acf.imagen` is a media
- * **ID** (resolved to a URL later by the route). The Zod schema below is the
- * runtime source of truth — the TS types are compile-time documentation only.
- * Unknown/extra fields are ignored; an item that fails validation is dropped
- * individually (never the whole response).
+ * fields — including `title.rendered`, the SOURCE of the promo title — plus an
+ * `acf` group holding `badge_*`, `color`, `tipo`, `activa`/`home`, and three
+ * responsive image media IDs (see {@link WpPromotion} / {@link WpPromotionAcf}).
+ * The editorial text fields (`titulo_*`, `descripcion_*`, `vigencia_*`) and the
+ * single `imagen` field were removed upstream; requiring the old `titulo_es`
+ * was what dropped every promotion, so it is gone here. Unknown/extra fields
+ * are ignored; an item that fails validation is dropped individually (never the
+ * whole response).
  */
 const acfSchema = z.object({
   badge_es: z.string().min(1),
   badge_en: z.string().optional(),
-  titulo_es: z.string().min(1),
-  titulo_en: z.string().optional(),
-  // Allow empty — a promo without description/validity still renders,
-  // rather than being silently dropped.
-  descripcion_es: z.string().default(''),
-  descripcion_en: z.string().optional(),
-  vigencia_es: z.string().default(''),
-  vigencia_en: z.string().optional(),
   // Accept any string for the editor-controlled badge color; unknown values
   // fall back to a default in `mapPromotion` rather than dropping the promo.
   color: z.string().min(1),
@@ -40,8 +34,13 @@ const acfSchema = z.object({
     .union([z.boolean(), z.number(), z.string()])
     .transform(v => v === true || v === 1 || v === '1'),
   home: z.union([z.boolean(), z.number(), z.string()]).optional(),
-  // Media ID (number) or 0/false/'' when no image is attached.
-  imagen: z.union([z.number(), z.string(), z.boolean()]).optional(),
+  // Three responsive image fields — each a media ID (number) or 0/''/absent.
+  // `.nullish()` (nullable + optional): the client may leave these as `null`
+  // when no image is uploaded yet; such promos must still PARSE (they are
+  // filtered out later, after resolution, rather than dropped at validation).
+  imagen_desktop: z.union([z.number(), z.string(), z.boolean()]).nullish(),
+  imagen_tablet: z.union([z.number(), z.string(), z.boolean()]).nullish(),
+  imagen_movil: z.union([z.number(), z.string(), z.boolean()]).nullish(),
 })
 
 /**
@@ -61,18 +60,25 @@ type _AcfFieldsMatchUpstream =
 const rawPromotionSchema = z.object({
   id: z.union([z.string(), z.number()]),
   date: z.string().min(1),
+  title: z.object({ rendered: z.string() }),
   acf: acfSchema,
 })
 
 export type RawPromotion = z.infer<typeof rawPromotionSchema>
 
 /**
- * A parsed promotion still awaiting image resolution. `imageMediaId` is the
- * WordPress media ID (or null when none is attached); the route resolves it to
- * a `source_url` and produces the final `Promotion`.
+ * A parsed promotion still awaiting image resolution. The three media IDs (or
+ * null when none is attached) are resolved to `source_url`s by the route, which
+ * then produces the final {@link Promotion}.
  */
-export interface ParsedPromotion extends Omit<Promotion, 'imageUrl'> {
-  imageMediaId: number | null
+export interface ParsedPromotion
+  extends Omit<
+    Promotion,
+    'imageDesktopUrl' | 'imageTabletUrl' | 'imageMovilUrl'
+  > {
+  desktopMediaId: number | null
+  tabletMediaId: number | null
+  movilMediaId: number | null
 }
 
 /** Accepted badge colors; anything else normalizes to {@link DEFAULT_COLOR}. */
@@ -92,7 +98,7 @@ function toPromotionColor(value: string): Promotion['color'] {
     : DEFAULT_COLOR
 }
 
-/** Coerce the loosely-typed `acf.imagen` field to a positive media ID or null. */
+/** Coerce a loosely-typed `acf.imagen_*` field to a positive media ID or null. */
 function toMediaId(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
     return value
@@ -110,17 +116,14 @@ function mapPromotion(raw: RawPromotion): ParsedPromotion {
   return {
     id: String(raw.id),
     badge: { es: acf.badge_es, en: acf.badge_en ?? acf.badge_es },
-    title: { es: acf.titulo_es, en: acf.titulo_en ?? acf.titulo_es },
-    description: {
-      es: acf.descripcion_es,
-      en: acf.descripcion_en ?? acf.descripcion_es,
-    },
-    validity: { es: acf.vigencia_es, en: acf.vigencia_en ?? acf.vigencia_es },
+    title: decodeHtmlEntities(raw.title.rendered.trim()),
     color: toPromotionColor(acf.color),
     type: acf.tipo,
     active: acf.activa,
     publishedAt: raw.date,
-    imageMediaId: toMediaId(acf.imagen),
+    desktopMediaId: toMediaId(acf.imagen_desktop),
+    tabletMediaId: toMediaId(acf.imagen_tablet),
+    movilMediaId: toMediaId(acf.imagen_movil),
   }
 }
 

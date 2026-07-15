@@ -1,17 +1,17 @@
 @import url("./tokens.css");
 
 /*
- * Self-hosted Titan One (Google Fonts, SIL OFL 1.1). Latin-subset WOFF2, single
- * weight (400). Used ONLY by the hero headline utility (.hero-headline) — the
- * general display font stays Bricolage Grotesque (--disp). License note:
- * public/fonts/OFL-TitanOne.txt.
+ * Self-hosted Graphik Super (client-licensed). WOFF2, single weight (400). Used
+ * ONLY by the hero headline utility (.hero-headline) — the general display font
+ * stays Bricolage Grotesque (--disp). License note:
+ * public/fonts/GRAPHIK-SUPER-LICENSE.txt.
  */
 @font-face {
-  font-family: "Titan One";
+  font-family: "Graphik Super";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("/fonts/titan-one-regular.woff2") format("woff2");
+  src: url("/fonts/graphik-super.woff2") format("woff2");
 }
 
 *,
@@ -60,7 +60,7 @@ body {
 }
 
 /*
- * Hero headline — logo-style lettering (client chose Titan One).
+ * Hero headline — logo-style lettering (client-licensed Graphik Super).
  * White fill (--panel) with a thick black outline (--ink) via -webkit-text-stroke
  * + paint-order so the stroke sits behind the fill, plus a subtle ink drop
  * shadow like the SUMO logo. No orange boxes. Tokens only, no inline hex.
@@ -82,7 +82,7 @@ body {
   align-items: flex-start;
   gap: 0;
   margin: 0;
-  font-family: "Titan One", system-ui, sans-serif;
+  font-family: "Graphik Super", system-ui, sans-serif;
   font-weight: 400;
   font-size: clamp(48px, 17vw, 120px);
   /* No horizontal stagger on mobile/tablet (lines sit directly stacked), so keep

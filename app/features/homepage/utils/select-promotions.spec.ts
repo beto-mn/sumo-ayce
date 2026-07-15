@@ -6,14 +6,14 @@ function makePromo(overrides: Partial<Promotion> = {}): Promotion {
   return {
     id: '1',
     badge: { es: '2x1', en: '2for1' },
-    title: { es: 'Promo', en: 'Promo' },
-    description: { es: 'desc', en: 'desc' },
-    validity: { es: 'hoy', en: 'today' },
+    title: 'Promo',
     color: 'orange',
     type: 'ayce',
     active: true,
     publishedAt: '2026-06-10T00:00:00Z',
-    imageUrl: null,
+    imageDesktopUrl: null,
+    imageTabletUrl: null,
+    imageMovilUrl: null,
     ...overrides,
   }
 }
@@ -50,14 +50,14 @@ describe('selectPromotions', () => {
     expect(out.map(p => p.id)).toEqual(['new', 'mid', 'old'])
   })
 
-  it('slices to a maximum of 3 promotions', () => {
+  it('keeps ALL active promotions (no cap) for the full-bleed carousel', () => {
     const input = Array.from({ length: 6 }, (_, i) =>
       makePromo({ id: String(i), publishedAt: `2026-06-0${i + 1}T00:00:00Z` })
     )
-    expect(selectPromotions(input)).toHaveLength(3)
+    expect(selectPromotions(input)).toHaveLength(6)
   })
 
-  it('returns fewer than 3 without padding when fewer exist', () => {
+  it('returns a single promotion when only one exists', () => {
     expect(selectPromotions([makePromo({ id: 'only' })])).toHaveLength(1)
   })
 
