@@ -7,13 +7,13 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        // Preload the self-hosted Titan One headline font (hero LCP text).
-        // Single Latin-subset woff2, font-display: swap declared in base.css.
+        // Preload the self-hosted Graphik Super headline font (hero LCP text).
+        // Single woff2, font-display: swap declared in base.css.
         {
           rel: 'preload',
           as: 'font',
           type: 'font/woff2',
-          href: '/fonts/titan-one-regular.woff2',
+          href: '/fonts/graphik-super.woff2',
           crossorigin: '',
         },
         // SVG favicon = the official vertical SUMO logo (modern browsers).
@@ -101,6 +101,11 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['.ngrok-free.app'],
+    },
+    // Pre-bundle the carousel lib so Vite doesn't discover it on first use and
+    // trigger a dev page reload (harmless dev-only optimization hint).
+    optimizeDeps: {
+      include: ['embla-carousel-vue'],
     },
   },
   alias: {

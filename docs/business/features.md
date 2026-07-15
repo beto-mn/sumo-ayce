@@ -26,7 +26,7 @@ Files in the prototype:
 
 - **Bilingual ES/EN** — every UI + content string has `es`/`en`. Default Spanish. Language toggle in nav. → Nuxt `@nuxtjs/i18n`. Content strings come bilingual from WordPress (ACF fields `*_es` / `*_en` or WPML/Polylang).
 - **Per-type accent** — AYCE = orange, Express = blue (`--accent` swap). Blue is Express-exclusive. See `docs/business/overview.md` §6.
-- **Brand copy rules** — "Estilo americano-japonés" (never "comida japonesa"); "All You Can Eat" (never "Buffet").
+- **Brand copy rules** — "Estilo americano-japonés" (never "comida japonesa").
 - **Responsive / mobile-first** — primary traffic is mobile. Breakpoints 880px / 520px (see `docs/business/overview.md` §9).
 - **Content via WordPress REST/GraphQL**, ISR 60s. App features (reservations, loyalty, staff) talk to Neon directly, not WordPress.
 - **WordPress admin setup is out of scope for this repo** — CPTs and ACF fields are configured by the user in WordPress admin. This repo only consumes the REST/GraphQL endpoints.

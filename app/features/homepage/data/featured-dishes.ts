@@ -14,6 +14,8 @@ export const FEATURED_DISHES: FeaturedDish[] = [
     imageUrl: null,
     badge: 'Top',
     category: 'frio',
+    locationType: 'ayce',
+    includedInAyce: true,
   },
   {
     id: 'd2',
@@ -25,6 +27,8 @@ export const FEATURED_DISHES: FeaturedDish[] = [
     imageUrl: null,
     badge: null,
     category: 'rolls',
+    locationType: 'ayce',
+    includedInAyce: true,
   },
   {
     id: 'd3',
@@ -36,6 +40,8 @@ export const FEATURED_DISHES: FeaturedDish[] = [
     imageUrl: null,
     badge: 'Picante',
     category: 'caliente',
+    locationType: 'ayce',
+    includedInAyce: true,
   },
   {
     id: 'd4',
@@ -47,6 +53,8 @@ export const FEATURED_DISHES: FeaturedDish[] = [
     imageUrl: null,
     badge: null,
     category: 'caliente',
+    locationType: 'ayce',
+    includedInAyce: true,
   },
   {
     id: 'd5',
@@ -58,5 +66,7 @@ export const FEATURED_DISHES: FeaturedDish[] = [
     imageUrl: null,
     badge: null,
     category: 'bebidas',
+    locationType: 'ayce',
+    includedInAyce: true,
   },
 ]

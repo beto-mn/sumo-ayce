@@ -16,6 +16,7 @@ const categories: FullMenuCategory[] = [
   {
     key: 'cold_rolls',
     name: { es: 'Sushi Frío', en: 'Cold Rolls' },
+    note: null,
     displayOrder: 0,
     dishes: [
       {
@@ -26,15 +27,18 @@ const categories: FullMenuCategory[] = [
         badge: null,
         price: null,
         incluido: true,
+        includedInAyce: true,
         drinkGroup: null,
         drinkSubGroup: null,
         requiresSauce: false,
+        featured: false,
       },
     ],
   },
   {
     key: 'wings',
     name: { es: 'Alitas & Boneless', en: 'Wings & Boneless' },
+    note: null,
     displayOrder: 1,
     dishes: [],
   },
@@ -71,6 +75,15 @@ describe('MenuDishGrid', () => {
     expect(wrapper.findAll('section')).toHaveLength(categories.length)
   })
 
+  it('renders the heading from the DB category name (locale), not an i18n key', () => {
+    const headings = mountGrid()
+      .findAll('h2')
+      .map(h => h.text())
+    // ES locale → name.es; NOT "menu.category.cold_rolls".
+    expect(headings[0]).toBe('Sushi Frío')
+    expect(headings[1]).toBe('Alitas & Boneless')
+  })
+
   it('sets the section id to the category key (for anchor navigation)', () => {
     const wrapper = mountGrid()
     const sections = wrapper.findAll('section')
@@ -94,5 +107,55 @@ describe('MenuDishGrid', () => {
     // carta modality passed — this is confirmed by the component passing modality prop to MenuDishCard
     const wrapper = mountGrid({ modality: 'carta' })
     expect(wrapper.exists()).toBe(true)
+  })
+
+  it('renders exactly one section when given the single active category', () => {
+    const wrapper = mountGrid({ categories: categories.slice(0, 1) })
+    const sections = wrapper.findAll('section')
+    expect(sections).toHaveLength(1)
+    expect(sections[0]?.attributes('id')).toBe('cold_rolls')
+  })
+
+  it('does NOT render a note box for a category without a note', () => {
+    const wrapper = mountGrid()
+    expect(wrapper.find('[data-testid="category-note"]').exists()).toBe(false)
+  })
+
+  it('renders the category note at the TOP of the section when present', () => {
+    const comboSection: FullMenuCategory = {
+      key: 'kids',
+      name: { es: 'Combo Infantil', en: 'Kids Combo' },
+      note: {
+        es: 'Incluye papas a la francesa (100 g)…',
+        en: 'Includes french fries (100 g)…',
+      },
+      displayOrder: 0,
+      dishes: [
+        {
+          id: 'k1',
+          name: { es: 'Kid Burger', en: 'Kid Burger' },
+          description: { es: 'Smash.', en: 'Smash.' },
+          imageUrl: null,
+          badge: null,
+          price: '149.00',
+          incluido: false,
+          includedInAyce: false,
+          drinkGroup: null,
+          drinkSubGroup: null,
+          requiresSauce: false,
+          featured: false,
+        },
+      ],
+    }
+    const wrapper = mountGrid({ categories: [comboSection] })
+    const note = wrapper.find('[data-testid="category-note"]')
+    expect(note.exists()).toBe(true)
+    expect(note.text()).toContain('papas a la francesa')
+    // The note precedes the dish grid within the section.
+    const section = wrapper.find('section')
+    const noteIdx = section.html().indexOf('category-note')
+    const cardIdx = section.html().indexOf('dish-card-stub')
+    expect(noteIdx).toBeGreaterThan(-1)
+    expect(noteIdx).toBeLessThan(cardIdx)
   })
 })

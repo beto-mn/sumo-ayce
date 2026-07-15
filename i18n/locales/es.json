@@ -99,7 +99,19 @@
       "express": "Sumo Express",
       "ayce": "Sumo AYCE"
     },
+    "type": {
+      "ayce": "AYCE",
+      "express": "EXPRESS",
+      "all": "AYCE + EXPRESS"
+    },
     "empty": "No hay promociones disponibles en este momento.",
+    "imageAltFallback": "Promoción SUMO",
+    "carousel": {
+      "label": "Promociones",
+      "prev": "Promoción anterior",
+      "next": "Promoción siguiente",
+      "goToSlide": "Ir a la promoción {n}"
+    },
     "seo": {
       "title": "Promociones Sumo",
       "description": "Descubre todas las promociones activas de SUMO All You Can Eat. Martes 2x1, cumpleañeros, jueves especiales y más."
@@ -140,6 +152,14 @@
       "whatsappLabel": "WhatsApp de la sucursal",
       "emailLabel": "Correo electrónico",
       "socialTitle": "Síguenos"
+    },
+    "jobs": {
+      "heading": "Bolsa de trabajo",
+      "lead": "¡Únete a nuestro equipo! No te pierdas la oportunidad de trabajar con nosotros.",
+      "body": "¿Cómo puedes ser parte? Buscamos chicos Sumo proactivos, responsables y con la mejor actitud en servicio, si crees cumplir con esos requisitos ya solamente tienes que llenar con tus datos personales el siguiente formulario y esperar a que un encargado se comunique contigo.",
+      "phoneLabel": "Contáctanos por WhatsApp",
+      "phone": "+525584406639",
+      "phoneDisplay": "+52 55 8440 6639"
     },
     "email": "contacto{'@'}sumo.com.mx",
     "socialInstagram": "https://www.instagram.com/sumo_allyoucaneat",
@@ -191,12 +211,12 @@
     "featured": {
       "title": "Los favoritos de nuestros clientes",
       "heading": "Garantía Sumo",
-      "subtitle": "Amado y recomendado por nuestros clientes"
+      "subtitle": "Amado y recomendado por nuestros clientes",
+      "openLabel": "Ver {name} en el menú"
     },
     "promotions": {
       "kicker": "Esta semana en SUMO",
       "title": "Promociones",
-      "cta": "Ver todas",
       "openLabel": "Ver promoción"
     },
     "reviews": {
@@ -215,28 +235,20 @@
   "menu": {
     "type": {
       "ayce": "AYCE",
-      "express": "Express"
+      "express": "Express",
+      "drinks": "Bebidas y coctelería",
+      "kids": "Kids",
+      "selector_label": "Selecciona tipo de restaurante: AYCE o Express"
     },
     "modality": {
       "buffet": "All You Can Eat",
-      "carta": "À la carte"
+      "carta": "Carta"
+    },
+    "kids": {
+      "ayce_heading": "All You Can Eat Kids",
+      "combo_heading": "Combo Infantil"
     },
     "category": {
-      "appetizers": "Entradas",
-      "salads": "Ensaladas",
-      "rice": "Arroz",
-      "ramen": "Ramen",
-      "burgers": "Burgers",
-      "sandwiches": "Sándwiches",
-      "burritos": "Burritos",
-      "hot_dogs": "Hot Dogs",
-      "cold_rolls": "Sushi Frío",
-      "hot_rolls": "Sushi Caliente",
-      "sweet_rolls": "Rollos Dulces",
-      "desserts": "Postres",
-      "wings": "Alitas & Boneless",
-      "kids": "Menú Kids",
-      "drinks": "Bebidas y coctelería",
       "empty": "Sin platillos en esta categoría"
     },
     "dish": {
@@ -245,13 +257,18 @@
       "no_image_alt": "Platillo SUMO",
       "sauce_required": "Elige tu salsa"
     },
-    "drink_group": {
-      "jumbo_cocktails": "Coctelería Jumbo",
-      "cantaritos_sumo_cups": "Cantaritos y Vasos Sumo",
-      "non_alcoholic": "Bebidas Sin Alcohol",
-      "sodas": "Refrescos y Bebidas",
-      "coffee_digestifs": "Café y Digestivos",
-      "beers_spirits": "Cervezas y Destilados"
+    "guarantee_alt": "Garantía Sumo",
+    "unavailable": "El menú no está disponible por el momento. Vuelve a intentarlo en unos minutos.",
+    "vaso_sumo": {
+      "picker_label": "Elige tu base",
+      "flavor": {
+        "ron": "Ron",
+        "tequila": "Tequila",
+        "vodka": "Vodka",
+        "whisky": "Whisky",
+        "new_mix": "New Mix",
+        "jack_daniels": "Jack Daniel's"
+      }
     },
     "sauce": {
       "spicy_indicator": "Picante"

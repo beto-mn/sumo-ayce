@@ -1,27 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { FullMenuDish, FullMenuSauce } from '@/types/menu'
+import type { FullMenuDish } from '@/types/menu'
 import MenuDishCard from './MenuDishCard.vue'
-
-const sauces: FullMenuSauce[] = [
-  {
-    id: 's1',
-    name: { es: 'Honey Mustard', en: 'Honey Mustard' },
-    imageUrl: null,
-    spiceLevel: 0,
-  },
-  {
-    id: 's2',
-    name: { es: 'Buffalo', en: 'Buffalo' },
-    imageUrl: null,
-    spiceLevel: 2,
-  },
-  {
-    id: 's3',
-    name: { es: 'Habanero', en: 'Habanero' },
-    imageUrl: null,
-    spiceLevel: 4,
-  },
-]
 
 const base: FullMenuDish = {
   id: 'd1',
@@ -34,30 +13,26 @@ const base: FullMenuDish = {
   badge: null,
   price: null,
   incluido: true,
+  includedInAyce: true,
   drinkGroup: null,
   drinkSubGroup: null,
   requiresSauce: false,
+  featured: false,
 }
 
 const meta = {
   title: 'Menu/MenuDishCard',
   component: MenuDishCard,
   tags: ['autodocs'],
-  args: { sauces, modality: 'buffet' },
+  args: { dish: base, modality: 'buffet' },
   argTypes: {
     dish: {
       description:
-        'FullMenuDish object with localized name, description, imageUrl, badge, price, and sauce flags',
-      control: { type: 'object' },
-    },
-    sauces: {
-      description:
-        'Available sauce options shown when the dish requiresSauce is true',
+        'FullMenuDish with localized name/description, imageUrl, badge and price. The whole card gently zooms on hover and lifts above its neighbors (hover-capable devices only; no zoom under reduced motion).',
       control: { type: 'object' },
     },
     modality: {
-      description:
-        'Menu modality: buffet (included dishes) or carta (a la carte with prices)',
+      description: 'Menu modality: buffet ("Incluido") or carta (price shown)',
       control: { type: 'select' },
       options: ['buffet', 'carta'],
     },
@@ -67,9 +42,8 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: { dish: base },
-}
+/** Default buffet card — hover the card to see the whole-card zoom (desktop pointers). */
+export const Default: Story = {}
 
 export const NoImage: Story = {
   args: { dish: { ...base, imageUrl: null } },
@@ -79,8 +53,25 @@ export const WithBadge: Story = {
   args: { dish: { ...base, badge: { es: 'Nuevo', en: 'New' } } },
 }
 
-export const WithSauce: Story = {
-  args: { dish: { ...base, requiresSauce: true } },
+/**
+ * Garantía Sumo (featured): the curated dishes show the star badge overlay at
+ * top-left (from `/brand/garantia-sumo.webp`), clear of the top-right badge.
+ */
+export const FeaturedGarantiaSumo: Story = {
+  args: {
+    dish: { ...base, featured: true, badge: { es: 'Nuevo', en: 'New' } },
+  },
+}
+
+/** Alitas & Boneless no longer show a sauce picker (FR-021). */
+export const WingsWithoutSaucePicker: Story = {
+  args: {
+    dish: {
+      ...base,
+      name: { es: 'Boneless', en: 'Boneless' },
+      requiresSauce: true,
+    },
+  },
 }
 
 export const CartaWithPrice: Story = {
@@ -92,17 +83,14 @@ export const CartaWithPrice: Story = {
 
 export const LocaleES: Story = {
   name: 'Locale ES (español)',
-  args: { dish: base },
   parameters: { globals: { locale: 'es' } },
 }
 
 export const LocaleEN: Story = {
   name: 'Locale EN (English)',
-  args: { dish: base },
   parameters: { globals: { locale: 'en' } },
 }
 
 export const Mobile: Story = {
-  args: { dish: base },
   parameters: { viewport: { defaultViewport: 'mobile1' } },
 }

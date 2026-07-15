@@ -29,4 +29,14 @@ describe('Chip', () => {
     await wrapper.trigger('click')
     expect(wrapper.emitted('click')).toBeTruthy()
   })
+
+  it('shows a pointer cursor for the clickable (button) variant but not the span variant', () => {
+    const asButton = mount(Chip, { slots: { default: 'Tap' } })
+    expect(asButton.classes()).toContain('cursor-pointer')
+    const asSpan = mount(Chip, {
+      props: { as: 'span' },
+      slots: { default: 'Static' },
+    })
+    expect(asSpan.classes()).not.toContain('cursor-pointer')
+  })
 })

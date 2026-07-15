@@ -25,6 +25,8 @@ type AlaCartaItem = {
   badgeEs?: string
   badgeEn?: string
   featured?: boolean
+  /** Explicit rail order when featured (Garantías Sumo). */
+  featuredOrder?: number
   requiresSauce?: boolean
 }
 
@@ -39,7 +41,6 @@ const APPETIZERS: AlaCartaItem[] = [
       'Tiras de pollo empanizadas, servidas con aderezo americano.',
     descriptionEn: 'Breaded chicken tenders served with American dressing.',
     fileName: 'menu/ala-carta/chicken_tenders.webp',
-    featured: true,
     price: '128.00',
   },
   {
@@ -63,6 +64,8 @@ const APPETIZERS: AlaCartaItem[] = [
       'French fries, smash beef, caramelized onion, green onion and American dressing.',
     fileName: 'menu/ala-carta/smash_fries.webp',
     price: '128.00',
+    featured: true,
+    featuredOrder: 1,
   },
   {
     categoryKey: 'appetizers',
@@ -101,6 +104,8 @@ const APPETIZERS: AlaCartaItem[] = [
     descriptionEn: 'Manchego cheese breaded in panko..',
     fileName: 'menu/ala-carta/cheese_kushiage.webp',
     price: '128.00',
+    featured: true,
+    featuredOrder: 7,
   },
   {
     categoryKey: 'appetizers',
@@ -165,7 +170,6 @@ const RICE_DISHES: AlaCartaItem[] = [
     descriptionEn:
       'Grilled rice with chicken, beef, egg, mixed vegetables, green onion and sesame.',
     fileName: 'menu/ala-carta/mixed_yakimeshi.webp',
-    featured: true,
     price: '99.00',
   },
   {
@@ -216,6 +220,7 @@ const RAMEN: AlaCartaItem[] = [
       'XL ramen in your choice of broth, with your choice of protein and extra toppings.',
     fileName: 'menu/ala-carta/ramen_xl.webp',
     featured: true,
+    featuredOrder: 8,
     price: '149.00',
   },
 ]
@@ -234,7 +239,6 @@ const BURGERS: AlaCartaItem[] = [
     descriptionEn:
       'Double beef burger (300g) with American dressing, manchego cheese and lettuce, topped with your choice of our sauces.',
     fileName: 'menu/ala-carta/sumo_burger.webp',
-    featured: true,
     price: '239.00',
   },
   {
@@ -280,6 +284,8 @@ const BURGERS: AlaCartaItem[] = [
       'Beef burger (150g) in cheese and bacon sauce over a guacamole base, with manchego cheese, honey bacon and caramelized onion, served with cinema nachos.',
     fileName: 'menu/ala-carta/tostiburger.webp',
     price: '239.00',
+    featured: true,
+    featuredOrder: 9,
   },
 ]
 
@@ -296,7 +302,6 @@ const HOT_DOGS: AlaCartaItem[] = [
     descriptionEn:
       'Jumbo hot dog wrapped in bacon with American dressing, Buffalo Ranch sauce and potato chips with cajun seasoning..',
     fileName: 'menu/ala-carta/buffalo_ranch_dog.webp',
-    featured: true,
     price: '239.00',
   },
   {
@@ -320,6 +325,8 @@ const HOT_DOGS: AlaCartaItem[] = [
       'Jumbo hot dog wrapped in bacon and smash beef, with caramelized onion, manchego cheese and roasted chile dressing..',
     fileName: 'menu/ala-carta/smash_dog.webp',
     price: '239.00',
+    featured: true,
+    featuredOrder: 3,
   },
 ]
 
@@ -336,7 +343,6 @@ const COLD_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: avocado and cucumber. Outside: mango, rocca shrimp, pineapple pico and chiltepín sauce..',
     fileName: 'menu/ala-carta/moon_roll.webp',
-    featured: true,
     price: '119.00',
   },
   {
@@ -349,6 +355,8 @@ const COLD_ROLLS: AlaCartaItem[] = [
       'Inside: cream cheese, cucumber and breaded shrimp. Outside: mango and eel sauce..',
     fileName: 'menu/ala-carta/bora_bora.webp',
     price: '119.00',
+    featured: true,
+    featuredOrder: 4,
   },
   {
     categoryKey: 'cold_rolls',
@@ -443,6 +451,8 @@ const HOT_ROLLS: AlaCartaItem[] = [
       'Inside: avocado, pineapple, cream cheese and breaded shrimp. Outside: panko and coconut breading, drizzled with chipotle-pineapple sauce. Seaweed-free..',
     fileName: 'menu/ala-carta/coco_roll.webp',
     price: '119.00',
+    featured: true,
+    featuredOrder: 5,
   },
   {
     categoryKey: 'hot_rolls',
@@ -464,7 +474,6 @@ const HOT_ROLLS: AlaCartaItem[] = [
     descriptionEn:
       'Inside: fried rice base, cream cheese and breaded shrimp. Outside: breaded nori seaweed drizzled with eel sauce..',
     fileName: 'menu/ala-carta/rikishi_roll.webp',
-    featured: true,
     price: '119.00',
   },
   {
@@ -537,6 +546,7 @@ const SWEET_ROLLS: AlaCartaItem[] = [
       'Inside: cream cheese and plantain. Outside: sweet tempura dusted with sugar and cinnamon, drizzled with chocolate sauce..',
     fileName: 'menu/ala-carta/cinnamon_roll.webp',
     featured: true,
+    featuredOrder: 6,
     price: '119.00',
   },
   {
@@ -565,7 +575,6 @@ const WINGS: AlaCartaItem[] = [
       '10 chicken wings with 1 dressing (45ml) and 2 sauces of your choice (45ml each).',
     fileName: null,
     price: '229.00',
-    requiresSauce: true,
   },
   {
     categoryKey: 'wings',
@@ -577,7 +586,6 @@ const WINGS: AlaCartaItem[] = [
       '20 chicken wings with 1 dressing (45ml), french fries, vegetables (70g) and 3 sauces of your choice (45ml each).',
     fileName: null,
     price: '409.00',
-    requiresSauce: true,
   },
   {
     categoryKey: 'wings',
@@ -589,7 +597,6 @@ const WINGS: AlaCartaItem[] = [
       '12 breaded chicken bites in 2 sauces of your choice (45ml each), served with french fries (100g).',
     fileName: null,
     price: '279.00',
-    requiresSauce: true,
   },
   {
     categoryKey: 'wings',
@@ -601,13 +608,12 @@ const WINGS: AlaCartaItem[] = [
       '30 breaded chicken bites in 3 sauces of your choice (45ml each), served with french fries (200g).',
     fileName: null,
     price: '579.00',
-    requiresSauce: true,
   },
 ]
 
 // ─── All items ────────────────────────────────────────────────────────────────
 
-const ALL_ITEMS: AlaCartaItem[] = [
+export const ALL_ITEMS: AlaCartaItem[] = [
   ...APPETIZERS,
   ...SALADS,
   ...RICE_DISHES,
@@ -680,7 +686,7 @@ export async function seedAlaCarta() {
     drinkGroup: null,
     requiresSauce: item.requiresSauce ?? false,
     isActive: true,
-    displayOrder: i,
+    displayOrder: item.featuredOrder ?? i,
   }))
 
   await db.insert(menuItems).values(rows)

@@ -40,18 +40,20 @@ describe('resolveImageUrl', () => {
     }
   }
 
-  it('returns full URL when filePath is non-null', async () => {
+  it('returns full URL with the cache-busting version param when filePath is non-null', async () => {
     process.env = {
       ...process.env,
       ...buildEnv('https://abc123.public.blob.vercel-storage.com'),
     }
-    const { resolveImageUrl } = await import(
+    const { resolveImageUrl, MENU_IMAGE_VERSION } = await import(
       '../../../../../server/api/v1/menu/resolveImageUrl'
     )
     const result = resolveImageUrl('menu/ayce/mixed_yakimeshi.webp')
     expect(result).toBe(
-      'https://abc123.public.blob.vercel-storage.com/menu/ayce/mixed_yakimeshi.webp'
+      `https://abc123.public.blob.vercel-storage.com/menu/ayce/mixed_yakimeshi.webp?v=${MENU_IMAGE_VERSION}`
     )
+    // The version suffix busts the 30-day Blob cache when an image is replaced.
+    expect(result).toContain(`?v=${MENU_IMAGE_VERSION}`)
   })
 
   it('returns null when filePath is null', async () => {
@@ -70,15 +72,15 @@ describe('resolveImageUrl', () => {
       ...process.env,
       ...buildEnv('https://abc123.public.blob.vercel-storage.com/'),
     }
-    const { resolveImageUrl } = await import(
+    const { resolveImageUrl, MENU_IMAGE_VERSION } = await import(
       '../../../../../server/api/v1/menu/resolveImageUrl'
     )
     const result = resolveImageUrl('menu/ayce/ramen.webp')
     expect(result).toBe(
-      'https://abc123.public.blob.vercel-storage.com/menu/ayce/ramen.webp'
+      `https://abc123.public.blob.vercel-storage.com/menu/ayce/ramen.webp?v=${MENU_IMAGE_VERSION}`
     )
-    // Verify the path portion (after https://) has no double slash
-    const pathPart = result?.replace('https://', '')
+    // Verify the path portion (after https://, before the query) has no double slash
+    const pathPart = result?.replace('https://', '').split('?')[0]
     expect(pathPart).not.toContain('//')
   })
 
@@ -87,15 +89,15 @@ describe('resolveImageUrl', () => {
       ...process.env,
       ...buildEnv('https://abc123.public.blob.vercel-storage.com'),
     }
-    const { resolveImageUrl } = await import(
+    const { resolveImageUrl, MENU_IMAGE_VERSION } = await import(
       '../../../../../server/api/v1/menu/resolveImageUrl'
     )
     const result = resolveImageUrl('/menu/sauces/bbq.webp')
     // Leading slash in path is stripped so no double slash appears in the path portion
     expect(result).toBe(
-      'https://abc123.public.blob.vercel-storage.com/menu/sauces/bbq.webp'
+      `https://abc123.public.blob.vercel-storage.com/menu/sauces/bbq.webp?v=${MENU_IMAGE_VERSION}`
     )
-    const pathPart = result?.replace('https://', '')
+    const pathPart = result?.replace('https://', '').split('?')[0]
     expect(pathPart).not.toContain('//')
   })
 })

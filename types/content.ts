@@ -24,20 +24,28 @@ export interface FeaturedDish {
   imageUrl: string | null // null → component renders a neutral placeholder
   badge: string | null
   category: string
+  /** Branch scope, for the /menu deep link. */
+  locationType: 'ayce' | 'express' | 'both'
+  /** Buffet (true) vs à-la-carte (false), for the /menu modality deep link. */
+  includedInAyce: boolean
 }
 
-/** Promotion (WordPress `promociones` endpoint). */
+/** Promotion (WordPress `promociones` endpoint, NEW restructured model). */
 export interface Promotion {
   id: string
   badge: Bilingual
-  title: Bilingual
-  description: Bilingual
-  validity: Bilingual
+  /** Single decoded string derived from the WP post `title.rendered`. */
+  title: string
   color: 'orange' | 'pink' | 'blue' | 'yellow' | 'green'
   type: SumoType
   active: boolean
   publishedAt: string // ISO date — used for "top 3" ordering
-  imageUrl: string | null // resolved from the `acf.imagen` media ID; null → no image
+  /** Desktop image URL; null → slide renders without an image. */
+  imageDesktopUrl: string | null
+  /** Tablet image URL; falls back to desktop when missing/duplicate. */
+  imageTabletUrl: string | null
+  /** Mobile image URL; falls back to desktop when missing/duplicate. */
+  imageMovilUrl: string | null
 }
 
 /** Google review from a static/hardcoded fixture committed in the repo. */

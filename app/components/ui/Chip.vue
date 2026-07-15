@@ -20,6 +20,8 @@ const classes = computed(() =>
     'border-pop-sm border-ink font-disp font-extrabold uppercase text-kicker',
     'min-h-[44px] transition-colors duration-150',
     'focus-visible:outline-none focus-visible:ring-pop focus-visible:ring-accent',
+    // Native <button> has no pointer cursor by default; add it for the clickable variant.
+    props.as === 'button' && 'cursor-pointer',
     props.active ? 'bg-ink text-bg' : 'bg-panel text-ink hover:bg-bg2',
     props.accent === 'express' && 'scope-express'
   )

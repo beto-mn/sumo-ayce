@@ -83,6 +83,7 @@ const APPETIZERS: ExpressItem[] = [
     descriptionEn:
       'Smash fries, smash beef, caramelized onions, American dressing and freshly chopped green onions. 300 g.',
     fileName: 'menu/express/smash_fries.webp',
+    featured: true,
   },
   {
     categoryKey: 'appetizers',
@@ -103,6 +104,7 @@ const APPETIZERS: ExpressItem[] = [
     descriptionEn:
       'Pasta spirals in creamy cheese sauce, freshly chopped green onions. 240 g.',
     fileName: 'menu/express/mac_and_cheese.webp',
+    featured: true,
   },
   {
     categoryKey: 'appetizers',
@@ -189,6 +191,7 @@ const BURGERS: ExpressItem[] = [
     fileName: 'menu/express/barrio_burger.webp',
     badgeEs: 'Make it Double +$79',
     badgeEn: 'Make it Double +$79',
+    featured: true,
   },
   {
     categoryKey: 'burgers',
@@ -304,6 +307,7 @@ const HOT_DOGS: ExpressItem[] = [
     descriptionEn:
       'Hot dog topped with smash beef, yellow mustard, crispy onion, jalapeño sauce and American dressing. 1 pc.',
     fileName: 'menu/express/smash_dog.webp',
+    featured: true,
   },
 ]
 
@@ -369,6 +373,7 @@ const COLD_ROLLS: ExpressItem[] = [
     descriptionEn:
       'Inside: spicy tuna, cream cheese. Outside: mango, sesame and sweet chili sauce. 5 pcs.',
     fileName: 'menu/express/bora_bora.webp',
+    featured: true,
   },
 ]
 
@@ -449,6 +454,7 @@ const SWEET_ROLLS: ExpressItem[] = [
     descriptionEn:
       'Inside: cream cheese. Outside: cream cheese, breaded and fried, topped with dulce de leche, cinnamon and powdered sugar. 5 pcs.',
     fileName: 'menu/express/cinnamon_roll.webp',
+    featured: true,
   },
 ]
 
@@ -462,7 +468,6 @@ const WINGS: ExpressItem[] = [
     descriptionEs: '5 alitas de pollo con tu salsa a elegir.',
     descriptionEn: '5 chicken wings with your choice of sauce.',
     fileName: null,
-    requiresSauce: true,
   },
   {
     categoryKey: 'wings',
@@ -473,13 +478,12 @@ const WINGS: ExpressItem[] = [
     descriptionEn:
       '150g breaded chicken bites, topped with your choice of sauce.',
     fileName: null,
-    requiresSauce: true,
   },
 ]
 
 // ─── All sections ordered as they appear in the menu ─────────────────────────
 
-const ALL_ITEMS: ExpressItem[] = [
+export const ALL_ITEMS: ExpressItem[] = [
   ...APPETIZERS,
   ...BURGERS,
   ...BURRITOS,

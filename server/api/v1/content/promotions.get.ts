@@ -2,138 +2,183 @@ import { defineEventHandler, getQuery } from 'h3'
 import type { Promotion, PromotionsResult } from '@/types/content'
 import { env } from '../../../utils/env'
 import { ExternalServiceError, handleError } from '../../../utils/error-handler'
+import { logger } from '../../../utils/logger'
 import { type ParsedPromotion, parsePromotions } from './validators'
 
-/** Max promotions rendered in the homepage section. */
-const HOME_PROMOTIONS_LIMIT = 3
-
 /**
- * Primary homepage query (pretty-permalink form): active promos explicitly
- * flagged for the home (`acf.home === true`). WordPress filters server-side via
- * `activa=1` + `home=1`; `per_page=100` is a safe upper bound (the flagged set
- * is small) — we still cap to {@link HOME_PROMOTIONS_LIMIT} newest in code, as
- * the query does NOT guarantee ≤3.
- */
-const homePromocionesUrl = () =>
-  `${env.WORDPRESS_API_URL}/wp-json/wp/v2/promociones?activa=1&home=1&per_page=100`
-/**
- * Fallback query (pretty-permalink form): all active promos regardless of the
- * home flag. Used only when the primary `home=1` query returns ZERO promos, so
- * the section still shows something. Same `per_page=100` + in-code cap.
+ * All-active query (pretty-permalink form). BOTH the homepage and the
+ * promotions page (`?all=1`) use this: `?activa=1` returns every active promo
+ * with its CURRENT media IDs. The former `home=1`-flagged primary query was
+ * removed — no promo is home-flagged and WordPress served a STALE/broken cache
+ * for that filter (old deleted media IDs), so unifying on `activa=1` keeps the
+ * two surfaces consistent and correct. Home-flag curation, if wanted later, is
+ * a separate feature once the WP caching is sorted.
  */
 const activePromocionesUrl = () =>
   `${env.WORDPRESS_API_URL}/wp-json/wp/v2/promociones?activa=1&per_page=100`
-/** WordPress REST URL for a single media attachment (pretty-permalink form). */
-const mediaUrl = (id: number) =>
-  `${env.WORDPRESS_API_URL}/wp-json/wp/v2/media/${id}`
+/**
+ * Batched media query: resolve MANY attachment IDs in ONE request via the WP
+ * `include` param, instead of one `/media/{id}` request per image. This turns
+ * ~15 fragile parallel calls (3 per promo × 5) into a single reliable call.
+ */
+const mediaBatchUrl = (ids: number[]) =>
+  `${env.WORDPRESS_API_URL}/wp-json/wp/v2/media?include=${ids.join(',')}&per_page=100`
 
 /**
  * Per-request timeouts (ms) for the WordPress fetches. These bound the
- * WordPress dependency so the ISR/SSR render degrades gracefully (empty promos
- * / no image) instead of blocking if WordPress is slow or unreachable.
+ * WordPress dependency so the ISR/SSR render degrades gracefully instead of
+ * blocking if WordPress is slow or unreachable. The media batch gets a larger
+ * budget than a single item since it returns every image at once.
  */
 const LIST_FETCH_TIMEOUT_MS = 4000
-const MEDIA_FETCH_TIMEOUT_MS = 3000
+const MEDIA_FETCH_TIMEOUT_MS = 6000
 
-/**
- * Cap a parsed list to the {@link HOME_PROMOTIONS_LIMIT} newest ACTIVE promos
- * of any `tipo` (`all`/`ayce`/`express`), most-recent first. The `?activa=1`
- * query already filters server-side, but the `p.active` filter is kept as a
- * defensive guard in case the query semantics ever change. Express promos are
- * included too — the card color-codes them.
- */
-function capActiveNewest(promotions: ParsedPromotion[]): ParsedPromotion[] {
+/** Sort ACTIVE promos of any `tipo` most-recent-first (no cap). */
+function sortActiveNewest(promotions: ParsedPromotion[]): ParsedPromotion[] {
   return promotions
     .filter(p => p.active)
     .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
-    .slice(0, HOME_PROMOTIONS_LIMIT)
+}
+
+/** A single WP media item from the batch endpoint. */
+interface WpMediaItem {
+  id?: unknown
+  source_url?: unknown
 }
 
 /**
- * Resolve a WordPress media ID to its `source_url`. Returns null on any failure
- * so an individual card degrades gracefully (renders without an image) rather
- * than failing the whole response.
+ * Resolve every distinct media ID referenced by the parsed promos in ONE
+ * batched WP request → a `Map<id, source_url>`. On any transient failure the
+ * map is empty (logged at WARN, never ERROR) and callers degrade gracefully.
  */
-async function resolveMediaUrl(id: number): Promise<string | null> {
+async function resolveMediaMap(
+  parsed: ParsedPromotion[]
+): Promise<Map<number, string>> {
+  const ids = collectMediaIds(parsed)
+  const map = new Map<number, string>()
+  if (ids.length === 0) return map
   try {
-    const media = await $fetch<{ source_url?: unknown }>(mediaUrl(id), {
+    const items = await $fetch<WpMediaItem[]>(mediaBatchUrl(ids), {
       timeout: MEDIA_FETCH_TIMEOUT_MS,
     })
-    return typeof media?.source_url === 'string' ? media.source_url : null
-  } catch {
-    return null
+    if (Array.isArray(items)) {
+      for (const item of items) {
+        if (
+          typeof item?.id === 'number' &&
+          typeof item.source_url === 'string'
+        ) {
+          map.set(item.id, item.source_url)
+        }
+      }
+    }
+  } catch (error) {
+    // Transient media unavailability: log at WARN and return an empty map so
+    // the promos still render (image-less) rather than the whole call failing.
+    logger.warn(
+      { err: error, count: ids.length },
+      '[promotions] media batch fetch failed'
+    )
+  }
+  return map
+}
+
+/** Distinct positive media IDs across desktop/tablet/mobile of all promos. */
+function collectMediaIds(parsed: ParsedPromotion[]): number[] {
+  const set = new Set<number>()
+  for (const promo of parsed) {
+    for (const id of [
+      promo.desktopMediaId,
+      promo.tabletMediaId,
+      promo.movilMediaId,
+    ]) {
+      if (id !== null) set.add(id)
+    }
+  }
+  return [...set]
+}
+
+/**
+ * Build the final `Promotion` from a parsed promo + the resolved media map.
+ * Each size falls back to the desktop URL when its own ID is null/unresolved;
+ * desktop itself falls back to whichever size DID resolve, so a promo with any
+ * resolvable image still renders full-bleed.
+ */
+function projectPromotion(
+  parsed: ParsedPromotion,
+  media: Map<number, string>
+): Promotion {
+  const { desktopMediaId, tabletMediaId, movilMediaId, ...rest } = parsed
+  const urlOf = (id: number | null) =>
+    id === null ? null : (media.get(id) ?? null)
+
+  const desktop = urlOf(desktopMediaId)
+  const tablet = urlOf(tabletMediaId)
+  const movil = urlOf(movilMediaId)
+  // Baseline: prefer the desktop image, else any size that DID resolve.
+  const baseline = desktop ?? tablet ?? movil
+
+  return {
+    ...rest,
+    imageDesktopUrl: desktop ?? baseline,
+    imageTabletUrl: tablet ?? baseline,
+    imageMovilUrl: movil ?? baseline,
   }
 }
 
-/** Resolve image media IDs (in parallel) and produce final `Promotion[]`. */
+/**
+ * Resolve images for all promos via a single batched media fetch, then keep
+ * every promo that HAS at least one configured image media ID. A promo is only
+ * dropped when it has NO media IDs at all (nothing to show in an image-only
+ * carousel) — NOT merely because a fetch timed out. Skips are quiet (one debug
+ * line), never a per-promo warning.
+ */
 async function resolveImages(parsed: ParsedPromotion[]): Promise<Promotion[]> {
-  return Promise.all(
-    parsed.map(async ({ imageMediaId, ...rest }): Promise<Promotion> => {
-      const imageUrl =
-        imageMediaId === null ? null : await resolveMediaUrl(imageMediaId)
-      return { ...rest, imageUrl }
-    })
-  )
+  const hasConfiguredImage = (p: ParsedPromotion) =>
+    p.desktopMediaId !== null ||
+    p.tabletMediaId !== null ||
+    p.movilMediaId !== null
+  const withIds = parsed.filter(hasConfiguredImage)
+  const skipped = parsed.length - withIds.length
+  if (skipped > 0) {
+    logger.debug(
+      { skipped, kept: withIds.length },
+      '[promotions] skipped promos with no configured image'
+    )
+  }
+  const media = await resolveMediaMap(withIds)
+  return withIds.map(promo => projectPromotion(promo, media))
 }
 
 /**
- * GET /api/v1/content/promotions — select the homepage promotions from the live
- * WordPress `promociones` endpoint (primary → fallback), validate the ACF shape,
- * resolve each `acf.imagen` media ID to an image URL, and return them.
+ * GET /api/v1/content/promotions — select promotions from the live WordPress
+ * `promociones` endpoint, validate the ACF shape, and resolve each promotion's
+ * three responsive image media IDs (desktop/tablet/mobile) to URLs via a SINGLE
+ * batched media request. Every returned promo occupies a full-bleed carousel
+ * slide, so promos are ordered newest-first with NO cap on either surface.
  *
- * Selection logic when called WITHOUT `?all=1` (homepage path):
- *   1. PRIMARY — `?activa=1&home=1`: active promos flagged for the home.
- *   2. FALLBACK — `?activa=1`: if the primary yields ZERO promos, fall back to
- *      all active promos so the section still shows something.
- *   3. Both paths are capped to the {@link HOME_PROMOTIONS_LIMIT} newest active.
- *   4. If the fallback is ALSO empty → `{ promotions: [], ok: false }`.
+ * BOTH surfaces use the SAME `?activa=1` query (all active, newest-first, no
+ * cap) so the homepage and the promotions page render an identical full-bleed
+ * carousel. The `?all=1` flag is retained only to distinguish the two callers.
  *
- * When called WITH `?all=1` (promotions page path):
- *   - Fetches `?activa=1` directly (no home filter, no cap).
- *   - Returns ALL active promotions for the dedicated promotions page.
- *
- * Always HTTP 200: on any upstream failure it logs an `ExternalServiceError` and
- * returns `{ promotions: [], ok: false }` so the surface degrades gracefully.
+ * Always HTTP 200: on any upstream failure it logs an `ExternalServiceError`
+ * (WARN via the error handler) and returns `{ promotions: [], ok: false }` so
+ * the surface degrades gracefully.
  */
 export default defineEventHandler(async (event): Promise<PromotionsResult> => {
   const { all } = getQuery(event)
+  const source =
+    all === '1' ? 'WordPress promociones (all)' : 'WordPress promociones'
 
-  // ── Promotions page path: ?all=1 — no home filter, no cap ─────────────────
-  if (all === '1') {
-    try {
-      const payload = await $fetch<unknown>(activePromocionesUrl(), {
-        timeout: LIST_FETCH_TIMEOUT_MS,
-      })
-      const parsed = parsePromotions(payload).filter(p => p.active)
-      if (parsed.length === 0) return { promotions: [], ok: false }
-      const promotions = await resolveImages(parsed)
-      return { promotions, ok: true }
-    } catch (error) {
-      handleError(
-        new ExternalServiceError('WordPress promociones (all)', error)
-      )
-      return { promotions: [], ok: false }
-    }
-  }
-
-  // ── Homepage path: primary (home=1) → fallback (activa=1), capped at 3 ────
   try {
-    const homePayload = await $fetch<unknown>(homePromocionesUrl(), {
+    const payload = await $fetch<unknown>(activePromocionesUrl(), {
       timeout: LIST_FETCH_TIMEOUT_MS,
     })
-    let selected = capActiveNewest(parsePromotions(homePayload))
-    // Fallback: only when the home-flagged query returned NOTHING.
-    if (selected.length === 0) {
-      const activePayload = await $fetch<unknown>(activePromocionesUrl(), {
-        timeout: LIST_FETCH_TIMEOUT_MS,
-      })
-      selected = capActiveNewest(parsePromotions(activePayload))
-    }
-    if (selected.length === 0) return { promotions: [], ok: false }
-    const promotions = await resolveImages(selected)
+    const parsed = sortActiveNewest(parsePromotions(payload))
+    if (parsed.length === 0) return { promotions: [], ok: false }
+    const promotions = await resolveImages(parsed)
     return { promotions, ok: true }
   } catch (error) {
-    handleError(new ExternalServiceError('WordPress promociones', error))
+    handleError(new ExternalServiceError(source, error))
     return { promotions: [], ok: false }
   }
 })

@@ -18,9 +18,9 @@ const localePath = useLocalePath()
         <UiKicker tone="ink">{{ t('home.hero.kicker') }}</UiKicker>
         <!-- Real, selectable heading. The full phrase is exposed to screen
              readers via the sr-only span; the two staggered lines are a
-             presentational split (aria-hidden). Titan One logo-style lettering
-             (white fill + black stroke), tokens only — see .hero-headline in
-             base.css. -->
+             presentational split (aria-hidden). Graphik Super logo-style
+             lettering (white fill + black stroke), tokens only — see
+             .hero-headline in base.css. -->
         <h1 class="hero-headline">
           <span class="sr-only">{{ t('home.hero.headline') }}</span>
           <span

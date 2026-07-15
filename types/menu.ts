@@ -34,10 +34,10 @@ export type MenuCategoryKey =
 export type DrinkGroup =
   | 'jumbo_cocktails'
   | 'cantaritos_sumo_cups'
-  | 'non_alcoholic'
   | 'sodas'
   | 'coffee_digestifs'
-  | 'beers_spirits'
+  | 'beers'
+  | 'destilados'
 
 /**
  * A featured dish/drink row, ready for the homepage rail. The route resolves
@@ -51,6 +51,9 @@ export interface FeaturedDishRow {
   imageUrl: string | null
   badge: Bilingual | null
   category: MenuCategoryKey
+  /** Branch scope + buffet flag, for the card's /menu deep link. */
+  locationType: MenuLocationType
+  includedInAyce: boolean
 }
 
 export interface DrinkSubGroup {
@@ -58,6 +61,8 @@ export interface DrinkSubGroup {
   name: Bilingual
   subtitle: Bilingual | null
   promo: Bilingual | null
+  /** Sort order within its drink group (e.g. Caguamón first). */
+  displayOrder: number
 }
 
 export interface FullMenuDish {
@@ -70,14 +75,20 @@ export interface FullMenuDish {
   price: string | null
   /** True when the dish is shown as "incluido" (buffet) instead of a price. */
   incluido: boolean
+  /** Raw `included_in_ayce` flag; the Kids view splits its list on this (buffet vs. combo). */
+  includedInAyce: boolean
   drinkGroup: DrinkGroup | null
   drinkSubGroup: DrinkSubGroup | null
   requiresSauce: boolean
+  /** True for the curated "Garantía Sumo" dishes — the card shows a star badge. */
+  featured: boolean
 }
 
 export interface FullMenuCategory {
   key: MenuCategoryKey
   name: Bilingual
+  /** Optional section note rendered at the TOP of a sub-section (e.g. Kids "Combo Infantil" inclusions). */
+  note: Bilingual | null
   displayOrder: number
   dishes: FullMenuDish[]
 }
@@ -89,12 +100,30 @@ export interface FullMenuSauce {
   spiceLevel: number
 }
 
+/**
+ * Group-level metadata for the Bebidas view: deterministic display order and a
+ * single group-level promo note (e.g. the Destilados "2x1 / Combo Mezcladores"
+ * note rendered ONCE for the whole group instead of per sub-group).
+ */
+export interface DrinkGroupMeta {
+  key: DrinkGroup
+  /** Display label (DB-sourced) for the Bebidas chip + section heading. */
+  name: Bilingual
+  displayOrder: number
+  promo: Bilingual | null
+}
+
+/** The primary menu view a full-menu request resolves for. `kids` is a cross-cutting standalone view. */
+export type MenuViewType = 'ayce' | 'express' | 'kids'
+
 export interface FullMenuResult {
-  /** The resolved request location (never 'both'). */
-  locationType: Exclude<MenuLocationType, 'both'>
-  /** The resolved effective modality (Express is coerced to 'buffet'). */
+  /** The resolved request view (`ayce | express | kids`). */
+  locationType: MenuViewType
+  /** The resolved effective modality (Express is coerced to 'buffet'; Kids uses 'carta' pricing). */
   modality: MenuModality
   categories: FullMenuCategory[]
   /** The active sauce-picker catalog (the 12 Wings & Boneless sauces). */
   sauces: FullMenuSauce[]
+  /** Ordered drink-group metadata (order + group-level promo) for the Bebidas view. */
+  drinkGroups: DrinkGroupMeta[]
 }

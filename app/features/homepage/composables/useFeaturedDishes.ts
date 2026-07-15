@@ -27,6 +27,8 @@ export function useFeaturedDishes(): UseFeaturedDishesReturn {
       imageUrl: row.imageUrl,
       badge: row.badge ? (row.badge[loc] ?? row.badge.es) : null,
       category: row.category,
+      locationType: row.locationType,
+      includedInAyce: row.includedInAyce,
     }))
   })
 

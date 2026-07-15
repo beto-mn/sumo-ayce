@@ -16,25 +16,31 @@ export interface WpRendered {
   rendered: string
 }
 
-/** ACF group attached to each `promociones` item. */
+/**
+ * ACF group attached to each `promociones` item (NEW restructured model).
+ *
+ * The editorial text fields (`titulo_*`, `descripcion_*`, `vigencia_*`) and the
+ * single `imagen` field were removed upstream. The promotion title now comes
+ * from the WP post `title.rendered` (see {@link WpPromotion}); the image is
+ * served in three responsive sizes, each a separate media ID.
+ */
 export interface WpPromotionAcf {
   badge_es: string
-  badge_en: string
-  titulo_es: string
-  titulo_en: string
-  descripcion_es: string
-  descripcion_en: string
-  vigencia_es: string
-  vigencia_en: string
+  /** Optional — falls back to `badge_es` in the projection. */
+  badge_en?: string
   /** ACF select — decorative color. */
   color: 'orange' | 'blue' | 'pink' | 'yellow' | 'green' | (string & {})
   /** ACF select — location/line type. */
   tipo: 'ayce' | 'express' | 'all' | (string & {})
   activa: boolean
   /** ACF boolean — "show on homepage" flag (drives the `?home=1` query). */
-  home: boolean
-  /** WordPress media attachment ID (0 when none). */
-  imagen: number
+  home?: boolean
+  /** WordPress media attachment ID for the desktop image (0 when none). */
+  imagen_desktop: number
+  /** Tablet image media ID; 0/dup/unresolved → desktop fallback. */
+  imagen_tablet: number
+  /** Mobile image media ID; 0/dup/unresolved → desktop fallback. */
+  imagen_movil: number
 }
 
 /** A single raw `promociones` item as returned by the REST endpoint. */

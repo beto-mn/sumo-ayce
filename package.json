@@ -1,6 +1,6 @@
 {
   "name": "sumo-ayce",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.27.0",
@@ -35,7 +35,9 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
     "@nuxt/image": "2.0.0",
+    "@vercel/blob": "^2.6.1",
     "drizzle-orm": "^0.45.2",
+    "embla-carousel-vue": "^8.6.0",
     "mapbox-gl": "^3.25.0",
     "nuxt": "^4.4.6",
     "pino": "^10.3.1",

@@ -22,6 +22,8 @@ type AyceItem = {
   badgeEs?: string
   badgeEn?: string
   featured?: boolean
+  /** Explicit rail order when featured (Garantías Sumo). */
+  featuredOrder?: number
   requiresSauce?: boolean
 }
 
@@ -85,6 +87,8 @@ const APPETIZERS: AyceItem[] = [
     descriptionEn:
       'French fries, smash beef, caramelized onion, green onion and American dressing.',
     fileName: 'menu/ayce/smash_fries.webp',
+    featured: true,
+    featuredOrder: 1,
   },
   {
     categoryKey: 'appetizers',
@@ -104,6 +108,8 @@ const APPETIZERS: AyceItem[] = [
     descriptionEn:
       'Pasta in cheese sauce with bacon, green onion and pickled jalapeños.',
     fileName: 'menu/ayce/mac_and_cheese.webp',
+    featured: true,
+    featuredOrder: 2,
   },
   {
     categoryKey: 'appetizers',
@@ -152,6 +158,8 @@ const APPETIZERS: AyceItem[] = [
     descriptionEs: 'Queso manchego empanizado en panko.',
     descriptionEn: 'Manchego cheese breaded in panko.',
     fileName: 'menu/ayce/cheese_kushiage.webp',
+    featured: true,
+    featuredOrder: 7,
   },
 ]
 
@@ -189,6 +197,8 @@ const BURGERS: AyceItem[] = [
     fileName: 'menu/ayce/barrio_burger.webp',
     badgeEs: 'Doble o triple carne',
     badgeEn: 'Double or triple meat',
+    featured: true,
+    featuredOrder: 0,
   },
   {
     categoryKey: 'burgers',
@@ -313,6 +323,8 @@ const HOT_DOGS: AyceItem[] = [
     descriptionEn:
       'Jumbo hot dog wrapped in bacon and smash beef, with caramelized onion, manchego cheese and roasted chile dressing..',
     fileName: 'menu/ayce/smash_dog.webp',
+    featured: true,
+    featuredOrder: 3,
   },
 ]
 
@@ -328,6 +340,8 @@ const COLD_ROLLS: AyceItem[] = [
     descriptionEn:
       'Inside: cream cheese, cucumber and breaded shrimp. Outside: mango and eel sauce..',
     fileName: 'menu/ayce/bora_bora.webp',
+    featured: true,
+    featuredOrder: 4,
   },
   {
     categoryKey: 'cold_rolls',
@@ -473,6 +487,8 @@ const HOT_ROLLS: AyceItem[] = [
     descriptionEn:
       'Inside: avocado, pineapple, cream cheese and breaded shrimp. Outside: panko and coconut breading, drizzled with chipotle-pineapple sauce. Seaweed-free..',
     fileName: 'menu/ayce/coco_roll.webp',
+    featured: true,
+    featuredOrder: 5,
   },
   {
     categoryKey: 'hot_rolls',
@@ -508,6 +524,8 @@ const SWEET_ROLLS: AyceItem[] = [
     descriptionEn:
       'Inside: cream cheese and plantain. Outside: sweet tempura dusted with sugar and cinnamon, drizzled with chocolate sauce..',
     fileName: 'menu/ayce/cinnamon_roll.webp',
+    featured: true,
+    featuredOrder: 6,
   },
   {
     categoryKey: 'sweet_rolls',
@@ -531,7 +549,6 @@ const WINGS: AyceItem[] = [
     descriptionEs: '5 alitas de pollo con una salsa a elegir.',
     descriptionEn: '5 chicken wings with your choice of sauce.',
     fileName: null,
-    requiresSauce: true,
   },
   {
     categoryKey: 'wings',
@@ -541,13 +558,12 @@ const WINGS: AyceItem[] = [
       '150g de trocitos de pollo empanizados y bañados en una de nuestras salsas.',
     descriptionEn: '150g breaded chicken bites topped with one of our sauces.',
     fileName: null,
-    requiresSauce: true,
   },
 ]
 
 // ─── All sections ordered as they appear in the menu ─────────────────────────
 
-const ALL_ITEMS: AyceItem[] = [
+export const ALL_ITEMS: AyceItem[] = [
   ...APPETIZERS,
   ...BURGERS,
   ...SANDWICHES,
@@ -615,7 +631,7 @@ export async function seedAyceMenu() {
     drinkGroup: null,
     requiresSauce: item.requiresSauce ?? false,
     isActive: true,
-    displayOrder: i,
+    displayOrder: item.featuredOrder ?? i,
   }))
 
   await db.insert(menuItems).values(rows)

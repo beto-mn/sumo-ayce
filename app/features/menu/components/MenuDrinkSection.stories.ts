@@ -1,43 +1,131 @@
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { FullMenuDish } from '@/types/menu'
+import type { Decorator, Meta, StoryObj } from '@storybook/vue3-vite'
+import type { DrinkGroupMeta, FullMenuDish } from '@/types/menu'
+import MenuDrinkCard from './MenuDrinkCard.vue'
 import MenuDrinkSection from './MenuDrinkSection.vue'
+import MenuSaucePicker from './MenuSaucePicker.vue'
+
+function sub(key: string, es: string, en: string, order: number) {
+  return {
+    key,
+    name: { es, en },
+    subtitle: null,
+    promo: null,
+    displayOrder: order,
+  }
+}
 
 const drinks: FullMenuDish[] = [
+  // Cantaritos y Vasos Sumo — one consolidated Vaso Sumo card + a full-image card
   {
-    id: 'dr1',
-    name: { es: 'Margarita Jumbo', en: 'Jumbo Margarita' },
-    description: { es: 'Tequila, limón y sal.', en: 'Tequila, lime and salt.' },
-    imageUrl: null,
-    badge: null,
-    price: '180.00',
+    id: 'cf',
+    name: { es: 'Cantarito Fest', en: 'Cantarito Fest' },
+    description: {
+      es: 'Jarrito 750 ml a base de New Mix.',
+      en: '750 ml New Mix jar.',
+    },
+    imageUrl: 'https://placehold.co/400x300',
+    badge: { es: 'Sabor a elegir', en: 'Choose your flavor' },
+    price: '155.00',
     incluido: false,
-    drinkGroup: 'jumbo_cocktails',
+    includedInAyce: false,
+    drinkGroup: 'cantaritos_sumo_cups',
     drinkSubGroup: null,
     requiresSauce: false,
+    featured: false,
   },
   {
-    id: 'dr2',
-    name: { es: 'Coca-Cola', en: 'Coca-Cola' },
-    description: { es: 'Refresco 500 ml.', en: '500 ml soda.' },
-    imageUrl: null,
-    badge: null,
-    price: '50.00',
+    id: 'vs',
+    name: { es: 'Vaso Sumo', en: 'Sumo Cup' },
+    description: {
+      es: 'Vaso SUMO 960 ml, base a elegir.',
+      en: 'SUMO cup 960 ml, choose your base.',
+    },
+    imageUrl: 'https://placehold.co/400x300',
+    badge: { es: 'Base a elegir', en: 'Choose your base' },
+    price: '159.00',
     incluido: false,
-    drinkGroup: 'sodas',
+    includedInAyce: false,
+    drinkGroup: 'cantaritos_sumo_cups',
     drinkSubGroup: null,
     requiresSauce: false,
+    featured: false,
+  },
+]
+
+const beers: FullMenuDish[] = [
+  {
+    id: 'cag',
+    name: { es: 'Caguamón en Bolsa', en: 'Beer Bag' },
+    description: { es: 'Indio o XX Lager.', en: 'Indio or XX Lager.' },
+    imageUrl: 'https://placehold.co/400x300',
+    badge: null,
+    price: '149.00',
+    incluido: false,
+    includedInAyce: false,
+    drinkGroup: 'beers',
+    drinkSubGroup: sub('caguamon', 'Caguamón', 'Beer Bag', 0),
+    requiresSauce: false,
+    featured: false,
   },
   {
-    id: 'dr3',
-    name: { es: 'Agua Mineral', en: 'Sparkling Water' },
-    description: { es: 'Agua mineral 355 ml.', en: '355 ml sparkling water.' },
+    id: 'indio',
+    name: { es: 'Indio', en: 'Indio' },
+    description: { es: '325 ml.', en: '325 ml.' },
     imageUrl: null,
     badge: null,
-    price: '40.00',
+    price: '59.00',
     incluido: false,
-    drinkGroup: 'non_alcoholic',
-    drinkSubGroup: null,
+    includedInAyce: false,
+    drinkGroup: 'beers',
+    drinkSubGroup: sub(
+      'cerveza_nacional',
+      'Cerveza Nacional',
+      'National Beer',
+      1
+    ),
     requiresSauce: false,
+    featured: false,
+  },
+]
+
+const destilados: FullMenuDish[] = [
+  {
+    id: 'bacardi',
+    name: { es: 'Bacardí Blanco', en: 'Bacardí Blanco' },
+    description: { es: 'Ron.', en: 'Rum.' },
+    imageUrl: null,
+    badge: { es: '700 ml · Botella $699', en: '700 ml · Bottle $699' },
+    price: '119.00',
+    incluido: false,
+    includedInAyce: false,
+    drinkGroup: 'destilados',
+    drinkSubGroup: sub('ron', 'Ron', 'Rum', 0),
+    requiresSauce: false,
+    featured: false,
+  },
+]
+
+const drinkGroups: DrinkGroupMeta[] = [
+  {
+    key: 'cantaritos_sumo_cups',
+    name: { es: 'Cantaritos y Vasos Sumo', en: 'Cantaritos & Sumo Cups' },
+    displayOrder: 1,
+    promo: null,
+  },
+  {
+    key: 'beers',
+    name: { es: 'Cervezas', en: 'Beers' },
+    displayOrder: 3,
+    promo: null,
+  },
+  {
+    key: 'destilados',
+    name: { es: 'Destilados', en: 'Spirits' },
+    displayOrder: 4,
+    promo: {
+      es: 'Combo Mezcladores $189: incluye 2 sabores y 2 minerales.',
+      en: 'Mixer Combo $189: includes 2 flavors and 2 mineral waters.',
+    },
   },
 ]
 
@@ -45,44 +133,46 @@ const meta = {
   title: 'Menu/MenuDrinkSection',
   component: MenuDrinkSection,
   tags: ['autodocs'],
-  args: { drinks },
+  args: { drinks, drinkGroups, activeGroup: 'cantaritos_sumo_cups' },
   argTypes: {
     drinks: {
-      description:
-        'Array of drink dish objects with drinkGroup for categorization',
+      description: 'All drink dishes (the section slices to the active group)',
+      control: { type: 'object' },
+    },
+    drinkGroups: {
+      description: 'Ordered group metadata (display order + group-level promo)',
       control: { type: 'object' },
     },
     activeGroup: {
-      description:
-        'Currently active drink group filter key (or null/undefined for all)',
+      description: 'The single active drink-group key resolved by the shell',
       control: { type: 'text' },
     },
   },
+  decorators: [
+    (story => ({
+      components: { story, MenuDrinkCard, MenuSaucePicker },
+      template: '<story />',
+    })) as Decorator,
+  ],
 } satisfies Meta<typeof MenuDrinkSection>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+/**
+ * Cantaritos y Vasos Sumo — the consolidated Vaso Sumo card shows the base
+ * selector with SIX chips: Ron, Tequila, Vodka, Whisky, New Mix, Jack Daniel's.
+ */
+export const CantaritosWithVasoSumo: Story = {}
 
-export const FilteredGroup: Story = {
-  args: { activeGroup: 'sodas' },
+/** Cervezas — Caguamón sub-group ordered first; the no-image beer is half width. */
+export const BeersCaguamonFirst: Story = {
+  args: { drinks: beers, activeGroup: 'beers' },
 }
 
-export const Empty: Story = {
-  args: { drinks: [] },
-}
-
-export const LocaleES: Story = {
-  name: 'Locale ES (español)',
-  args: { drinks },
-  parameters: { globals: { locale: 'es' } },
-}
-
-export const LocaleEN: Story = {
-  name: 'Locale EN (English)',
-  args: { drinks },
-  parameters: { globals: { locale: 'en' } },
+/** Destilados — the 2x1 / Combo Mezcladores promo renders once at the group level. */
+export const DestiladosSinglePromo: Story = {
+  args: { drinks: destilados, activeGroup: 'destilados' },
 }
 
 export const Mobile: Story = {

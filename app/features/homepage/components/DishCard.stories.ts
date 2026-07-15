@@ -11,7 +11,9 @@ const base: FeaturedDish = {
   },
   imageUrl: '/hero-placeholder.svg',
   badge: null,
-  category: 'frio',
+  category: 'cold_rolls',
+  locationType: 'ayce',
+  includedInAyce: true,
 }
 
 const meta = {
@@ -21,7 +23,7 @@ const meta = {
   argTypes: {
     dish: {
       description:
-        'FeaturedDish object with id, name, description (ES/EN), imageUrl, badge, and category',
+        'FeaturedDish object with id, name, description (ES/EN), imageUrl, badge, category, locationType (ayce | express | both) and includedInAyce — the last two drive the /menu deep link',
       control: { type: 'object' },
     },
   },
@@ -30,8 +32,30 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/** AYCE dish → links to /menu?type=ayce&modality=buffet&category=<key>. */
 export const Default: Story = {
   args: { dish: base },
+}
+
+/**
+ * Express dish → links to /menu?type=express&category=<key> (no modality).
+ * Demonstrates the data-driven deep-link difference vs. the AYCE default.
+ */
+export const Express: Story = {
+  args: {
+    dish: {
+      ...base,
+      id: 'e1',
+      name: 'Sumo Burrito',
+      description: {
+        es: 'Burrito estilo americano-japonés.',
+        en: 'American-Japanese style burrito.',
+      },
+      category: 'burritos',
+      locationType: 'express',
+      includedInAyce: false,
+    },
+  },
 }
 
 export const WithBadge: Story = {

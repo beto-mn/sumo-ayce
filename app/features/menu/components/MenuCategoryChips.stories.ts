@@ -1,47 +1,52 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { FullMenuCategory } from '@/types/menu'
+import type { CategoryChip } from './MenuCategoryChips.vue'
 import MenuCategoryChips from './MenuCategoryChips.vue'
 
-const categories: FullMenuCategory[] = [
-  {
-    key: 'cold_rolls',
-    name: { es: 'Sushi Frío', en: 'Cold Rolls' },
-    displayOrder: 0,
-    dishes: [],
-  },
-  {
-    key: 'hot_rolls',
-    name: { es: 'Sushi Caliente', en: 'Hot Rolls' },
-    displayOrder: 1,
-    dishes: [],
-  },
-  {
-    key: 'wings',
-    name: { es: 'Alitas & Boneless', en: 'Wings & Boneless' },
-    displayOrder: 2,
-    dishes: [],
-  },
-  {
-    key: 'burgers',
-    name: { es: 'Burgers', en: 'Burgers' },
-    displayOrder: 3,
-    dishes: [],
-  },
+// Labels are DB-sourced (name[locale]) and passed in by the parent — the chip
+// no longer resolves i18n itself. These fixtures mirror the seeded DB names.
+const AYCE_BUFFET_CHIPS: CategoryChip[] = [
+  { key: 'appetizers', label: 'Entradas' },
+  { key: 'burgers', label: 'Hamburguesas' },
+  { key: 'sandwiches', label: 'Sándwiches' },
+  { key: 'hot_dogs', label: 'Hot Dogs' },
+  { key: 'cold_rolls', label: 'Sushi Frío' },
+  { key: 'hot_rolls', label: 'Sushi Caliente' },
+  { key: 'sweet_rolls', label: 'Sushi Dulce' },
+  { key: 'wings', label: 'Alitas & Boneless' },
+]
+
+const AYCE_CARTA_CHIPS: CategoryChip[] = [
+  { key: 'appetizers', label: 'Entradas' },
+  { key: 'salads', label: 'Ensaladas' },
+  { key: 'rice', label: 'Arroz' },
+  { key: 'ramen', label: 'Ramen' },
+  { key: 'burgers', label: 'Hamburguesas' },
+  { key: 'desserts', label: 'Postres' },
+  { key: 'kids', label: 'Menú Kids' },
+]
+
+const DRINKS_CHIPS: CategoryChip[] = [
+  { key: 'jumbo_cocktails', label: 'Coctelería Jumbo' },
+  { key: 'cantaritos_sumo_cups', label: 'Cantaritos y Vasos Sumo' },
+  { key: 'sodas', label: 'Refrescos y Bebidas' },
+  { key: 'beers', label: 'Cervezas' },
+  { key: 'destilados', label: 'Destilados' },
+  { key: 'coffee_digestifs', label: 'Café y Digestivos' },
 ]
 
 const meta = {
   title: 'Menu/MenuCategoryChips',
   component: MenuCategoryChips,
   tags: ['autodocs'],
-  args: { categories, activeCategory: null },
+  args: { items: AYCE_BUFFET_CHIPS, activeCategory: 'appetizers' },
   argTypes: {
-    categories: {
-      description: 'Array of menu category objects with key and localized name',
+    items: {
+      description:
+        'Ordered chips with their DB-sourced labels ({ key, label }). The parent resolves label from the API menu data (name[locale]).',
       control: { type: 'object' },
     },
     activeCategory: {
-      description:
-        'Key of the currently active/selected category chip (or null for all)',
+      description: 'Key of the single active chip (never null — no show-all)',
       control: { type: 'text' },
     },
   },
@@ -50,27 +55,16 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: { activeCategory: null },
+export const AyceBuffetSet: Story = {}
+
+export const AyceCartaSet: Story = {
+  args: { items: AYCE_CARTA_CHIPS, activeCategory: 'ramen' },
 }
 
-export const WithActiveCategory: Story = {
-  args: { activeCategory: 'wings' },
-}
-
-export const LocaleES: Story = {
-  name: 'Locale ES (español)',
-  args: { activeCategory: null },
-  parameters: { globals: { locale: 'es' } },
-}
-
-export const LocaleEN: Story = {
-  name: 'Locale EN (English)',
-  args: { activeCategory: null },
-  parameters: { globals: { locale: 'en' } },
+export const DrinksSet: Story = {
+  args: { items: DRINKS_CHIPS, activeCategory: 'jumbo_cocktails' },
 }
 
 export const Mobile: Story = {
-  args: { activeCategory: null },
   parameters: { viewport: { defaultViewport: 'mobile1' } },
 }

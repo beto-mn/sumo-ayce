@@ -1,25 +1,40 @@
 <script setup lang="ts">
-import type { MenuType } from '@/features/menu/types'
+import type { PrimarySelection } from '@/features/menu/menu-sets'
 import type { FullMenuResult, MenuModality } from '@/types/menu'
 
 const { t } = useI18n()
 const route = useRoute()
 
-const activeType = computed<MenuType>(() => {
+const activeSelection = computed<PrimarySelection>(() => {
   const q = route.query.type
-  return q === 'express' ? 'express' : 'ayce'
+  if (q === 'express') return 'express'
+  if (q === 'kids') return 'kids'
+  if (q === 'bebidas' || q === 'drinks') return 'drinks'
+  return 'ayce'
 })
 
-const activeModality = computed<MenuModality>(() => {
-  const q = route.query.modality
-  return q === 'carta' ? 'carta' : 'buffet'
+const activeModality = computed<MenuModality>(() =>
+  route.query.modality === 'carta' && activeSelection.value === 'ayce'
+    ? 'carta'
+    : 'buffet'
+)
+
+/**
+ * The API knows `ayce | express | kids`. Bebidas reuses the AYCE response because
+ * drinks are `locationType='both'` and appear in every menu; the Bebidas view is
+ * a client-side slice over those drinks. Kids has its own cross-cutting view.
+ */
+const apiType = computed<'ayce' | 'express' | 'kids'>(() => {
+  if (activeSelection.value === 'express') return 'express'
+  if (activeSelection.value === 'kids') return 'kids'
+  return 'ayce'
 })
 
 const { data, error } = await useAsyncData(
-  () => `menu-${activeType.value}-${activeModality.value}`,
+  () => `menu-${apiType.value}-${activeModality.value}`,
   () =>
     $fetch<FullMenuResult>('/api/v1/menu', {
-      params: { type: activeType.value, modality: activeModality.value },
+      params: { type: apiType.value, modality: activeModality.value },
     }),
   {
     getCachedData: (key, nuxtApp) =>
@@ -27,9 +42,21 @@ const { data, error } = await useAsyncData(
   }
 )
 
+/**
+ * The API degrades to an empty result (HTTP 200) when Neon is transiently
+ * unavailable, so a truthy-but-empty payload means "menu temporarily
+ * unavailable" — render a friendly state rather than an empty shell.
+ */
+const isUnavailable = computed(
+  () =>
+    !!data.value &&
+    data.value.categories.length === 0 &&
+    data.value.drinkGroups.length === 0
+)
+
 useHead({
   title: computed(() =>
-    activeType.value === 'express'
+    activeSelection.value === 'express'
       ? t('menu.seo.title_express')
       : t('menu.seo.title_ayce')
   ),
@@ -39,14 +66,17 @@ useHead({
 
 <template>
   <div>
-    <div v-if="error" class="container-pop py-16 text-center">
-      <p class="text-soft">{{ error.message }}</p>
+    <div
+      v-if="error || isUnavailable"
+      class="container-pop py-16 text-center"
+    >
+      <p class="text-soft">{{ t('menu.unavailable') }}</p>
     </div>
     <MenuShell
       v-else-if="data"
-      :key="`${activeType}-${activeModality}`"
+      :key="`${activeSelection}-${activeModality}`"
       :menu-data="data"
-      :initial-type="activeType"
+      :initial-selection="activeSelection"
       :initial-modality="activeModality"
     />
   </div>

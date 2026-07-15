@@ -33,6 +33,15 @@ const mailtoHref = computed(() => {
   return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 })
 
+/** Static "Bolsa de trabajo" RH (HR) phone CTA. `wa.me` needs a digits-only
+ *  value (country code 52 + the 10-digit mobile). The formatted display text
+ *  lets users read/copy the number without tapping the WhatsApp button. */
+const jobsPhone = computed(() => t('contact.jobs.phone'))
+const jobsPhoneDisplay = computed(() => t('contact.jobs.phoneDisplay'))
+const jobsWhatsappUrl = computed(
+  () => `https://wa.me/${jobsPhone.value.replace(/\D/g, '')}`
+)
+
 const socialLinks = computed(() => [
   {
     key: 'instagram',
@@ -116,5 +125,29 @@ const socialLinks = computed(() => [
         </a>
       </div>
     </section>
+
+    <!-- Bolsa de trabajo (job board): static i18n copy + phone/WhatsApp CTA.
+         No form, no backend — text and a pill only. -->
+    <section data-testid="jobs-card" class="mt-6 border-t-pop border-ink pt-6">
+      <h3 class="font-disp text-h-sm font-extrabold text-ink mb-3">
+        {{ t('contact.jobs.heading') }}
+      </h3>
+      <p class="font-body text-ink mb-3">{{ t('contact.jobs.lead') }}</p>
+      <p class="font-body text-soft mb-4">{{ t('contact.jobs.body') }}</p>
+      <p class="font-body text-ink mb-4" data-testid="jobs-phone-text">
+        {{ jobsPhoneDisplay }}
+      </p>
+      <a
+        :href="jobsWhatsappUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        :aria-label="`${t('contact.jobs.phoneLabel')}: ${jobsPhoneDisplay}`"
+        data-testid="jobs-phone-pill"
+        class="inline-flex items-center gap-2 rounded-pop-full border-pop border-ink bg-panel px-4 py-2 font-disp font-extrabold text-ink shadow-pop-sm transition-transform duration-200 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-pop min-h-[44px]"
+      >
+        {{ t('contact.jobs.phoneLabel') }}
+      </a>
+    </section>
   </div>
 </template>
+

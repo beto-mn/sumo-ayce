@@ -38,6 +38,17 @@ describe('Marquee', () => {
     }
   })
 
+  it('spaces copies uniformly: no edge padding on the copy so the seam gap == the internal gap', () => {
+    const wrapper = mount(Marquee, { slots: { default: 'aviso' } })
+    const content = wrapper.get('.marquee-content')
+    // Internal item spacing is gap-8; the track between-copies spacing is also
+    // gap-8. Edge px-4 on the copy would double the seam gap (uncentered first
+    // item), so it must NOT be present.
+    expect(content.classes()).toContain('gap-8')
+    expect(content.classes()).not.toContain('px-4')
+    expect(wrapper.get('.marquee-track').classes()).toContain('gap-8')
+  })
+
   it('defaults to the yellow tone', () => {
     const wrapper = mount(Marquee, { slots: { default: 'amarillo' } })
     const root = wrapper.get('.marquee')

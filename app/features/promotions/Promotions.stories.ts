@@ -20,10 +20,12 @@ export const Overview: Story = {
     template: `
       <div style="font-family: sans-serif; padding: 2rem; max-width: 640px;">
         <h1>Promotions Feature</h1>
-        <p>Components in this slice:</p>
+        <p>The promotions page and the homepage share one carousel primitive:</p>
         <ul>
-          <li><strong>PromotionsGrid</strong> — responsive grid of PromotionCards with an empty state.</li>
+          <li><strong>UiPromotionsCarousel</strong> (<code>components/ui</code>) — Embla touch/drag carousel with dots + arrows, rendering one <strong>UiPromotionCard</strong> per slide.</li>
+          <li><strong>UiPromotionCard</strong> (<code>components/ui</code>) — responsive &lt;picture&gt; slide with a color badge overlay.</li>
         </ul>
+        <p>The page fetches <code>/api/v1/content/promotions?all=1</code> and shows an empty state when there are no active promotions.</p>
       </div>
     `,
   }),

@@ -1,6 +1,33 @@
+import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import type { StorybookConfig } from '@storybook/vue3-vite'
 import vue from '@vitejs/plugin-vue'
+import tailwindcss from 'tailwindcss'
+
+const require = createRequire(import.meta.url)
+
+/**
+ * PostCSS plugins for Storybook's Vite build. The project no longer ships a
+ * root `postcss.config.cjs` (it triggered a "not supported together with Nuxt"
+ * warning — Nuxt wires Tailwind/PostCSS itself via `@nuxtjs/tailwindcss`).
+ * Storybook, however, still needs Tailwind processed for its component preview,
+ * so we configure PostCSS INLINE here (which also disables Vite's search for a
+ * postcss config file). Autoprefixer is added only when resolvable so a missing
+ * transitive dep never breaks the Storybook build.
+ */
+function storybookPostcssPlugins(): unknown[] {
+  const tailwindConfig = fileURLToPath(
+    new URL('../tailwind.config.ts', import.meta.url)
+  )
+  const plugins: unknown[] = [tailwindcss(tailwindConfig)]
+  try {
+    const autoprefixer = require('autoprefixer') as (opts?: unknown) => unknown
+    plugins.push(autoprefixer())
+  } catch {
+    // Autoprefixer is optional for the isolated component preview.
+  }
+  return plugins
+}
 
 const config: StorybookConfig = {
   stories: ['../app/**/*.stories.@(ts|tsx)'],
@@ -32,6 +59,13 @@ const config: StorybookConfig = {
       vue({ template: { transformAssetUrls: { includeAbsolute: false } } })
     )
     config.plugins = plugins
+
+    // Configure PostCSS inline (Tailwind) now that the root postcss.config.cjs
+    // is gone. An explicit object also stops Vite from searching for a config
+    // file. Merge into any existing css config Storybook may have set.
+    config.css ??= {}
+    config.css.postcss = { plugins: storybookPostcssPlugins() }
+
     config.resolve ??= {}
 
     // Storybook 10 uses array format for resolve.alias internally.

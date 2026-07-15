@@ -9,7 +9,9 @@ function dish(id: string, name: string, imageUrl: string | null): FeaturedDish {
     description: { es: 'Descripción.', en: 'Description.' },
     imageUrl,
     badge: null,
-    category: 'frio',
+    category: 'cold_rolls',
+    locationType: 'ayce',
+    includedInAyce: true,
   }
 }
 

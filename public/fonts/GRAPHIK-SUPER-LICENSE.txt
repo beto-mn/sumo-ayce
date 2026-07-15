@@ -1,0 +1,12 @@
+Graphik Super — client-licensed web font
+
+Font: Graphik Super (Regular, weight 400)
+Foundry: Commercial Type
+Rights holder: SUMO AYCE (client) — licensed for web / self-hosted use.
+
+This project self-hosts a WOFF2 build of Graphik Super
+(`graphik-super.woff2`) used ONLY for the homepage hero headline
+(.hero-headline in app/assets/css/base.css). It is NOT an open-source font;
+it must not be redistributed outside this project. The source .ttf was
+supplied by the client and converted to WOFF2 at setup time (see
+specs/022-homepage-hero-promos-contact/research.md R2).

@@ -20,12 +20,14 @@ type CategoryKey =
   | 'drinks'
   | 'kids'
 
-const CATEGORIES: {
+export const CATEGORIES: {
   key: CategoryKey
   nameEs: string
   nameEn: string
   displayOrder: number
   isActive: boolean
+  noteEs?: string | null
+  noteEn?: string | null
 }[] = [
   {
     key: 'appetizers',
@@ -43,8 +45,8 @@ const CATEGORIES: {
   },
   {
     key: 'rice',
-    nameEs: 'Arroces',
-    nameEn: 'Rice Dishes',
+    nameEs: 'Arroz',
+    nameEn: 'Rice',
     displayOrder: 2,
     isActive: true,
   },
@@ -57,14 +59,14 @@ const CATEGORIES: {
   },
   {
     key: 'burgers',
-    nameEs: 'Smash Burgers',
-    nameEn: 'Smash Burgers',
+    nameEs: 'Hamburguesas',
+    nameEn: 'Burgers',
     displayOrder: 4,
     isActive: true,
   },
   {
     key: 'sandwiches',
-    nameEs: 'Sándwich',
+    nameEs: 'Sándwiches',
     nameEn: 'Sandwiches',
     displayOrder: 5,
     isActive: true,
@@ -85,21 +87,21 @@ const CATEGORIES: {
   },
   {
     key: 'cold_rolls',
-    nameEs: 'Rollos Sushi Frío',
-    nameEn: 'Cold Sushi Rolls',
+    nameEs: 'Sushi Frío',
+    nameEn: 'Cold Rolls',
     displayOrder: 8,
     isActive: true,
   },
   {
     key: 'hot_rolls',
     nameEs: 'Sushi Caliente',
-    nameEn: 'Hot Sushi Rolls',
+    nameEn: 'Hot Rolls',
     displayOrder: 9,
     isActive: true,
   },
   {
     key: 'sweet_rolls',
-    nameEs: 'Rollo Sushi Dulce',
+    nameEs: 'Sushi Dulce',
     nameEn: 'Sweet Rolls',
     displayOrder: 10,
     isActive: true,
@@ -113,8 +115,8 @@ const CATEGORIES: {
   },
   {
     key: 'wings',
-    nameEs: 'Alitas y Boneless',
-    nameEn: 'Wings and Boneless',
+    nameEs: 'Alitas & Boneless',
+    nameEn: 'Wings & Boneless',
     displayOrder: 12,
     isActive: true,
   },
@@ -145,6 +147,10 @@ const CATEGORIES: {
     nameEn: 'Kids Menu',
     displayOrder: 16,
     isActive: true,
+    noteEs:
+      'Incluye papas a la francesa (100 g), refresco (400 ml), sushi kids (5 pzas de cualquier rollo de nuestra carta) y un yakimeshi (240 g).',
+    noteEn:
+      'Includes french fries (100 g), a soft drink (400 ml), sushi kids (5 pcs of any roll from our menu) and a yakimeshi (240 g).',
   },
 ]
 
@@ -158,6 +164,8 @@ export async function seedMenuCategories() {
         key: cat.key,
         nameEs: cat.nameEs,
         nameEn: cat.nameEn,
+        noteEs: cat.noteEs ?? null,
+        noteEn: cat.noteEn ?? null,
         displayOrder: cat.displayOrder,
         isActive: cat.isActive,
       })
@@ -166,6 +174,8 @@ export async function seedMenuCategories() {
         set: {
           nameEs: cat.nameEs,
           nameEn: cat.nameEn,
+          noteEs: cat.noteEs ?? null,
+          noteEn: cat.noteEn ?? null,
           displayOrder: cat.displayOrder,
           isActive: cat.isActive,
         },
