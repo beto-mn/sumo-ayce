@@ -72,7 +72,7 @@ const openLabel = computed(() =>
         </div>
         <UiSticker
           v-if="dish.badge"
-          class="absolute right-2 top-2"
+          class="absolute -right-5 -top-3 whitespace-nowrap"
           tone="pink"
           :rotate="-6"
         >
