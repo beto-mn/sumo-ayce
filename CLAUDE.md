@@ -50,11 +50,11 @@ return only the reference. Never the full content in chat.
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/019-homepage-brand-updates`
-**Plan**: `specs/019-homepage-brand-updates/plan.md`
-**Spec**: `specs/019-homepage-brand-updates/spec.md`
-**Data Model**: `specs/019-homepage-brand-updates/data-model.md`
-**Quickstart**: `specs/019-homepage-brand-updates/quickstart.md`
-**Research**: `specs/019-homepage-brand-updates/research.md`
-**Contracts**: `specs/019-homepage-brand-updates/contracts/i18n-keys.md`
+**Branch**: `feat/021-menu-experience-overhaul` (also carries consolidated feature 022 — one deliverable/PR)
+**Plan**: `specs/022-homepage-hero-promos-contact/plan.md`
+**Spec**: `specs/022-homepage-hero-promos-contact/spec.md`
+**Data Model**: `specs/022-homepage-hero-promos-contact/data-model.md`
+**Quickstart**: `specs/022-homepage-hero-promos-contact/quickstart.md`
+**Research**: `specs/022-homepage-hero-promos-contact/research.md`
+**Contracts**: `specs/022-homepage-hero-promos-contact/contracts/promotions-wp.md`
 <!-- SPECKIT END -->

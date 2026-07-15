@@ -101,8 +101,7 @@ Routes (Nuxt pages). The prototype was a hash SPA; in Nuxt these are real routes
 5. **Contact** (`/contacto`) — form → WhatsApp.
 
 > **Important (copy):** the brand is **"Estilo americano-japonés"** (American-Japanese style),
-> NOT "Japanese food". Never use the word **"Buffet"** (there's a competitor "Sumo Buffet")
-> → use **"All You Can Eat"**.
+> NOT "Japanese food". ("All You Can Eat" and "Buffet" are both acceptable copy.)
 
 ---
 
