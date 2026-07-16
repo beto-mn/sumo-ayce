@@ -29,7 +29,19 @@ function resolveStyle(style?: string): string {
   return STYLE_URLS[style] ?? DEFAULT_STYLE
 }
 
-function makeMarkerElement(color: 'orange' | 'blue'): HTMLDivElement {
+/**
+ * Per-marker brand mark: AYCE pins keep the generic SUMO mark, Express pins
+ * carry the actual Sumo Express vertical lockup (FR-009/FR-010). Exported for
+ * direct unit testing (see mapboxAdapter.spec.ts) — this is the only place in
+ * app/ allowed to know about these specific asset paths.
+ */
+export function markerLogoSrc(color: 'orange' | 'blue'): string {
+  return color === 'blue'
+    ? '/brand/sumo-express-vertical.webp'
+    : '/brand/sumo-vertical.svg'
+}
+
+export function makeMarkerElement(color: 'orange' | 'blue'): HTMLDivElement {
   const brandColor =
     color === 'orange' ? 'rgb(var(--orange))' : 'rgb(var(--blue))'
   const ink = 'rgb(var(--ink))'
@@ -60,8 +72,8 @@ function makeMarkerElement(color: 'orange' | 'blue'): HTMLDivElement {
   ].join(';')
 
   const img = document.createElement('img')
-  img.src = '/brand/sumo-vertical.svg'
-  img.alt = 'SUMO'
+  img.src = markerLogoSrc(color)
+  img.alt = color === 'blue' ? 'SUMO Express' : 'SUMO'
   img.draggable = false
   img.style.cssText = 'width:100%;height:100%;object-fit:contain;'
 

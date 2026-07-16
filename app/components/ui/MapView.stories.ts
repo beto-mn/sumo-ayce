@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { defineComponent, h, onMounted, ref } from 'vue'
+import { makeMarkerElement } from '@/composables/maps/adapters/mapboxAdapter'
 
 /**
  * MapView renders an interactive Mapbox map.
@@ -157,5 +159,54 @@ export const Loading: Story = {
   args: { center: [-99.1332, 19.4326], zoom: 11, markers: [] },
   render: () => ({
     template: mapStub('Map initializing…', '400px', 'bg'),
+  }),
+}
+
+/**
+ * Demonstrates the REAL per-pin marker DOM produced by
+ * `makeMarkerElement()` in the mapbox adapter (feature 024) — an AYCE pin
+ * (generic SUMO mark) next to an Express pin (actual Sumo Express vertical
+ * lockup). This is the actual production function, not reimplemented
+ * markup; only the surrounding `<MapView>` canvas itself is stubbed above
+ * (documented exception: requires a live Mapbox token to render).
+ */
+const MarkerBrandingDemo = defineComponent({
+  name: 'MarkerBrandingDemo',
+  setup() {
+    const aycePinHost = ref<HTMLDivElement | null>(null)
+    const expressPinHost = ref<HTMLDivElement | null>(null)
+    onMounted(() => {
+      aycePinHost.value?.appendChild(makeMarkerElement('orange'))
+      expressPinHost.value?.appendChild(makeMarkerElement('blue'))
+    })
+    return { aycePinHost, expressPinHost }
+  },
+  render() {
+    return h(
+      'div',
+      {
+        class:
+          'flex items-end gap-10 rounded-pop border-pop border-ink bg-bg2 p-8',
+      },
+      [
+        h('div', { class: 'flex flex-col items-center gap-2' }, [
+          h('div', { ref: 'aycePinHost' }),
+          h('span', { class: 'text-sm font-body text-soft' }, 'AYCE pin'),
+        ]),
+        h('div', { class: 'flex flex-col items-center gap-2' }, [
+          h('div', { ref: 'expressPinHost' }),
+          h('span', { class: 'text-sm font-body text-soft' }, 'Express pin'),
+        ]),
+      ]
+    )
+  },
+})
+
+export const MarkerBranding: Story = {
+  name: 'Marker Branding — AYCE vs Express (real pin DOM)',
+  args: { center: [-99.1332, 19.4326], zoom: 11, markers: [] },
+  render: () => ({
+    components: { MarkerBrandingDemo },
+    template: '<MarkerBrandingDemo />',
   }),
 }
