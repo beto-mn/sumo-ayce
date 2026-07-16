@@ -41,7 +41,7 @@ export const KIDS_ITEMS: KidsItem[] = [
       'Buffet all you can eat para niños de 2 a 10 años. Precio por persona, promoción individual (no para compartir). Rollos y alitas se sirven de 5 piezas; los demás platillos en porciones individuales. Máximo 2 platillos por persona a la vez. Solo para consumo en restaurante.',
     descriptionEn:
       'All you can eat buffet for children ages 2 to 10. Price per person, individual promotion (not for sharing). Rolls and wings are served in portions of 5 pieces; all other dishes in individual portions. Maximum 2 dishes per person at a time. Dine-in only.',
-    fileName: null,
+    fileName: 'menu/kids/all_you_can_eat_kids.webp',
     price: KIDS_AYCE_PRICE,
     includedInAyce: true,
   },

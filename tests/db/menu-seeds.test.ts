@@ -233,10 +233,10 @@ describe('kids menu seed', () => {
     expect(KIDS_ITEMS[0]?.nameEs).toBe('All You Can Eat Kids')
   })
 
-  it('prices the All You Can Eat Kids item at $179 with no image asset', () => {
+  it('prices the All You Can Eat Kids item at $179 with the kids image asset', () => {
     const ayce = KIDS_ITEMS.find(i => i.nameEs === 'All You Can Eat Kids')
     expect(ayce?.price).toBe('179.00')
-    expect(ayce?.fileName).toBeNull()
+    expect(ayce?.fileName).toBe('menu/kids/all_you_can_eat_kids.webp')
     expect(ayce?.nameEn).toBe('All You Can Eat Kids')
     expect(ayce?.descriptionEs).toContain('2 a 10 años')
     expect(ayce?.descriptionEn).toContain('ages 2 to 10')

@@ -161,3 +161,46 @@ Public homepage in the "Mercado Pop" visual language, ISR 3600. Branch `feat/010
 - `./init.sh` exit 0 — 918/918 tests, Biome + typecheck + Storybook build all green. Sensitive-data scan clean.
 - Full review record: `progress/review_menu-chip-db-drift-guard.md`.
 - Homepage branch `feat/010-homepage` is uncommitted — commit/PR per the CI flow when ready.
+
+## Feature closed: 024 — menu-image-refresh-express-branding (2026-07-15)
+
+**Branch**: `feat/024-menu-image-refresh-express-branding` (rebased onto master post-023;
+uncommitted, awaiting human commit/merge).
+
+### Flow
+- Human approved spec → leader flipped `spec_ready` → `in_progress`, launched implementer.
+- Implementer: all 27 tasks (T001-T027) done. Round-1 reviewer REJECTED solely because
+  `tasks.md` checkboxes weren't updated (implementer's prior session had no live transcript to
+  resume); leader corrected `tasks.md` directly (docs/tracking, not source code) and re-ran the
+  reviewer. Round-2 reviewer → **APPROVED** (`progress/review_menu-image-refresh-express-branding.md`).
+  A follow-up implementer instance marked `done` in `feature_list.json` per convention.
+
+### What was delivered (3 independent user stories)
+- **US1 — Kids AYCE collage**: `server/db/seeds/kidsMenu.ts` sets `fileName:
+  'menu/kids/all_you_can_eat_kids.webp'` for the "All You Can Eat Kids" item; a new 3-panel
+  composite (burger/sushi/tenders+fries) was uploaded to Vercel Blob at that path via
+  `scripts/replace-blob-images.ts` (added `--src` CLI flag). DB reseeded; every other Kids row
+  unchanged.
+- **US2 — Sitewide watermark**: new `backgroundImage.watermark` Tailwind token
+  (`public/patterns/sumo-watermark.webp`, ~10% baked-in alpha, 300×405) applied on
+  `app/layouts/default.vue`'s root wrapper alongside the existing `bg-bg`. Bug found + fixed
+  in the process: `app/pages/branches.vue` and `app/pages/contact.vue` each had a redundant
+  opaque `min-h-screen bg-bg` on their own page-root that fully occluded the new watermark —
+  removed (matches the pattern already used by `menu.vue`/`promotions.vue`/`index.vue`).
+  Lighthouse re-verified via a `git worktree` production-build baseline: 0-3 point diff
+  (no regression).
+- **US3 — Express map branding**: `app/composables/maps/adapters/mapboxAdapter.ts` gained a
+  `markerLogoSrc(color)` helper; Express (`blue`) markers now use
+  `public/brand/sumo-express-vertical.webp`, AYCE (`orange`) unchanged. Live Mapbox/WebGL
+  screenshot wasn't possible in the sandbox (no GPU/GL backend); verified instead via a new
+  `mapboxAdapter.spec.ts` (5 tests) plus a Storybook story mounting the real
+  `makeMarkerElement()` function.
+
+### Guardrails confirmed
+- Zero diff on `app/features/menu/menu-sets.ts` and `app/components/layout/SiteLogo.vue`
+  (explicit out-of-scope requirement).
+- `./init.sh` — exit 0: Biome (373 files), typecheck, 957/957 tests (114 files), Storybook
+  build all green.
+
+### Known issues / TODOs
+- None blocking. Working tree left uncommitted for the human to commit/merge.

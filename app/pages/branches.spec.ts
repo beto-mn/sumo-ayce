@@ -131,4 +131,11 @@ describe('branches.vue', () => {
     await flushPromises()
     expect(wrapper.find('[data-testid="map-panel"]').exists()).toBe(true)
   })
+
+  it('does not paint its own opaque bg-bg on the root wrapper (would occlude the sitewide watermark — FR-005/SC-002)', async () => {
+    const wrapper = mountPage()
+    await flushPromises()
+    const root = wrapper.get('div')
+    expect(root.classes()).not.toContain('bg-bg')
+  })
 })

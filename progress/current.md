@@ -1,5 +1,9 @@
 # Current session
 
+## CLOSED: 024 — menu-image-refresh-express-branding (see progress/history.md)
+
+---
+
 ## IN PROGRESS: 022 — homepage-hero-promos-contact (implementation, on 021 branch)
 
 Branch: `feat/021-menu-experience-overhaul` (022 ships with 021 as one PR).

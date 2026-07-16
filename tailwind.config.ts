@@ -76,6 +76,12 @@ export default {
         // top of the cream `bg-bg` base color.
         'hero-pop':
           'radial-gradient(circle at 88% 12%, rgb(var(--yellow)) 0 70px, transparent 71px), repeating-linear-gradient(45deg, rgb(var(--bg2)) 0 22px, transparent 22px 44px)',
+        // Sitewide low-opacity (~10-15%, pre-baked into the asset itself)
+        // repeating pop-art watermark texture. Painted alongside `bg-bg` on
+        // the root layout wrapper (two CSS layers on one element), never as
+        // its own overlay `<div>` — see docs/business/overview.md and
+        // specs/024-menu-image-refresh-express-branding/research.md R4.
+        watermark: "url('/patterns/sumo-watermark.webp')",
       },
       maxWidth: {
         pop: 'var(--maxw)',
