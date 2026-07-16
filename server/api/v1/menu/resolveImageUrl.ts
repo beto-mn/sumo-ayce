@@ -13,7 +13,7 @@ import { env } from '../../../utils/env'
  * It is intentionally a hand-maintained constant — NOT derived from build time —
  * so ordinary deploys do NOT needlessly bust every image and re-download them.
  */
-export const MENU_IMAGE_VERSION = '2026-07-14-1'
+export const MENU_IMAGE_VERSION = '2026-07-15-1'
 
 /**
  * Resolves a Vercel Blob image URL from a Blob-relative file path.

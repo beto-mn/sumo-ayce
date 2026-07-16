@@ -115,7 +115,7 @@ const CDMX_CENTER: LngLat = [-99.1332, 19.4326]
 </script>
 
 <template>
-  <div class="min-h-screen bg-bg px-4 py-8 sm:px-6 lg:px-8">
+  <div class="px-4 py-8 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
       <!-- Page header -->
       <UiPageHeader

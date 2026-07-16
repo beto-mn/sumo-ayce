@@ -8,8 +8,10 @@
  * kids), each with its OWN blob path — the file is uploaded to ALL of them.
  *
  * Usage:
- *   pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts          # dry run
- *   pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts --apply  # upload
+ *   pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts                       # dry run, default folder
+ *   pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts --apply                # upload, default folder
+ *   pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts --src <path>            # dry run, custom folder
+ *   pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts --src <path> --apply     # upload, custom folder
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -17,8 +19,20 @@ import { put } from '@vercel/blob'
 import { menuItems } from '../server/db/schema'
 import { db } from '../server/utils/db'
 
-const SRC = '/Users/betonajera/Downloads/wetransfer_fotos-web_2026-07-13_1959'
+const DEFAULT_SRC =
+  '/Users/betonajera/Downloads/wetransfer_fotos-web_2026-07-13_1959'
 const APPLY = process.argv.includes('--apply')
+
+/** `--src <path>` overrides the default hardcoded source folder. */
+function resolveSrc(): string {
+  const flagIndex = process.argv.indexOf('--src')
+  if (flagIndex === -1) return DEFAULT_SRC
+  const value = process.argv[flagIndex + 1]
+  if (!value) throw new Error('--src requires a path argument')
+  return value
+}
+
+const SRC = resolveSrc()
 
 /**
  * Local files whose name differs from the DB nameEs → map to the exact nameEs.
