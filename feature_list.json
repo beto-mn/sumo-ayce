@@ -214,7 +214,7 @@
       "description": "Bug found during exploration (not yet spec'd/implemented): app/features/menu/menu-sets.ts hardcodes the per-view category/drink-group membership (AYCE_BUFFET_SET, AYCE_CARTA_SET, EXPRESS_SET, DRINKS_SET) consumed by useMenuFilters.ts to build MenuShell.vue's chip row. This static list is never cross-checked against what menu-queries.ts actually returns from menu_categories/drink_group. If a category (e.g. Sándwiches) and its menu_items are removed from the DB but menu-sets.ts is not updated, MenuShell.vue still renders the chip — foodCategoryLabel() falls back to the raw untranslated key string when the category isn't found (MenuShell.vue), and activeFoodCategory falls back to an empty { dishes: [] } section, so the chip leads to a silent blank state instead of being hidden. No test today guards this drift (checked tests/db/menu-seeds.test.ts). Fix should either (a) filter/hide curated-set chips that have no matching entry in the fetched FullMenuResult.categories/drinkGroups, and/or (b) add an integration test asserting every key in menu-sets.ts exists in the DB seed/categories, failing CI on drift. Out of scope: sauces and drinkSubGroups tables — both investigated in this context and confirmed still needed (drinkSubGroups is fully live in MenuDrinkSection.vue; the sauces catalog is intentionally retained per specs/021-menu-experience-overhaul FR-021 'for any future use' even though its Alitas & Boneless picker UI was removed) — do NOT drop those tables/seeds as part of this fix.",
       "spec_path": "specs/023-menu-chip-db-drift-guard",
       "sdd": true,
-      "status": "pending"
+      "status": "spec_ready"
     }
   ]
 }

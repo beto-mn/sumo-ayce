@@ -1,5 +1,71 @@
 # Current session
 
+## SPEC_READY: 023 — menu-chip-db-drift-guard
+
+**Feature**: id 23, `menu-chip-db-drift-guard`.
+**Status**: `pending` → `spec_ready`.
+**Spec folder**: `specs/023-menu-chip-db-drift-guard/`
+**Branch**: `fix/023-menu-chip-db-drift-guard` (new branch, created via `/speckit-git-feature`).
+
+### Skills invoked (in order)
+1. `/speckit-git-feature` → created branch `fix/023-menu-chip-db-drift-guard`.
+2. `/speckit.specify` → `spec.md` (+ `checklists/requirements.md`).
+3. `/speckit.clarify` → SKIPPED — 0 `[NEEDS CLARIFICATION]` markers. The two candidate fix
+   directions supplied in the feature description (runtime chip filter vs. CI regression
+   test) were treated as complementary requirements, not a fork needing a client decision —
+   both were written into the spec as FR-001–FR-007 (runtime guard) and FR-008–FR-009
+   (regression test), since both independently satisfy distinct acceptance criteria from
+   `feature_list.json` (no silent dead chip in production; drift caught by automated test)
+   with no conflict between them.
+4. `/speckit.plan` → `plan.md`, `research.md`, `data-model.md`, `quickstart.md`. No
+   `contracts/` — the feature exposes no new external interface (purely internal presentation
+   filter + test).
+5. `/speckit.tasks` → `tasks.md` (15 tasks: Setup(1) → Foundational(1, verification-only) →
+   US1 runtime guard (7) → US2 regression test (3) → Polish (3)).
+
+### The bug (traceability)
+`app/features/menu/menu-sets.ts` hardcodes curated per-view category/drink-group membership
+(`AYCE_BUFFET_SET`, `AYCE_CARTA_SET`, `EXPRESS_SET`, `DRINKS_SET`) consumed by
+`useMenuFilters.ts` to build `MenuShell.vue`'s chip row, never cross-checked against
+`server/utils/menu-queries.ts`'s live DB read. A removed/deactivated category still renders a
+chip; `foodCategoryLabel()` falls back to the raw untranslated key, and `activeFoodCategory`
+falls back to an empty `{ dishes: [] }` section — a silent dead/blank chip.
+
+### Two-part fix design (research.md)
+- **US1 (P1, runtime guard)**: new pure `filterAvailableKeys(keys, availableKeys)` helper in
+  `menu-sets.ts`; wired into `useMenuFilters`'s `curatedSet` computed so a chip only renders
+  when its key is present in the fetched `FullMenuResult.categories`/`drinkGroups`; the
+  existing `resolveActiveKey` fallback-to-default is reused (no new fallback logic) for the
+  case where the active key becomes unavailable.
+- **US2 (P2, CI guard)**: new `describe` block in `tests/db/menu-seeds.test.ts` (extends the
+  existing seed-shape test file, same `db` stub pattern) asserting every key in the four
+  curated sets exists among the active seed's `menu_categories`/`drink_group` keys, failing
+  with a message naming the specific missing key + set.
+- Both stories are file-disjoint and independently shippable (US1 touches
+  `app/features/menu/**`; US2 touches only `tests/db/menu-seeds.test.ts`).
+
+### Explicitly out of scope (confirmed, not touched by any task)
+`sauces` table/seed and `drinkSubGroups`/`drink_sub_group` table/seed — both confirmed still
+in active use per `specs/021-menu-experience-overhaul/` and excluded from every requirement
+(FR-010) and every task.
+
+### Main Phase -1 gates (from plan.md)
+- **Article I**: all changes confined to `app/features/menu/` (feature-folder boundary); no
+  new component — the existing chip-mapping computed is filtered upstream, not duplicated.
+- **Article IV**: co-located Vitest specs for the new pure function and the composable
+  extension; regression test reuses the existing `tests/db/menu-seeds.test.ts` DB-stub
+  pattern; no live DB dependency introduced.
+- **Article V**: no route/rendering-mode change — `/menu` stays as currently configured; no
+  new Neon/Drizzle import surface.
+- **Article VII**: `MenuShell.stories.ts` (already exists) gains a filtered-chip-row variant.
+- **Article VIII/X**: new filter function is a single, small (<15-line), pure helper — no new
+  abstraction layer, no design pattern introduced (KISS).
+- **Article XII**: N/A — this is a silent UI filter (expected behavior), not an error path; no
+  new server route or error type.
+- No Constitution Check violations; Complexity Tracking table is empty.
+
+---
+
 ## IN PROGRESS: 022 — homepage-hero-promos-contact (implementation, on 021 branch)
 
 Branch: `feat/021-menu-experience-overhaul` (022 ships with 021 as one PR).
