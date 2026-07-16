@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { PrimarySelection } from '@/features/menu/menu-sets'
 import type { FullMenuResult, MenuModality } from '@/types/menu'
 
@@ -30,7 +31,7 @@ const apiType = computed<'ayce' | 'express' | 'kids'>(() => {
   return 'ayce'
 })
 
-const { data, error } = await useAsyncData(
+const { data, error, status } = await useAsyncData(
   () => `menu-${apiType.value}-${activeModality.value}`,
   () =>
     $fetch<FullMenuResult>('/api/v1/menu', {
@@ -54,6 +55,13 @@ const isUnavailable = computed(
     data.value.drinkGroups.length === 0
 )
 
+/**
+ * `status` transitions to 'pending' both on first mount and whenever the
+ * fetch key changes (type/modality switch) — the same mechanism covers both
+ * a cold load and a client-side switch (feature 023 PART B).
+ */
+const isLoading = computed(() => status.value === 'pending')
+
 useHead({
   title: computed(() =>
     activeSelection.value === 'express'
@@ -72,6 +80,12 @@ useHead({
     >
       <p class="text-soft">{{ t('menu.unavailable') }}</p>
     </div>
+    <MenuSkeleton
+      v-else-if="isLoading"
+      class="container-pop py-8"
+      :selection="activeSelection"
+      :modality="activeModality"
+    />
     <MenuShell
       v-else-if="data"
       :key="`${activeSelection}-${activeModality}`"

@@ -137,4 +137,27 @@ Public homepage in the "Mercado Pop" visual language, ISR 3600. Branch `feat/010
 - **T042** (Lighthouse ≥90 / interactive <2s) deferred to post-deploy verification on the feature-009 CI preview.
 - **Feature 011 (menu page)** is still specced for the WordPress `menu_item` CPT — must be reconciled to DB sourcing (revive the `016` schema from `git stash@{0}`) before it is worked on.
 - `git stash@{0}` holds the reviewer-approved 016 menu-schema DB code (schema + migration + seed + `getFeaturedDishes`/`getFullMenu` helpers). Restore it for 011/012, or drop it if redoing.
+
+---
+
+## Feature 023 — Menu Chip / DB Drift Guard — DONE (2026-07-15)
+
+**Branch**: `fix/023-menu-chip-db-drift-guard`
+
+### The bug
+`app/features/menu/menu-sets.ts` hardcoded curated per-view category/drink-group membership (`AYCE_BUFFET_SET`, `AYCE_CARTA_SET`, `EXPRESS_SET`, `DRINKS_SET`) consumed by `useMenuFilters.ts` to build `MenuShell.vue`'s chip row, never cross-checked against `server/utils/menu-queries.ts`'s live DB read. A category removed/deactivated in the DB without updating `menu-sets.ts` still rendered a chip — `foodCategoryLabel()` fell back to the raw untranslated key, `activeFoodCategory` fell back to an empty `{ dishes: [] }` section — a silent dead/blank chip.
+
+### What shipped
+- **Runtime guard (US1)**: new pure `filterAvailableKeys(keys, availableKeys)` in `menu-sets.ts`; `resolveActiveKey` and `useMenuFilters` gained an optional `availableKeys?: Set<string>` param (backward-compatible, existing 3-arg call sites unaffected) so a chip only renders when its key exists in the fetched `FullMenuResult.categories`/`drinkGroups`; the existing out-of-set fallback is reused for the active-key-becomes-unavailable case. `MenuShell.vue` builds `availableKeys` from `props.menuData` and passes it through.
+- **CI regression guard (US2)**: new `describe` block in `tests/db/menu-seeds.test.ts` asserting every curated-set key exists among the active seed's `menu_categories`/`drink_group` keys, failing with a message naming the offending key + set. Verified live to fail on an injected drift, then reverted clean.
+- Storybook: `MenuShell.stories.ts` expanded fixture + two new variants (`FilteredMissingCategory`, `FilteredMissingDrinkGroup`).
+- Explicitly out of scope (confirmed untouched): `sauces` and `drinkSubGroups` tables/seeds — both still in active use (drinkSubGroups fully live in `MenuDrinkSection.vue`; sauces catalog intentionally retained per specs/021 FR-021 "for any future use").
+
+### Reviewer round 1 → REJECTED (2 reasons), fixed, round 2 → APPROVED
+1. `tasks.md` had all 15 tasks unchecked despite the work being done — fixed, T001-T015 marked `[x]` (T003 documents the file-naming deviation: tests went into the pre-existing `menu-sets.spec.ts` instead of a new file).
+2. `MenuShell.vue` was 203 lines, over the 200-line Article VIII cap — trimmed to 197 lines, no functionality/coverage lost.
+
+### Final state
+- `./init.sh` exit 0 — 918/918 tests, Biome + typecheck + Storybook build all green. Sensitive-data scan clean.
+- Full review record: `progress/review_menu-chip-db-drift-guard.md`.
 - Homepage branch `feat/010-homepage` is uncommitted — commit/PR per the CI flow when ready.

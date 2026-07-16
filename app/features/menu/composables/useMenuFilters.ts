@@ -1,6 +1,7 @@
 import type { ComputedRef, Ref } from 'vue'
 import { computed, ref } from 'vue'
 import {
+  filterAvailableKeys,
   getCuratedSet,
   getDefaultKey,
   type PrimarySelection,
@@ -43,9 +44,19 @@ function parseModality(value: unknown): MenuModality | undefined {
   return undefined
 }
 
+/**
+ * @param availableKeys The live category/drink-group keys from the current
+ *   menu content read (feature 023 — drift guard). When supplied, curated-set
+ *   membership (both for the exposed `curatedSet` chip list and for resolving
+ *   the active category) is filtered down to keys that also exist here, so a
+ *   curated-but-no-longer-available category never renders a dead chip and
+ *   never becomes the active selection. Omitted (or `undefined`) preserves the
+ *   pre-023 behavior of trusting the curated set as-is (no regression — FR-012).
+ */
 export function useMenuFilters(
   initialSelection: PrimarySelection,
-  initialModality: MenuModality
+  initialModality: MenuModality,
+  availableKeys?: Set<string>
 ): MenuFilters {
   const router = useRouter()
   const route = useRoute()
@@ -59,12 +70,14 @@ export function useMenuFilters(
       : 'buffet'
   )
   // Default category is ALWAYS the first entry of the active set (no show-all);
-  // an out-of-set deep-link key falls back to the view default (FR-013d).
+  // an out-of-set deep-link key falls back to the view default (FR-013d), and
+  // so does a curated-but-no-longer-available key (FR-005).
   const activeCategory = ref<string>(
     resolveActiveKey(
       activeSelection.value,
       activeModality.value,
-      route.query.category as string | undefined
+      route.query.category as string | undefined,
+      availableKeys
     )
   )
 
@@ -73,9 +86,12 @@ export function useMenuFilters(
   const isKids = computed(() => activeSelection.value === 'kids')
   // Kids is a single flat list, so it renders WITHOUT a category-chip row.
   const showCategoryChips = computed(() => activeSelection.value !== 'kids')
-  const curatedSet = computed(() =>
-    getCuratedSet(activeSelection.value, activeModality.value)
-  )
+  // Curated order is authoritative for ordering; availability (when supplied)
+  // is authoritative for membership only (FR-003/FR-004) — drift guard.
+  const curatedSet = computed(() => {
+    const curated = getCuratedSet(activeSelection.value, activeModality.value)
+    return availableKeys ? filterAvailableKeys(curated, availableKeys) : curated
+  })
 
   const accentStyle = computed(() => {
     if (activeSelection.value === 'express')
@@ -115,7 +131,8 @@ export function useMenuFilters(
     activeCategory.value = resolveActiveKey(
       activeSelection.value,
       activeModality.value,
-      key
+      key,
+      availableKeys
     )
     syncUrl()
   }

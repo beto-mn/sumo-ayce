@@ -428,3 +428,173 @@ new git branch was created (speckit-git-feature intentionally skipped; setup-pla
   `contracts/promotions-wp.md` is authoritative. Doc update flagged as follow-up (out of code scope).
 - The batch-intake maps named in the request (`homepage-map.md`, `contact-map.md`) do NOT exist —
   only `intake.md` + `menu-map.md` are present; intake.md covered the needed findings.
+
+---
+
+## SPEC_READY: 025 — menu-loading-skeletons
+
+**Feature**: id 25, `menu-loading-skeletons`.
+**Spec folder**: `specs/025-menu-loading-skeletons/`
+**Branch**: `feat/025-menu-loading-skeletons` (created fresh via speckit-git-feature; branched off
+the working tree that was on `fix/023-menu-chip-db-drift-guard` at the time, then renamed from the
+script's auto-numbered `feat/024-...` to `feat/025-...` to match this feature's fixed `spec_path`).
+
+### Skills invoked (in order)
+1. `/speckit-git-feature` → branch created (`feat/024-menu-loading-skeletons`), then renamed to
+   `feat/025-menu-loading-skeletons` to match `feature_list.json`'s `spec_path`.
+2. `/speckit.specify` → spec.md (+ checklists/requirements.md). Directory forced to
+   `specs/025-menu-loading-skeletons` via `.specify/feature.json` since the branch-numbering script
+   would otherwise have picked `024` (next empty slot in `specs/`), which doesn't match this
+   feature's assigned `spec_path`.
+3. `/speckit.clarify` → SKIPPED. 0 `[NEEDS CLARIFICATION]` markers — both judgment calls flagged in
+   the assignment (component placement, prop-drilling vs. page-level loading swap) were resolved
+   via existing codebase conventions and recorded in spec.md's Assumptions + research.md Decisions
+   1-2, with rationale.
+4. `/speckit.plan` → plan.md + research.md (5 decisions) + data-model.md +
+   contracts/skeleton-components.md + quickstart.md.
+5. `/speckit.tasks` → tasks.md (25 tasks across Setup, Foundational, US1/US2/US3, Polish).
+
+### Design decisions (from research.md)
+- **Component placement**: generic `UiSkeleton.vue` primitive → `app/components/ui/` (Article I —
+  reusable across future features). Menu-specific compositions (`MenuChipSkeleton`,
+  `MenuDishCardSkeleton`, `MenuSkeleton` orchestrator) → `app/features/menu/components/` (Article X
+  — only `/menu` needs these exact shapes today).
+- **Loading-state ownership**: handled at `app/pages/menu.vue` (new `isLoading` branch alongside
+  the existing `error`/`isUnavailable`/`data` branches); `MenuShell.vue` and all its children are
+  UNCHANGED — avoids threading a new prop through an already multi-branch presentational component.
+- **Chip skeleton count is EXACT, not approximate**: sourced from the existing
+  `getCuratedSet(selection, modality)` in `app/features/menu/menu-sets.ts` (already known before the
+  fetch resolves, since `activeSelection`/`activeModality` derive from `route.query`) — 8 for
+  AYCE·buffet, 11 for AYCE·carta, 8 for Express, 6 for Bebidas, 0 (no chip row) for Kids.
+- **Dish-card skeleton count is a fixed 6** (grid-friendly at all breakpoints) — the real
+  per-category dish count is unknowable before the fetch resolves.
+- **Reduced motion**: Tailwind `animate-pulse motion-reduce:animate-none`, the exact pattern already
+  used by `Marquee.vue` — no new JS/keyframes.
+
+### Main Phase -1 gates (from plan.md's Constitution Check)
+- Article I: DRY (shared primitive) vs KISS (feature-scoped compositions) placement, justified.
+- Article IV: co-located Vitest specs for every new component (no composable introduced).
+- Article VII: Storybook stories (Default + reduced-motion/static + Responsive) per new component;
+  reduced-motion handling mandatory, matching `Marquee.vue`'s established convention.
+- Article VIII: components kept small/single-purpose, well under the 200-line limit.
+- Article X: no premature abstraction — the shared primitive stays a minimal box/pill, the
+  menu-specific shapes are NOT generalized until a second real use case exists.
+- Articles III/V/VI/XII/XIII marked N/A (no routes, no DB, no auth, no server route touched).
+
+### ⚠️ CONFLICT FOUND — needs leader/human reconciliation before this can move forward
+While authoring this spec, `feature_list.json` was found being actively rewritten by a concurrent
+process (uncommitted working-tree changes, observed mid-session, NOT something I edited):
+- Feature **id 25 was removed entirely** from the array.
+- Feature **23**'s title/description was rewritten to add a "PART B" folding this exact
+  menu-loading-skeletons work into feature 23, with the explicit note "no formal spec — implemented
+  directly per client instruction... do not create a separate feature entry for this," and its
+  `status` changed from `spec_ready` to `in_progress`.
+- This is a live, uncommitted conflict — `git diff HEAD -- feature_list.json` shows it as an
+  unstaged modification, not a prior commit. It appears another agent/process is implementing this
+  same skeleton work directly on `fix/023-menu-chip-db-drift-guard` without going through the spec
+  phase, which contradicts this assignment (formal spec for a standalone id-25 feature) and the
+  root `CLAUDE.md` hard rule that any `sdd: true` feature MUST go through `spec_author` first.
+- **I did NOT touch `feature_list.json`'s feature-23 entry or re-add id 25** — reconciling which
+  track (formal spec-based id 25 vs. direct no-spec PART-B-of-23) is authoritative is a
+  leader/human decision, not mine to make unilaterally.
+
+### ✅ RESOLVED (human decision)
+Client explicitly instructed: no separate feature entry, everything folds into feature 23 as
+PART B, implemented directly on this same branch without a formal spec_author pass, no commit
+until told. `feature_list.json` stays as the leader rewrote it (id 25 removed, id 23 covers both
+parts, `status: in_progress`). This `specs/025-menu-loading-skeletons/` folder is kept only as
+reference research (design decisions above — component placement, loading-state ownership,
+exact chip-skeleton counts via `getCuratedSet`, reduced-motion pattern) informing the direct
+implementation; it is not an active spec_path.
+- The full spec/plan/tasks for id 25 are complete and committed to disk at
+  `specs/025-menu-loading-skeletons/` on branch `feat/025-menu-loading-skeletons` regardless of how
+  this conflict is resolved.
+
+### Pending
+- Leader/human must reconcile the `feature_list.json` conflict above before feature 25 (or the
+  folded-in "PART B" of 23) can proceed to `in_progress`.
+- Feature **015 — loyalty-portal** (`pending`, `sdd: true`) — next candidate once reconciled.
+
+## IMPLEMENTED: 023 PART B — menu loading skeletons (uncommitted, awaiting review)
+
+Implemented directly on the current branch (`feat/025-menu-loading-skeletons`), no formal
+spec_author pass, per explicit client instruction (feature 23's `feature_list.json` description
+covers this as "PART B"). Used `specs/025-menu-loading-skeletons/{research,data-model,contracts,
+tasks}.md` as reference design/task breakdown only — that folder was NOT modified and is not an
+active spec_path. **Nothing was committed** — all changes below are uncommitted working-tree
+modifications for the human to review/commit.
+
+### What changed
+- New generic primitive `app/components/ui/UiSkeleton.vue` (`shape: 'rect' | 'pill' | 'circle'`,
+  default `rect`) — single `<div aria-hidden="true">`, `bg-bg2`, `animate-pulse
+  motion-reduce:animate-none` (same reduced-motion pattern as `Marquee.vue`'s track). No
+  width/height props — sizing via `class` passthrough.
+- New menu-scoped compositions in `app/features/menu/components/`:
+  - `MenuChipSkeleton.vue` — one pill `UiSkeleton` sized to `UiChip`'s dimensions/border.
+  - `MenuDishCardSkeleton.vue` — `MenuDishCard`'s outer shell classes wrapping exactly 3
+    `UiSkeleton`s (image area, title line, description line).
+  - `MenuSkeleton.vue` (orchestrator) — props `selection`/`modality`; chip count =
+    `getCuratedSet(selection, modality).length` (exact — 8 AYCE·buffet, 11 AYCE·carta, 8 Express,
+    6 Bebidas, 0/no-row Kids); dish-card count fixed at 6 (grid-friendly at all breakpoints,
+    real per-category count unknowable pre-fetch); root carries `role="status"
+    aria-live="polite"` + a `sr-only` bilingual loading label (`menu.skeleton.loading`, added to
+    both `i18n/locales/es.json`/`en.json`); individual placeholders stay `aria-hidden="true"`
+    (moved off the wrapper rows during implementation so only true leaf placeholders are
+    aria-hidden, matching the contract's "root conveys loading state, placeholders are
+    decorative" split).
+- `app/pages/menu.vue`: destructures `status` from the existing `useAsyncData` call (alongside
+  `data`/`error`, unchanged); new `isLoading = computed(() => status.value === 'pending')`; new
+  template branch `<MenuSkeleton v-else-if="isLoading" :selection :modality />` inserted AFTER the
+  existing `error || isUnavailable` branch and BEFORE the `data`/`MenuShell` branch, so
+  error/unavailable always takes precedence over a stale pending indicator. Also added the
+  explicit `import { computed } from 'vue'` this file was missing (relies on Nuxt auto-import at
+  runtime, but the plain-`@vitejs/plugin-vue` Vitest "app" project has no such auto-import — this
+  was blocking the page's first-ever unit test from mounting at all; harmless/no-op under real
+  Nuxt, matches the explicit-import convention already used by `promotions.vue`/`branches.vue`).
+- `MenuShell.vue` and all of its existing children (`MenuCategoryChips`, `MenuDishGrid`,
+  `MenuDishCard`, `MenuTypeToggle`, `MenuModalityToggle`, `MenuDrinkSection`) are UNTOUCHED, per
+  the reference research's Decision 2 (loading-state ownership stays at the page level).
+
+### Tests added (co-located, one file per new component + the page)
+- `UiSkeleton.spec.ts` — aria-hidden, rounding per shape, animate-pulse +
+  motion-reduce:animate-none always present regardless of shape.
+- `MenuChipSkeleton.spec.ts` — pill dimensions/border, reduced-motion.
+- `MenuDishCardSkeleton.spec.ts` — outer shell classes, exactly 3 nested skeletons, reduced-motion
+  on all 3.
+- `MenuSkeleton.spec.ts` — exact chip count per (selection, modality) combo incl. 0/no-row for
+  Kids; always-6 dish-card skeletons; `role="status"`/`aria-live="polite"`/`sr-only` label;
+  reduced-motion holds through composition for both a chip-bearing view and Kids.
+- `app/pages/menu.spec.ts` (new file, first test for this page) — cold-load renders `MenuSkeleton`
+  with the correct default selection/modality (not `MenuShell`/error); switching (route query
+  change) while pending renders `MenuSkeleton` for the destination selection, never stale
+  `MenuShell` content; resolved fetch renders `MenuShell`; error and the degraded
+  empty-menu ("unavailable") states both take precedence over a stale pending status.
+
+### Storybook
+- `UiSkeleton.stories.ts`, `MenuChipSkeleton.stories.ts`, `MenuDishCardSkeleton.stories.ts`,
+  `MenuSkeleton.stories.ts` — each with `tags: ['autodocs']`, `satisfies Meta<typeof ...>`,
+  Default + shape/selection variants, a composed-row/composed-grid demo story, a documented
+  `ReducedMotion` story, and Mobile/Desktop viewport stories. All mount the real component (no
+  hand-rolled markup). No `.storybook/preview.ts` changes needed — `UiSkeleton` is picked up by
+  the existing `app/components/ui/*.vue` glob (auto-registered as `<UiSkeleton>`); the
+  menu-scoped compositions resolve `<UiSkeleton>`/each other the same way `MenuShell`'s stories
+  already do (no new global registration required).
+
+### Design tokens / constraints honored
+- No arbitrary values, no inline hex — only `bg-bg2`, `rounded-pop-sm`/`rounded-pop-full`,
+  `border-pop`/`border-pop-sm`, `border-ink`, `bg-panel`, `shadow-pop-sm`, `animate-pulse
+  motion-reduce:animate-none` (all pre-existing Tailwind/design tokens).
+- Every new component ≤ ~40 lines (well under the 200-line cap).
+- `prefers-reduced-motion` respected end-to-end (primitive + both compositions + the
+  orchestrator), verified by Vitest across the full composition, not just the primitive.
+
+### Self-verification
+- `./init.sh` → exit 0: Biome OK (371 files), `nuxt typecheck` OK, Vitest 948/948 passed (112
+  files), Storybook build OK.
+- Secret self-scan on the diff (`git diff -- ':!pnpm-lock.yaml' ...` + the grep pattern from the
+  security checklist) → clean, no matches.
+- **Nothing committed** — `git status` shows all of the above as unstaged/untracked working-tree
+  changes only, per instruction to leave commit to the human.
+
+### Known issues / TODOs
+- None.
