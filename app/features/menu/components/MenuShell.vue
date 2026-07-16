@@ -155,7 +155,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
       </div>
     </div>
 
-    <div v-if="showCategoryChips" class="w-full bg-bg py-3">
+    <div v-if="showCategoryChips" class="w-full py-3">
       <div class="container-pop">
         <MenuCategoryChips
           :items="chipItems"

@@ -83,4 +83,14 @@ describe('contact.vue', () => {
     const arg = mockSeoMeta.mock.calls[0]?.[0] as Record<string, unknown>
     expect(arg).toBeDefined()
   })
+
+  it('does not paint its own opaque bg-bg on the root wrapper (would occlude the sitewide watermark — FR-005/SC-002)', () => {
+    const wrapper = mount(ContactPage, {
+      global: {
+        components: { ContactForm, ContactInfo },
+      },
+    })
+    const root = wrapper.get('div')
+    expect(root.classes()).not.toContain('bg-bg')
+  })
 })
