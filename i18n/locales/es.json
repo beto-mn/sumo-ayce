@@ -259,6 +259,9 @@
     },
     "guarantee_alt": "Garantía Sumo",
     "unavailable": "El menú no está disponible por el momento. Vuelve a intentarlo en unos minutos.",
+    "skeleton": {
+      "loading": "Cargando menú…"
+    },
     "vaso_sumo": {
       "picker_label": "Elige tu base",
       "flavor": {

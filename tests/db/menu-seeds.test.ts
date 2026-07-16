@@ -5,6 +5,12 @@ import { describe, expect, it, vi } from 'vitest'
 // but the seed *data* is a pure constant we assert against directly).
 vi.mock('../../server/utils/db', () => ({ db: {} }))
 
+import {
+  AYCE_BUFFET_SET,
+  AYCE_CARTA_SET,
+  DRINKS_SET,
+  EXPRESS_SET,
+} from '../../app/features/menu/menu-sets'
 import { DRINK_GROUPS } from '../../server/db/seeds/drinkGroups'
 import { SUB_GROUPS } from '../../server/db/seeds/drinkSubGroups'
 import { ALL_DRINKS } from '../../server/db/seeds/drinks'
@@ -248,6 +254,55 @@ describe('kids menu seed', () => {
       expect(combo.price).toBeUndefined()
       // Combos default to includedInAyce=false (undefined → false at seed time).
       expect(combo.includedInAyce ?? false).toBe(false)
+    }
+  })
+})
+
+// ─── menu-sets.ts curated keys match the active seed (feature 023 — FR-008/009) ──
+
+/**
+ * Guards against `app/features/menu/menu-sets.ts` drifting away from the
+ * live content seed: if a curated-set key stops matching an active
+ * `menu_categories`/`drink_group` entry, this test fails at build time with
+ * the specific key + curated-set name, before the drift reaches production
+ * (the runtime guard in `useMenuFilters.ts`/`menu-sets.ts` protects diners at
+ * runtime if drift somehow still reaches production).
+ *
+ * Scope: ONLY `menu_categories` (food sets) and `drink_group` (Bebidas) are
+ * asserted here — `sauces` and `drinkSubGroups`/`drink_sub_group` are
+ * explicitly out of scope (FR-010) and are never imported by this test file
+ * for that purpose (see the `drinkSubGroups` import above, used solely by the
+ * pre-existing "drink sub-groups seed" describe block, not by this guard).
+ */
+describe('menu-sets.ts curated keys match the active seed', () => {
+  const activeCategoryKeys = new Set(
+    CATEGORIES.filter(c => c.isActive).map(c => c.key)
+  )
+  const activeDrinkGroupKeys = new Set(DRINK_GROUPS.map(g => g.groupKey))
+
+  const curatedFoodSets: [string, string[]][] = [
+    ['AYCE_BUFFET_SET', AYCE_BUFFET_SET],
+    ['AYCE_CARTA_SET', AYCE_CARTA_SET],
+    ['EXPRESS_SET', EXPRESS_SET],
+  ]
+
+  it.each(
+    curatedFoodSets
+  )('%s: every key has a matching active menu_categories entry', (setName, keys) => {
+    for (const key of keys) {
+      expect(
+        activeCategoryKeys.has(key),
+        `${setName} references "${key}", which has no matching active entry in the menu_categories seed`
+      ).toBe(true)
+    }
+  })
+
+  it('DRINKS_SET: every key has a matching active drink_group entry', () => {
+    for (const key of DRINKS_SET) {
+      expect(
+        activeDrinkGroupKeys.has(key),
+        `DRINKS_SET references "${key}", which has no matching active entry in the drink_group seed`
+      ).toBe(true)
     }
   })
 })

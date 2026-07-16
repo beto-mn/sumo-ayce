@@ -92,16 +92,41 @@ export function getDefaultKey(selection: PrimarySelection): string {
 }
 
 /**
+ * Filters curated-set keys down to the subset also present in `availableKeys`
+ * (the live category/drink-group keys from the current menu content read),
+ * preserving curated order (feature 023 — drift guard).
+ *
+ * Invariants: never adds a key that wasn't already in `keys` (curated sets
+ * remain the sole source of *candidate* chips — FR-007); never reorders `keys`
+ * (FR-003); pure, no side effects.
+ */
+export function filterAvailableKeys(
+  keys: string[],
+  availableKeys: Set<string>
+): string[] {
+  return keys.filter(key => availableKeys.has(key))
+}
+
+/**
  * Resolves an incoming (deep-linked) key against the active set: returns it when
  * it is a member, otherwise the view's default — never an out-of-set key, so the
  * view is never empty (FR-013d).
+ *
+ * When `availableKeys` is supplied (feature 023), membership is checked against
+ * the curated set filtered to entries that also exist in the current menu
+ * content read, so a curated-but-no-longer-available key is treated exactly
+ * like a key that was never curated at all — falls back to the default (FR-005).
  */
 export function resolveActiveKey(
   selection: PrimarySelection,
   modality: AyceModality,
-  requested: string | null | undefined
+  requested: string | null | undefined,
+  availableKeys?: Set<string>
 ): string {
-  const set = getCuratedSet(selection, modality)
+  const curated = getCuratedSet(selection, modality)
+  const set = availableKeys
+    ? filterAvailableKeys(curated, availableKeys)
+    : curated
   if (requested && set.includes(requested)) return requested
   return getDefaultKey(selection)
 }

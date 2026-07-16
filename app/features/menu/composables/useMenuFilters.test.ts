@@ -242,3 +242,89 @@ describe('useMenuFilters — setCategory', () => {
     })
   })
 })
+
+describe('useMenuFilters — drift guard (feature 023)', () => {
+  it('excludes a curated key that has no matching entry in availableKeys', () => {
+    // Sándwiches is a real AYCE·buffet member, but this render's menu data
+    // (content-store read) no longer contains it.
+    const availableKeys = new Set([
+      'appetizers',
+      'burgers',
+      'hot_dogs',
+      'cold_rolls',
+      'hot_rolls',
+      'sweet_rolls',
+      'wings',
+    ])
+    const { curatedSet } = useMenuFilters('ayce', 'buffet', availableKeys)
+    expect(curatedSet.value).not.toContain('sandwiches')
+    // The remaining members keep their existing curated order.
+    expect(curatedSet.value).toEqual([
+      'appetizers',
+      'burgers',
+      'hot_dogs',
+      'cold_rolls',
+      'hot_rolls',
+      'sweet_rolls',
+      'wings',
+    ])
+  })
+
+  it('falls back the active category to the view default when the deep-linked key becomes unavailable', () => {
+    routeQuery = { type: 'ayce', modality: 'buffet', category: 'sandwiches' }
+    const availableKeys = new Set(['appetizers', 'burgers'])
+    const { activeCategory } = useMenuFilters('ayce', 'buffet', availableKeys)
+    expect(activeCategory.value).toBe('appetizers')
+  })
+
+  it('setCategory falls back to the default when the target key is no longer available', () => {
+    routeQuery = { type: 'ayce', modality: 'buffet' }
+    const availableKeys = new Set(['appetizers', 'burgers'])
+    const { activeCategory, setCategory } = useMenuFilters(
+      'ayce',
+      'buffet',
+      availableKeys
+    )
+    setCategory('sandwiches')
+    expect(activeCategory.value).toBe('appetizers')
+  })
+
+  it('excludes a missing drink group from the Bebidas chip row', () => {
+    routeQuery = { type: 'bebidas' }
+    const availableKeys = new Set([
+      'jumbo_cocktails',
+      'sodas',
+      'beers',
+      'coffee_digestifs',
+    ])
+    const { curatedSet } = useMenuFilters('drinks', 'buffet', availableKeys)
+    expect(curatedSet.value).not.toContain('cantaritos_sumo_cups')
+    expect(curatedSet.value).not.toContain('destilados')
+    expect(curatedSet.value).toEqual([
+      'jumbo_cocktails',
+      'sodas',
+      'beers',
+      'coffee_digestifs',
+    ])
+  })
+
+  it('keeps unaffected views identical to current behavior when nothing is missing (no regression — FR-012)', () => {
+    routeQuery = { type: 'ayce', modality: 'buffet' }
+    const availableKeys = new Set([
+      'appetizers',
+      'burgers',
+      'sandwiches',
+      'hot_dogs',
+      'cold_rolls',
+      'hot_rolls',
+      'sweet_rolls',
+      'wings',
+    ])
+    const withGuard = useMenuFilters('ayce', 'buffet', availableKeys)
+    const withoutGuard = useMenuFilters('ayce', 'buffet')
+    expect(withGuard.curatedSet.value).toEqual(withoutGuard.curatedSet.value)
+    expect(withGuard.activeCategory.value).toBe(
+      withoutGuard.activeCategory.value
+    )
+  })
+})

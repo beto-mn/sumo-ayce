@@ -259,6 +259,9 @@
     },
     "guarantee_alt": "Sumo Guarantee",
     "unavailable": "The menu is temporarily unavailable. Please try again in a few minutes.",
+    "skeleton": {
+      "loading": "Loading menu…"
+    },
     "vaso_sumo": {
       "picker_label": "Choose your base",
       "flavor": {
