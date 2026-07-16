@@ -22,7 +22,7 @@ test) so each can be implemented, tested, and demoed independently.
 
 **Purpose**: Establish a clean baseline before touching any code.
 
-- [ ] T001 Confirm branch `fix/023-menu-chip-db-drift-guard` is checked out and capture a
+- [x] T001 Confirm branch `fix/023-menu-chip-db-drift-guard` is checked out and capture a
       green baseline by running `npx vitest run app/features/menu tests/db/menu-seeds.test.ts`
       — no code changes in this task, just confirms the starting point is stable before the
       fix begins.
@@ -37,7 +37,7 @@ later phases can proceed without touching `types/menu.ts` or the server query la
 **⚠️ Note**: This phase is verification-only (no code changes) — both user stories read the
 same existing types, so confirming them once avoids redundant checks in each story.
 
-- [ ] T002 [P] Verify `types/menu.ts`'s `FullMenuResult.categories[].key` and
+- [x] T002 [P] Verify `types/menu.ts`'s `FullMenuResult.categories[].key` and
       `FullMenuResult.drinkGroups[].key` (via `DrinkGroupMeta`) already exist and are the
       correct fields to build an "available keys" set from (per data-model.md §1) — confirm no
       type changes are required in `types/menu.ts`.
@@ -62,13 +62,18 @@ the removed key (see `quickstart.md` "Verify the fix (User Story 1)").
 
 > Write these tests FIRST; confirm they fail before implementing T005-T007.
 
-- [ ] T003 [P] [US1] Write unit tests for a new `filterAvailableKeys(keys, availableKeys)`
+- [x] T003 [P] [US1] Write unit tests for a new `filterAvailableKeys(keys, availableKeys)`
       pure function in `app/features/menu/menu-sets.test.ts` (new file): preserves curated
       order for keys present in `availableKeys`; drops keys absent from `availableKeys`; never
       adds a key not already in `keys`; returns an empty array when `availableKeys` is empty;
       returns the full input when all keys are available (no-op case, matches current
       behavior for a healthy DB — FR-012 no-regression).
-- [ ] T004 [P] [US1] Extend `app/features/menu/composables/useMenuFilters.test.ts` with a new
+      (Deviation, reviewer-accepted: these tests were added to the pre-existing
+      `app/features/menu/menu-sets.spec.ts` instead of a new `menu-sets.test.ts`, to avoid two
+      competing test files for one module. Coverage is equivalent — order preservation,
+      drop-missing, never-adds-a-key, empty-`availableKeys`, full-`availableKeys` no-op are all
+      present there.)
+- [x] T004 [P] [US1] Extend `app/features/menu/composables/useMenuFilters.test.ts` with a new
       `describe('useMenuFilters — drift guard')` block: `curatedSet` excludes a key that has
       no matching entry in the menu data passed to the composable; when the currently active
       category/drink-group becomes unavailable, `activeCategory` resolves to the view's
@@ -78,27 +83,27 @@ the removed key (see `quickstart.md` "Verify the fix (User Story 1)").
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Implement `filterAvailableKeys(keys: string[], availableKeys: Set<string>):
+- [x] T005 [US1] Implement `filterAvailableKeys(keys: string[], availableKeys: Set<string>):
       string[]` in `app/features/menu/menu-sets.ts`, alongside the existing `getCuratedSet`/
       `getDefaultKey`/`resolveActiveKey` helpers, per data-model.md §2 (depends on T003 failing
       tests).
-- [ ] T006 [US1] Wire `filterAvailableKeys` into `app/features/menu/composables/
+- [x] T006 [US1] Wire `filterAvailableKeys` into `app/features/menu/composables/
       useMenuFilters.ts`: accept the current menu content's available category/drink-group
       keys as an input, filter the `curatedSet` computed through `filterAvailableKeys` before
       exposing it, and ensure `resolveActiveKey` (used in the initial `activeCategory` ref and
       in `setSelection`/`setModality`/`setCategory`) checks membership against the filtered set
       so a stale active key always falls back to the view's default (depends on T005; must
       make T004's tests pass).
-- [ ] T007 [US1] Update the `useMenuFilters(...)` call site in
+- [x] T007 [US1] Update the `useMenuFilters(...)` call site in
       `app/features/menu/components/MenuShell.vue` to supply the available keys derived from
       `props.menuData.categories`/`props.menuData.drinkGroups` to the composable (depends on
       T006); confirm `foodCategoryLabel()`/`drinkGroupLabel()`'s existing fallback-to-raw-key
       branch is no longer reachable for any rendered chip once the upstream filter is wired in.
-- [ ] T008 [P] [US1] Add a new story variant to `app/features/menu/components/
+- [x] T008 [P] [US1] Add a new story variant to `app/features/menu/components/
       MenuShell.stories.ts` using a `menuData` fixture missing one curated category or drink
       group, demonstrating the filtered (shorter) chip row per Article VII (can run in
       parallel with T007 — different file).
-- [ ] T009 [US1] Run `npx vitest run app/features/menu/menu-sets.test.ts
+- [x] T009 [US1] Run `npx vitest run app/features/menu/menu-sets.test.ts
       app/features/menu/composables/useMenuFilters.test.ts` and confirm all pass; manually
       walk through `quickstart.md`'s "Verify the fix (User Story 1 — runtime guard)" steps
       against a local dev build.
@@ -122,7 +127,7 @@ message naming the specific key and set; revert and confirm it passes (see `quic
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T010 [US2] Add a new `describe('menu-sets.ts curated keys match the active seed')`
+- [x] T010 [US2] Add a new `describe('menu-sets.ts curated keys match the active seed')`
       block to `tests/db/menu-seeds.test.ts`, importing `AYCE_BUFFET_SET`, `AYCE_CARTA_SET`,
       `EXPRESS_SET`, `DRINKS_SET` from `app/features/menu/menu-sets.ts` and `CATEGORIES`,
       `DRINK_GROUPS` from `server/db/seeds/menuCategories.ts` /
@@ -137,13 +142,13 @@ message naming the specific key and set; revert and confirm it passes (see `quic
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Temporarily introduce a bogus key into one curated set in
+- [x] T011 [US2] Temporarily introduce a bogus key into one curated set in
       `app/features/menu/menu-sets.ts` (local, uncommitted change) and confirm T010's test
       fails with a message identifying that key and set; revert the temporary change and
       confirm the test passes again — this task IS the implementation verification for US2
       (the "implementation" is the test itself; there is no production code change for this
       story).
-- [ ] T012 [P] [US2] Run `npx vitest run tests/db/menu-seeds.test.ts` on the real (unmodified)
+- [x] T012 [P] [US2] Run `npx vitest run tests/db/menu-seeds.test.ts` on the real (unmodified)
       `menu-sets.ts` and current seeds, and confirm a green baseline.
 
 **Checkpoint**: User Story 2 is fully functional and independently testable — any future drift
@@ -157,14 +162,14 @@ whether US1's runtime guard is present.
 **Purpose**: Confirm the fix as a whole satisfies FR-012 (no regression) and Article IX
 (quality gates), across both user stories.
 
-- [ ] T013 Run the full menu feature test surface: `npx vitest run app/features/menu
+- [x] T013 Run the full menu feature test surface: `npx vitest run app/features/menu
       tests/db/menu-seeds.test.ts` and confirm all pre-existing tests (e.g. curated ordering,
       default-category, deep-link restoration in `useMenuFilters.test.ts`) still pass unchanged
       alongside the new tests from T003, T004, T010 (FR-012, SC-005).
-- [ ] T014 [P] Run the full quality gate locally per `quickstart.md`: `npx biome check .`,
+- [x] T014 [P] Run the full quality gate locally per `quickstart.md`: `npx biome check .`,
       `npx vue-tsc --noEmit`, `npx vitest run` — confirm all three pass (Article IX parity with
       CI).
-- [ ] T015 Execute the remaining `quickstart.md` steps end-to-end against a local dev build
+- [x] T015 Execute the remaining `quickstart.md` steps end-to-end against a local dev build
       (`npm run dev`, or `npm run storybook` for the T008 story variant) to visually confirm
       the filtered chip row and the fallback-to-default behavior described in User Story 1.
 
