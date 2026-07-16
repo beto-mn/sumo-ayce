@@ -4,6 +4,7 @@ import {
   AYCE_CARTA_SET,
   DRINKS_SET,
   EXPRESS_SET,
+  filterAvailableKeys,
   getCuratedSet,
   getDefaultKey,
   KIDS_SET,
@@ -125,6 +126,82 @@ describe('menu curated sets', () => {
     expect(resolveActiveKey('ayce', 'buffet', null)).toBe('appetizers')
     expect(resolveActiveKey('drinks', 'buffet', undefined)).toBe(
       'jumbo_cocktails'
+    )
+  })
+})
+
+// ─── filterAvailableKeys (feature 023 — menu chip / DB drift guard) ──────────
+
+describe('filterAvailableKeys', () => {
+  it('preserves curated order for keys present in availableKeys', () => {
+    const availableKeys = new Set(['wings', 'appetizers', 'burgers'])
+    expect(filterAvailableKeys(AYCE_BUFFET_SET, availableKeys)).toEqual([
+      'appetizers',
+      'burgers',
+      'wings',
+    ])
+  })
+
+  it('drops keys absent from availableKeys', () => {
+    const availableKeys = new Set(['appetizers', 'burgers'])
+    expect(filterAvailableKeys(AYCE_BUFFET_SET, availableKeys)).toEqual([
+      'appetizers',
+      'burgers',
+    ])
+  })
+
+  it('never adds a key not already in the input keys', () => {
+    const availableKeys = new Set([
+      'appetizers',
+      'burgers',
+      'salads', // not a member of AYCE_BUFFET_SET — must not appear in output
+    ])
+    const result = filterAvailableKeys(AYCE_BUFFET_SET, availableKeys)
+    expect(result).not.toContain('salads')
+    for (const key of result) expect(AYCE_BUFFET_SET).toContain(key)
+  })
+
+  it('returns an empty array when availableKeys is empty', () => {
+    expect(filterAvailableKeys(AYCE_BUFFET_SET, new Set())).toEqual([])
+  })
+
+  it('returns the full input when all keys are available (no-op, no regression)', () => {
+    expect(
+      filterAvailableKeys(AYCE_BUFFET_SET, new Set(AYCE_BUFFET_SET))
+    ).toEqual(AYCE_BUFFET_SET)
+  })
+})
+
+describe('resolveActiveKey — availableKeys drift guard (feature 023)', () => {
+  it('keeps a requested key that is curated AND available', () => {
+    const availableKeys = new Set(AYCE_BUFFET_SET)
+    expect(
+      resolveActiveKey('ayce', 'buffet', 'sandwiches', availableKeys)
+    ).toBe('sandwiches')
+  })
+
+  it('falls back to the default when the requested key is curated but no longer available', () => {
+    const availableKeys = new Set(
+      AYCE_BUFFET_SET.filter(key => key !== 'sandwiches')
+    )
+    expect(
+      resolveActiveKey('ayce', 'buffet', 'sandwiches', availableKeys)
+    ).toBe('appetizers')
+  })
+
+  it('falls back to the default drink group when it is missing from availableKeys', () => {
+    const availableKeys = new Set(
+      DRINKS_SET.filter(key => key !== 'destilados')
+    )
+    expect(
+      resolveActiveKey('drinks', 'buffet', 'destilados', availableKeys)
+    ).toBe('jumbo_cocktails')
+  })
+
+  it('behaves exactly as before when availableKeys is omitted (no regression — FR-012)', () => {
+    expect(resolveActiveKey('ayce', 'buffet', 'sandwiches')).toBe('sandwiches')
+    expect(resolveActiveKey('express', 'buffet', 'sandwiches')).toBe(
+      'appetizers'
     )
   })
 })

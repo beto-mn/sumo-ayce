@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/vue3-vite'
-import type { FullMenuResult } from '@/types/menu'
+import type { FullMenuCategory, FullMenuResult } from '@/types/menu'
 import MenuCategoryChips from './MenuCategoryChips.vue'
 import MenuDishCard from './MenuDishCard.vue'
 import MenuDishGrid from './MenuDishGrid.vue'
@@ -8,6 +8,42 @@ import MenuModalityToggle from './MenuModalityToggle.vue'
 import MenuSaucePicker from './MenuSaucePicker.vue'
 import MenuShell from './MenuShell.vue'
 import MenuTypeToggle from './MenuTypeToggle.vue'
+
+/**
+ * Builds a minimal AYCE·buffet category with a single placeholder dish — used
+ * to populate every `AYCE_BUFFET_SET` member so the chip row's drift-guard
+ * filter (feature 023) has real data to filter against, matching what the
+ * curated set expects from a healthy content-store read.
+ */
+function placeholderCategory(
+  key: FullMenuCategory['key'],
+  nameEs: string,
+  nameEn: string,
+  displayOrder: number
+): FullMenuCategory {
+  return {
+    key,
+    name: { es: nameEs, en: nameEn },
+    note: null,
+    displayOrder,
+    dishes: [
+      {
+        id: `${key}-1`,
+        name: { es: nameEs, en: nameEn },
+        description: { es: `${nameEs}.`, en: `${nameEn}.` },
+        imageUrl: null,
+        badge: null,
+        price: null,
+        incluido: true,
+        includedInAyce: true,
+        drinkGroup: null,
+        drinkSubGroup: null,
+        requiresSauce: false,
+        featured: false,
+      },
+    ],
+  }
+}
 
 const menuData: FullMenuResult = {
   locationType: 'ayce',
@@ -38,6 +74,21 @@ const menuData: FullMenuResult = {
         },
       ],
     },
+    // Remaining curated-set members across all three food sets (AYCE·buffet,
+    // AYCE·carta, Express) — feature 023's drift guard needs real matching
+    // entries to demonstrate the healthy, no-drift case for every story below.
+    placeholderCategory('burgers', 'Hamburguesas', 'Burgers', 3),
+    placeholderCategory('sandwiches', 'Sándwiches', 'Sandwiches', 4),
+    placeholderCategory('burritos', 'Burritos', 'Burritos', 5),
+    placeholderCategory('hot_dogs', 'Hot Dogs', 'Hot Dogs', 6),
+    placeholderCategory('cold_rolls', 'Sushi Frío', 'Cold Rolls', 7),
+    placeholderCategory('hot_rolls', 'Sushi Caliente', 'Hot Rolls', 8),
+    placeholderCategory('sweet_rolls', 'Sushi Dulce', 'Sweet Rolls', 9),
+    placeholderCategory('wings', 'Alitas & Boneless', 'Wings & Boneless', 10),
+    placeholderCategory('salads', 'Ensaladas', 'Salads', 11),
+    placeholderCategory('rice', 'Arroz', 'Rice', 12),
+    placeholderCategory('ramen', 'Ramen', 'Ramen', 13),
+    placeholderCategory('desserts', 'Postres', 'Desserts', 14),
     {
       key: 'drinks',
       name: { es: 'Bebidas', en: 'Drinks' },
@@ -115,9 +166,33 @@ const menuData: FullMenuResult = {
       promo: null,
     },
     {
+      key: 'cantaritos_sumo_cups',
+      name: { es: 'Cantaritos y Vasos Sumo', en: 'Cantaritos & Sumo Cups' },
+      displayOrder: 1,
+      promo: null,
+    },
+    {
       key: 'sodas',
       name: { es: 'Refrescos y Bebidas', en: 'Sodas & Beverages' },
       displayOrder: 2,
+      promo: null,
+    },
+    {
+      key: 'beers',
+      name: { es: 'Cervezas', en: 'Beers' },
+      displayOrder: 3,
+      promo: null,
+    },
+    {
+      key: 'destilados',
+      name: { es: 'Destilados', en: 'Spirits' },
+      displayOrder: 4,
+      promo: null,
+    },
+    {
+      key: 'coffee_digestifs',
+      name: { es: 'Café y Digestivos', en: 'Coffee & Digestifs' },
+      displayOrder: 5,
       promo: null,
     },
   ],
@@ -201,4 +276,35 @@ export const KidsSelection: Story = {
 
 export const Mobile: Story = {
   parameters: { viewport: { defaultViewport: 'mobile1' } },
+}
+
+/**
+ * Feature 023 — menu chip / DB drift guard: a curated-set member
+ * ("Sándwiches") has been deactivated/removed from the content store while
+ * `menu-sets.ts` still lists it (drift). The chip row renders one fewer chip
+ * than {@link Default} — no dead "Sándwiches" chip, no untranslated key, and
+ * the remaining chips keep their existing curated order.
+ */
+export const FilteredMissingCategory: Story = {
+  args: {
+    menuData: {
+      ...menuData,
+      categories: menuData.categories.filter(c => c.key !== 'sandwiches'),
+    },
+  },
+}
+
+/**
+ * Same drift-guard behavior for the Bebidas view: the "Destilados" drink
+ * group has been removed from the content store, so its chip disappears
+ * from the Bebidas chip row while the rest keep their order.
+ */
+export const FilteredMissingDrinkGroup: Story = {
+  args: {
+    initialSelection: 'drinks',
+    menuData: {
+      ...menuData,
+      drinkGroups: menuData.drinkGroups.filter(g => g.key !== 'destilados'),
+    },
+  },
 }

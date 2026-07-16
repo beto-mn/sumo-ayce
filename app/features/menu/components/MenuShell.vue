@@ -13,6 +13,13 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 
+/** Live category/drink-group keys (drift guard, feature 023): filters curated
+ *  chips to what actually exists in this request's menu content. */
+const availableKeys = new Set<string>([
+  ...props.menuData.categories.map(c => c.key),
+  ...props.menuData.drinkGroups.map(g => g.key),
+])
+
 const {
   activeSelection,
   activeModality,
@@ -26,7 +33,7 @@ const {
   setSelection,
   setModality,
   setCategory,
-} = useMenuFilters(props.initialSelection, props.initialModality)
+} = useMenuFilters(props.initialSelection, props.initialModality, availableKeys)
 
 /** DB category name for a key (single source of truth for FOOD chip labels). */
 function foodCategoryLabel(key: string): string {
