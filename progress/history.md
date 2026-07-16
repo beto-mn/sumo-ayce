@@ -162,6 +162,39 @@ Public homepage in the "Mercado Pop" visual language, ISR 3600. Branch `feat/010
 - Full review record: `progress/review_menu-chip-db-drift-guard.md`.
 - Homepage branch `feat/010-homepage` is uncommitted — commit/PR per the CI flow when ready.
 
+## Feature closed: 021 — menu-experience-overhaul (2026-07-16, retroactive)
+
+**Branch**: `feat/021-menu-experience-overhaul` (merged `--no-ff` to master, commit `cc57041`,
+and to develop, commit `8a7534c`, on 2026-07-14).
+
+### Retroactive closure note
+Implementation was completed and merged to master on 2026-07-14, but `feature_list.json` was
+left at `spec_ready` and no closure entry was written at the time — a bookkeeping gap, not a
+missing/incomplete feature. Discovered 2026-07-16 when the human asked to double-check features
+21/22. `reviewer` ran a full formal verification against `spec.md`/`plan.md`/`tasks.md`/
+`constitution.md`/`CHECKPOINTS.md` on the current master state and returned **APPROVED**: all 52
+tasks `[x]`, all Phase -1 gates `[x]`, no `[NEEDS CLARIFICATION]` markers, full acceptance-criteria
+traceability across US1–US3, `./init.sh` exit 0 (957/957 tests, Biome/typecheck/Storybook clean),
+no cross-feature imports or token violations, no secrets. Full record:
+`progress/review_021-menu-experience-overhaul.md`. `feature_list.json` flipped `spec_ready` → `done`.
+
+## Feature closed: 022 — homepage-hero-promos-contact (2026-07-16, retroactive)
+
+**Branch**: `feat/021-menu-experience-overhaul` (022 shipped as one PR with 021 per plan; same
+merge commits as above).
+
+### Retroactive closure note
+Same situation as 021 above — including the previously-blocked T001 (Graphik Super `woff2`,
+stuck on a macOS TCC file-read permission per `progress/current.md`'s working notes): the asset
+was in fact produced and committed (`e0a21d2`), and `public/fonts/graphik-super.woff2` is present
+on master. `reviewer` verification on 2026-07-16 returned **APPROVED**: all 32 tasks `[x]`
+(including T001), all Phase -1 gates `[x]`, full acceptance-criteria traceability across the three
+parts (promotions carousel, hero font, contact job card), same clean `./init.sh` run, no
+cross-import/token violations. One judgment call confirmed: the real WhatsApp number in the
+contact card is intended public business content per spec, not a committed secret. Full record:
+`progress/review_022-homepage-hero-promos-contact.md`. `feature_list.json` flipped `spec_ready` →
+`done`.
+
 ## Feature closed: 024 — menu-image-refresh-express-branding (2026-07-15)
 
 **Branch**: `feat/024-menu-image-refresh-express-branding` (rebased onto master post-023;

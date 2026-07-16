@@ -2,128 +2,16 @@
 
 ## CLOSED: 024 — menu-image-refresh-express-branding (see progress/history.md)
 
----
+## CLOSED: 021 — menu-experience-overhaul (retroactive, 2026-07-16 — see progress/history.md)
 
-## IN PROGRESS: 022 — homepage-hero-promos-contact (implementation, on 021 branch)
+## CLOSED: 022 — homepage-hero-promos-contact (retroactive, 2026-07-16 — see progress/history.md)
 
-Branch: `feat/021-menu-experience-overhaul` (022 ships with 021 as one PR).
-
-### Post-implementation dev-noise fixes (coordinator-relayed, in-scope)
-1. error-handler: `ExternalServiceError` now logs at WARN + returns 502 (was
-   falling through to ERROR "Unhandled server error"/500). Test added.
-2. Promos validator: `imagen_desktop/tablet/movil` → `.nullish()` so promos with
-   `null` image fields PARSE (were dropped with per-request WARN spam, e.g. WP
-   ids 58/59). `resolveImages` now filters out promos whose desktop image is
-   unresolved — quietly (single `logger.debug`, suppressed in prod). Fixtures +
-   tests updated (validators + promotions.get): null-image promo parses then is
-   excluded with no warn/error; image-bearing promos still show.
-3. Removed root `postcss.config.cjs` (Nuxt "not supported together with Nuxt"
-   warning). `@nuxtjs/tailwindcss` handles Nuxt's PostCSS; Storybook now sets
-   Tailwind PostCSS INLINE in `.storybook/main.ts` (`css.postcss`) so its build
-   still applies Tailwind. Verified: storybook:build exit 0 with Tailwind
-   utilities in output CSS; no postcss warning on Nuxt boot (typecheck).
-
-### Home-path stale-cache fix (coordinator-relayed, in-scope)
-- `promotions.get.ts`: the homepage path no longer queries `?activa=1&home=1`
-  (WordPress served a STALE/broken cache for that filter — deleted media id 66,
-  null images — and no promo is home-flagged). Removed `homePromocionesUrl` and
-  the primary→fallback branch; BOTH surfaces now use `?activa=1` (all active,
-  newest-first). Home and /promotions are now identical + correct.
-- Tests updated (promotions.get.test.ts): home path asserts a SINGLE `activa=1`
-  call and never `home=1`; simplified `mockUpstream` (one list). 49 content tests.
-
-### Client-review refinements to the promotions carousel (coordinator-relayed, in-scope)
-1. ONE full-bleed slide per view at all breakpoints — `PromotionsCarousel.vue`
-   slide basis `basis-full` (removed `sm:basis-1/2 lg:basis-1/3`); rounded/border
-   moved to the viewport container.
-2. Image IS the slide — `PromotionCard.vue` dropped the card frame
-   (border/bg/shadow/rounded, object-cover); `<picture>` fills edge-to-edge
-   (`w-full h-auto`, natural aspect). Colored badge overlay kept.
-3. Home shows the SAME full-bleed carousel with ALL active promos:
-   `promotions.get.ts` home path no longer caps to 3 (newest-first, home=1 →
-   fallback all active); `selectPromotions` util no longer slices to 3.
-4. Media robustness — `resolveImages` resolves ALL media in a SINGLE batched
-   request (`/wp/v2/media?include=<ids>&per_page=100`) instead of ~15 per-id
-   calls. A promo is dropped ONLY when it has NO configured image ID at all; a
-   transient media failure logs WARN (not ERROR) and degrades gracefully without
-   permanently dropping promos that HAVE image IDs.
-5. Responsive `<picture>` swaps movil/tablet/desktop by 520/880 breakpoints
-   (server returns distinct per-size URLs; covered by PromotionCard specs).
-   Updated specs/stories (PromotionCard, PromotionsCarousel, HomePromotions,
-   select-promotions, promotions.get + wordpress mock batch helper) and spec.md
-   acceptance criteria. All green: check/typecheck/test(821)/storybook:build/
-   init.sh exit 0.
-
-### Task progress (see specs/022-…/tasks.md)
-- 30/32 tasks `[x]`. Only T001 (font woff2 binary) and T031 (hero-font visual
-  breakpoint check, depends on T001) remain — both blocked by the same asset.
-- Part B (promotions, MVP) + Part C (contact job card) fully done + tested.
-- Part A (hero font) wiring done; only the woff2 binary is pending.
-
-### Verification (verified directly, not via init.sh masking)
-- `pnpm check` → exit 0 (Biome, after check:fix).
-- `pnpm typecheck` → exit 0 (vue-tsc).
-- `pnpm test` → 813 passed / 106 files.
-- `pnpm storybook:build` → exit 0.
-- `./init.sh` → exit 0, "Environment ready".
-- ES/EN i18n key parity → OK (0 drift).
-
-### Blocker: T001 font woff2
-macOS TCC denies read of the source ttf at
-`~/Documents/Projects/Clients/SUMO/Assets/Fonts/Graphik-Super.ttf` from this
-environment. fonttools IS installed and works; the file bytes are unreadable —
-`cat`, `ditto`, python, and fonttools all get "Operation not permitted" even
-with the sandbox disabled (`stat` succeeds → it is a Privacy/Full-Disk-Access
-denial on the shell process, NOT a missing tool). Per the task rule I did NOT
-ship a raw ttf or a fake woff2. All Part A wiring (base.css @font-face +
-.hero-headline family, nuxt.config preload, GRAPHIK-SUPER-LICENSE.txt, Titan
-One removal) is done and points at `/fonts/graphik-super.woff2`.
-TO UNBLOCK: grant the terminal Full Disk Access (or Documents access) OR copy
-the ttf into the repo (e.g. `public/fonts/_graphik-src.ttf`), then run:
-  fonttools ttLib.woff2 compress -o public/fonts/graphik-super.woff2 <ttf>
-and delete the source copy.
-
----
-
-## PRIOR: 021 — menu-experience-overhaul (implementation)
-
-Branch: `feat/021-menu-experience-overhaul`
-
-### Client decisions honored
-1. Rename internal drink group key `beers_spirits` → `beers` everywhere (TS union, i18n
-   keys es/en, seeds, queries, components, stories/specs). Visible label stays "Cervezas".
-   New `destilados` group added separately. Zero dangling `beers_spirits` (grep-verified).
-2. Featured "Garantías Sumo" = exactly 11 seed rows with featured=true + explicit
-   displayOrder (Burger del Barrio, Papas Smash, Mac & Cheese, Smash Dog, Bora Bora,
-   Coco Roll, Canela Roll, Kushiage de Queso, Ramen XL, Tostiburger, Sumo Fries).
-   "Sumo Fries" lives in desserts.ts. No other item featured.
-
-### Production safety
-- One additive migration `drink_group.display_order` created but NOT applied to prod Neon.
-- Seeds updated but NOT run against prod. Exact migrate+seed commands in final report.
-- Tests use mocked DB (no live DB), matching prior menu-feature test setup.
-
-### Task progress (see tasks.md for full list)
-- ALL 48 tasks `[x]` except T028 + T038 (production migrate/reseed — deferred, no Docker).
-- `./init.sh` exits 0 (Biome + typecheck + 799/799 tests). `storybook:build` OK.
-- All Phase -1 gates in plan.md marked `[x]`.
-- Zero dangling functional `beers_spirits` reference (only rename comments + a legacy-row
-  cleanup DELETE + negative test assertions remain, all intentional).
-
-### Post-review fixes
-- Reviewer round 1: fixed Biome format in menu-queries.test.ts; added MenuDrinkCard.spec.ts.
-- Reseed FK-ordering bug: `seedDrinkGroups` now calls `resetDrinkChildren()` FIRST —
-  deletes bebidas menu_items, then ALL drink_sub_groups (child→parent), BEFORE the legacy
-  `beers_spirits`/`non_alcoholic` drink_group DELETEs. Makes `pnpm db:seed` idempotent
-  against a DB that still holds pre-021 data (was NeonDbError 23503 FK violation).
-  Regression test: `tests/db/drink-seed-order.test.ts` (records op order, asserts children
-  deleted before any drink_group).
-
-### PENDING production steps (human must run — coordinated, no Docker fallback)
-1. Apply migration:  `pnpm db:migrate`  (adds drink_group.display_order — additive)
-2. Reseed menu data: `pnpm db:seed`  (rename beers_spirits→beers, split destilados,
-   consolidate Vaso Sumo, re-map non_alcoholic→sodas, 11 featured, wings no sauce)
-Do NOT run against production Neon until coordinated.
+### Outstanding, unrelated to the 021/022 closure
+- **PENDING production steps for 021** (human must run — coordinated, no Docker fallback):
+  1. Apply migration: `pnpm db:migrate` (adds `drink_group.display_order` — additive).
+  2. Reseed menu data: `pnpm db:seed` (rename `beers_spirits`→`beers`, split Destilados,
+     consolidate Vaso Sumo, re-map `non_alcoholic`→sodas, 11 featured, wings no sauce).
+  Do NOT run against production Neon until coordinated with the human.
 
 ---
 
