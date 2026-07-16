@@ -1,5 +1,81 @@
 # Current session
 
+## SPEC READY: 024 — menu-image-refresh-express-branding
+
+**Feature**: id 24, `menu-image-refresh-express-branding` — "Kids AYCE Dish Photo Collage +
+Sitewide Watermark Background + Express Map Logo"
+**Branch**: `feat/024-menu-image-refresh-express-branding`
+**Spec folder**: `specs/024-menu-image-refresh-express-branding/`
+**Status**: `spec_ready` (awaiting human approval gate before `in_progress`)
+
+### Source assets
+
+The 6 client-provided files (from the client's WeTransfer export, originally at a
+user-machine-local `~/Downloads/...` path) were copied into
+`specs/024-menu-image-refresh-express-branding/assets/source/` as the very first action of
+this session, before branch creation, per protocol (all 6 verified present and non-zero size):
+`DSC02525 copia.webp`, `Fondo webp.webp`, `KIDS BURGER_B.webp`, `Logo .webp`, `Logo 2.webp`,
+`SEB08252 copia.webp`.
+
+### Skills invoked, in order
+
+1. `/speckit-git-feature` — created `feat/025-menu-image-express-branding` (auto-numbered past
+   024 because the `specs/024-...` asset folder already existed at scan time); manually
+   renamed the branch to `feat/024-menu-image-refresh-express-branding` to match the
+   feature's fixed `spec_path` in `feature_list.json`.
+2. `/speckit.specify` — generated `spec.md` (3 user stories: US1 Kids collage P1, US2 sitewide
+   watermark P2, US3 Express map branding P3), plus `checklists/requirements.md`.
+3. `/speckit.clarify` — **skipped**. `spec.md` had zero `[NEEDS CLARIFICATION]` markers on
+   first pass (see below).
+4. `/speckit.plan` — generated `plan.md` (12 Phase -1 gates, all PASS, no Complexity Tracking
+   needed), `research.md` (6 decisions, R1–R6), `data-model.md`, `quickstart.md`.
+5. `/speckit.tasks` — generated `tasks.md` (27 atomic tasks across Setup + 3 user-story phases
+   + Polish; each story independently shippable, disjoint files).
+
+### On the missing [NEEDS CLARIFICATION] markers
+
+The task brief flagged 3 client-facing scope decisions as already settled via a prior
+clarification round-trip (collage vs. single photo, sitewide vs. scoped watermark, map-only vs.
+global logo) — these were folded directly into `spec.md`'s functional requirements as fixed
+facts, not re-opened as questions, per instructions.
+
+Two genuinely technical/implementation-level ambiguities were identified while reading the
+codebase (exact CSS layering of the watermark vs. the existing `hero-pop` Tailwind token in
+`app/layouts/default.vue` / `HomeHero.vue`; and the marker-vs-popup integration point for the
+Express logo in `app/composables/maps/adapters/mapboxAdapter.ts`, given no Mapbox `Popup`
+currently exists). Both were judged to be **implementation decisions, not business/scope
+decisions** — spec.md states the user-facing outcome without dictating the technical approach,
+and both were resolved with documented rationale in `research.md` (R4 and R5) instead of being
+raised as spec-level `[NEEDS CLARIFICATION]` markers. `/speckit.clarify` was therefore not
+needed.
+
+### Main Phase -1 gates (plan.md)
+
+- **G1/G12** — No new feature folder; touches only existing seed data, one existing ops
+  script, one Tailwind token + one layout file, one existing Mapbox adapter function.
+  `menu-sets.ts` and the global `SiteLogo.vue` are explicitly untouched (scope guardrail).
+- **G4** — New co-located `app/composables/maps/adapters/mapboxAdapter.spec.ts` covers the
+  Express-vs-AYCE marker branching (this adapter had no dedicated spec before).
+- **G5** — No new routes/`routeRules`; Lighthouse 90+ must hold after 3 new/optimized image
+  assets (collage, watermark tile, Express logo).
+- **G7** — Express logo must be used unmodified (Article VII logo-integrity rule); global
+  header/footer logo stays untouched.
+- **G10 (KISS)** — No image-compositing library (e.g. `sharp`) added to `package.json` for the
+  one-time collage asset (ephemeral tool use only); no new Mapbox `Popup` abstraction built to
+  host the horizontal Express logo (deferred out of scope — no acceptance scenario requires it).
+
+**Result**: no constitutional violations; Complexity Tracking table intentionally empty.
+
+### Note for the leader
+
+Per my role restrictions, I did **not** update the `<!-- SPECKIT START -->…<!-- SPECKIT END -->`
+"Active Feature" block in `CLAUDE.md` (the `/speckit.plan` skill suggests this, but it's outside
+`specs/`, `progress/`, `feature_list.json`). That pointer still references feature
+022/homepage-hero-promos-contact (already merged to master per `git log`) and should be updated
+by the leader to point at `specs/024-menu-image-refresh-express-branding/`.
+
+---
+
 ## IN PROGRESS: 022 — homepage-hero-promos-contact (implementation, on 021 branch)
 
 Branch: `feat/021-menu-experience-overhaul` (022 ships with 021 as one PR).
