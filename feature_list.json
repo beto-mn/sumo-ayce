@@ -5,7 +5,15 @@
     "one_feature_at_a_time": true,
     "require_tests_to_close": true,
     "require_approved_spec_to_implement": true,
-    "valid_status": ["pending", "spec_ready", "in_progress", "done", "blocked"],
+    "valid_status": [
+      "pending",
+      "spec_ready",
+      "in_progress",
+      "reviewing",
+      "done",
+      "blocked"
+    ],
+    "reviewing_required_before_done": true,
     "sdd_required_when": "feature has \"sdd\": true"
   },
   "features": [
@@ -231,6 +239,15 @@
       "title": "Menu Page — Lighthouse Performance & Accessibility Fixes",
       "description": "Fix bug (not a new feature): Lighthouse audit run against /menu (local dev, mobile) surfaced real production-affecting defects, independent of dev-server/extension noise in the raw trace. (1) Oversized menu images served far larger than their displayed dimensions — smash_fries.webp is 2.7MB transferred but displayed at 527x278 (source is 4092x2160, ~2.6MB of avoidable transfer); garantia-sumo.webp badge is 265KB transferred at 128x128 (source 2979x2889); chicken_tenders.webp and french_fries.webp are also moderately oversized. Fix: resize/re-encode these Vercel Blob-hosted assets to dimensions proportional to their actual display size (with reasonable retina headroom), reusing the existing scripts/replace-blob-images.ts one-off ops script — do not build a new upload pipeline. (2) Missing `lang` attribute on `<html>` (html-has-lang audit, score 0) — add lang bound to the active i18n locale in the root app/layout. (3) Insufficient color contrast (color-contrast audit, score 0) on two elements: the 'Reservar' nav button (white text on --orange background, measured ratio 2.67, needs 4.5:1) and the active 'AYCE' modality/category chip (white text on --orange, measured ratio 2.84) — adjust token usage (darker text or darker background) to meet WCAG AA on both without regressing the existing design system tokens. Explicitly OUT of scope: server-response-time (2017ms) and the inflated TTI/Speed-Index/unminified-JS numbers, since those are artifacts of testing against the unminified Nuxt dev server with Chrome extensions (ad blocker, bubble_compiled.js, Vue devtools) active in the trace — re-measure against a production build before treating those as real. No relation to feature 024 (which adds NEW images) — this fixes EXISTING already-shipped assets and accessibility defects.",
       "spec_path": "specs/025-menu-page-lighthouse-perf-fix",
+      "sdd": true,
+      "status": "pending"
+    },
+    {
+      "id": 26,
+      "name": "google-reviews-and-branches-ux",
+      "title": "Homepage Google Reviews (WordPress-backed, responsive) + Branches Map/Card UX",
+      "description": "Consolidated client request (4 parts, delivered together). PART A — Homepage 'Nos aman en Google' reviews: currently sourced from a static/hardcoded fixture (app/features/homepage/data/reviews.ts, per feature 010's original scope). Client wants this migrated to WordPress — a NEW server endpoint/ACF contract must be designed and built from scratch (no existing WP endpoint for this content; follow the established WP integration pattern in server/api/v1/content/promotions.get.ts / docs/business/wordpress-endpoints.md). Each review needs at minimum reviewer name, review text, rating, and a link to the actual Google review — clicking a review card must navigate to that Google comment/review URL. Responsive display count: mobile shows only 3 reviews, tablet 4, desktop shows all 6 (reason: too much scroll on small viewports today) — use the project's existing 520/880 breakpoint convention. If the WordPress-side ACF fields/content don't exist yet either, spec_author must flag this as a coordination dependency, not silently assume WP-side readiness. PART B — Branches page map/card click sync: clicking a Mapbox branch-pin marker on /branches must trigger the exact same behavior as clicking that branch's card (currently only card-click drives map zoom/pan; pin-click has no reciprocal action) — spec_author should inspect the existing card-click handler in app/pages/branches.vue / app/features/branches/components/BranchList.vue / BranchCard.vue and the mapbox adapter/composable, then wire marker click to invoke that same handler (single source of truth, no duplicated selection logic). PART C — Branches page mobile/tablet scroll UX: on mobile/tablet the branch card list currently causes a long full-page vertical scroll (client-provided screenshot shows cards stacking indefinitely below the map, pushing the footer far down) — client wants the card list to live in its OWN internal scrollable container on mobile/tablet, matching desktop's existing scoped-scroll layout (spec_author must confirm desktop's current layout mechanism and adapt it down to smaller breakpoints, not invent a new pattern). PART D — Branches page scroll-to-map on card click: when a card is clicked, in addition to the EXISTING map zoom/pan behavior (client confirms this already works correctly — 'el zoom al dar click a la card, ya lo hace' — do NOT rebuild it), the page should also scroll the viewport so the map is back in view, needed specifically for mobile/tablet where the user may have scrolled deep into the card list. PARTS C and D must be designed together (a contained/scrollable list container from PART C changes what 'scroll to map' means on those breakpoints) — spec_author should treat them as one coherent mobile/tablet interaction, not two independent tweaks.",
+      "spec_path": "specs/026-google-reviews-and-branches-ux",
       "sdd": true,
       "status": "pending"
     }

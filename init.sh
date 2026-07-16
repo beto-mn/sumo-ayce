@@ -77,15 +77,15 @@ if [ -f feature_list.json ]; then
     EXIT_CODE=1
   fi
 
-  IN_PROGRESS_COUNT=$(node -e "
+  ACTIVE_COUNT=$(node -e "
     const fl = JSON.parse(require('fs').readFileSync('feature_list.json','utf8'));
-    console.log(fl.features.filter(f => f.status === 'in_progress').length);
+    console.log(fl.features.filter(f => f.status === 'in_progress' || f.status === 'reviewing').length);
   " 2>/dev/null || echo "0")
 
-  if [ "$IN_PROGRESS_COUNT" -le 1 ]; then
-    ok "Features in_progress: $IN_PROGRESS_COUNT (max 1)"
+  if [ "$ACTIVE_COUNT" -le 1 ]; then
+    ok "Features in_progress/reviewing: $ACTIVE_COUNT (max 1 combined)"
   else
-    fail "There are $IN_PROGRESS_COUNT features in_progress — only 1 is allowed"
+    fail "There are $ACTIVE_COUNT features in_progress/reviewing combined — only 1 is allowed at a time"
     EXIT_CODE=1
   fi
 

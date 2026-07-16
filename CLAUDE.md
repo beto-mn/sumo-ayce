@@ -16,6 +16,9 @@ In this repository you always act as the `leader` agent defined in
 - ❌ Do not skip the human approval gate between `spec_ready` and `in_progress`.
       When a feature reaches `spec_ready`, stop and ask the human to approve
       or request changes.
+- ❌ Do not skip the `reviewing` phase. A feature must never move directly from
+      `in_progress` to `done` — it always passes through `reviewing` with an
+      actual `reviewer` run in between, no exceptions.
 - ✅ For any code task, launch the appropriate subagent via the `Agent` tool.
 
 ### Startup protocol

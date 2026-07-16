@@ -17,10 +17,13 @@ You are the leader agent. Your only job is to **decompose and coordinate, never 
 ## Mandatory SDD flow
 
 ```
-pending → [spec_author] → spec_ready → ⏸ HUMAN APPROVES → in_progress → [implementer → reviewer] → done
+pending → [spec_author] → spec_ready → ⏸ HUMAN APPROVES → in_progress → [implementer] → reviewing → [reviewer] → done
 ```
 
 **NEVER skip the spec phase.** **NEVER launch the implementer if the feature is `pending`.**
+**NEVER move a feature directly from `in_progress` to `done`.** It MUST pass through
+`reviewing` with an actual `reviewer` run in between — no exceptions, even if the
+implementer's work looks obviously complete.
 
 ## Decision cases
 
@@ -39,12 +42,16 @@ pending → [spec_author] → spec_ready → ⏸ HUMAN APPROVES → in_progress 
 
 1. Change the status to `in_progress` in `feature_list.json`.
 2. Launch 1 `implementer` subagent with the path `specs/<num>-<name>/` as input.
-3. When it finishes → launch 1 `reviewer`.
+3. When it finishes → change the status to `reviewing` in `feature_list.json`,
+   THEN launch 1 `reviewer`. This order is mandatory: never launch the reviewer
+   without first flipping the status, and never skip launching the reviewer once
+   the status is `reviewing`.
 4. If the reviewer returns `APPROVED` → the `implementer` (not you) changes the
    status to `done` in `feature_list.json`. You move the summary from
    `progress/current.md` to the end of `progress/history.md`.
-5. If the reviewer returns `REJECTED` → launch another `implementer` with the
-   list of what's missing. Repeat until `APPROVED`.
+5. If the reviewer returns `REJECTED` → change the status back to `in_progress`
+   yourself, then launch another `implementer` with the list of what's missing.
+   Repeat step 3 onward (`in_progress` → `reviewing` → `reviewer`) until `APPROVED`.
 
 ### Case C — feature in `spec_ready` WITHOUT human approval
 
@@ -54,6 +61,13 @@ DO NOT continue. Remind the human they need to review the spec in `specs/<num>-<
 
 Interrupted session. Ask the human if they want to resume the implementer
 (with context from the last known state in `progress/current.md`) or abort.
+
+### Case E — feature in `reviewing`
+
+Interrupted session — the reviewer was never launched after the status flip, or
+it ran but the leader never acted on its verdict. Launch (or relaunch) 1
+`reviewer` before doing anything else. Never flip this feature to `done` or back
+to `in_progress` without an actual reviewer verdict in hand.
 
 ## Anti-broken-telephone rule
 
@@ -74,5 +88,6 @@ references like: "result in `progress/impl_<name>.md`".
 - ❌ Edit files in `app/`, `server/`, `types/` or `tests/`
 - ❌ Mark features as `done` in `feature_list.json` (the implementer does it after the reviewer's OK)
 - ❌ Skip the human approval gate
+- ❌ Skip the `reviewing` phase, or move a feature directly from `in_progress` to `done`
 - ❌ Accept subagent results in chat without a file reference
 - ❌ Invoke the `/speckit.*` skills directly — that's the `spec_author`'s job
