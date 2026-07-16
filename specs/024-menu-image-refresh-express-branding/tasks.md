@@ -29,7 +29,7 @@ implemented, tested, and shipped independently and in any order.
 story starts.
 
 - [X] T001 Copy the 6 client source assets into `specs/024-menu-image-refresh-express-branding/assets/source/` and verify all 6 are present and non-zero size (already done — see `assets/source/`)
-- [ ] T002 Create `specs/024-menu-image-refresh-express-branding/assets/output/` as the staging folder for produced deliverables (composite image, converted logo, watermark tile)
+- [X] T002 Create `specs/024-menu-image-refresh-express-branding/assets/output/` as the staging folder for produced deliverables (composite image, converted logo, watermark tile)
 
 **Checkpoint**: Source assets confirmed durable in-repo; ready for all three stories.
 
@@ -55,13 +55,13 @@ client-provided dish photos, uploaded to Vercel Blob, with no other Kids data ch
 
 ### Implementation for User Story 1
 
-- [ ] T003 [US1] Produce the composite/collage `webp` from the 3 source photos (`assets/source/KIDS BURGER_B.webp`, `assets/source/DSC02525 copia.webp`, `assets/source/SEB08252 copia.webp`) using a one-off, non-project-dependency image tool (per research.md R2); save the result to `specs/024-menu-image-refresh-express-branding/assets/output/all_you_can_eat_kids.webp`
-- [ ] T004 [US1] Update `server/db/seeds/kidsMenu.ts`: set `fileName: 'menu/kids/all_you_can_eat_kids.webp'` for the `KIDS_ITEMS` entry with `nameEs: 'All You Can Eat Kids'` (leave every other field on this item and every other Kids item untouched)
-- [ ] T005 [US1] Reseed the `kids` menu category against the target database (run the project's existing seed command for `kidsMenu.ts`) and confirm via a DB query that the row's `file_name` column now equals `menu/kids/all_you_can_eat_kids.webp`
-- [ ] T006 [US1] Add a `--src <path>` CLI flag to `scripts/replace-blob-images.ts` (falls back to the existing hardcoded default path when omitted) per research.md R3 — no other behavior of the script changes
-- [ ] T007 [US1] Dry-run the upload: `pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts --src specs/024-menu-image-refresh-express-branding/assets/output`; confirm the plan output maps `all_you_can_eat_kids.webp` → `menu/kids/all_you_can_eat_kids.webp` with zero UNMATCHED entries
-- [ ] T008 [US1] Apply the upload: re-run the same command with `--apply`; verify the script reports a successful upload (`✓`, not `⚠ URL≠path`)
-- [ ] T009 [US1] Manually verify in the running app (`/menu` → Kids view) that the "All You Can Eat Kids" card now renders the new composite image and every other Kids item/price/description is unchanged
+- [X] T003 [US1] Produce the composite/collage `webp` from the 3 source photos (`assets/source/KIDS BURGER_B.webp`, `assets/source/DSC02525 copia.webp`, `assets/source/SEB08252 copia.webp`) using a one-off, non-project-dependency image tool (per research.md R2); save the result to `specs/024-menu-image-refresh-express-branding/assets/output/all_you_can_eat_kids.webp`
+- [X] T004 [US1] Update `server/db/seeds/kidsMenu.ts`: set `fileName: 'menu/kids/all_you_can_eat_kids.webp'` for the `KIDS_ITEMS` entry with `nameEs: 'All You Can Eat Kids'` (leave every other field on this item and every other Kids item untouched)
+- [X] T005 [US1] Reseed the `kids` menu category against the target database (run the project's existing seed command for `kidsMenu.ts`) and confirm via a DB query that the row's `file_name` column now equals `menu/kids/all_you_can_eat_kids.webp`
+- [X] T006 [US1] Add a `--src <path>` CLI flag to `scripts/replace-blob-images.ts` (falls back to the existing hardcoded default path when omitted) per research.md R3 — no other behavior of the script changes
+- [X] T007 [US1] Dry-run the upload: `pnpm tsx --env-file-if-exists=.env scripts/replace-blob-images.ts --src specs/024-menu-image-refresh-express-branding/assets/output`; confirm the plan output maps `all_you_can_eat_kids.webp` → `menu/kids/all_you_can_eat_kids.webp` with zero UNMATCHED entries
+- [X] T008 [US1] Apply the upload: re-run the same command with `--apply`; verify the script reports a successful upload (`✓`, not `⚠ URL≠path`)
+- [X] T009 [US1] Manually verify in the running app (`/menu` → Kids view) that the "All You Can Eat Kids" card now renders the new composite image and every other Kids item/price/description is unchanged
 
 **Checkpoint**: User Story 1 is fully functional and independently verifiable (SC-001).
 
@@ -79,13 +79,13 @@ homepage hero section still reads correctly with its existing `hero-pop` backdro
 
 ### Implementation for User Story 2
 
-- [ ] T010 [P] [US2] Re-export `assets/source/Fondo webp.webp` at a pre-baked ~10–15% opacity (blended against transparent) and compressed, saving the result to `specs/024-menu-image-refresh-express-branding/assets/output/sumo-watermark.webp` (per research.md R4)
-- [ ] T011 [US2] Copy the produced asset to `public/patterns/sumo-watermark.webp` (create the `public/patterns/` directory if it doesn't exist)
-- [ ] T012 [US2] Add a `watermark` entry to `backgroundImage` in `tailwind.config.ts`, alongside the existing `hero-pop` entry, referencing `url('/patterns/sumo-watermark.webp')` with `background-repeat: repeat` semantics
-- [ ] T013 [US2] Edit `app/layouts/default.vue`'s root wrapper `div` to add the new `bg-watermark` utility (or equivalent Tailwind class from T012) alongside the existing `bg-bg`, so both the solid color and the tiled pattern paint together on the same element
-- [ ] T014 [US2] Visually verify on `/` that the watermark is visible in the header/marquee/footer chrome and does not visually clash with `HomeHero.vue`'s own `bg-hero-pop` section (per research.md R4 — occlusion inside the Hero section is expected and acceptable)
-- [ ] T015 [US2] Spot-check text/content contrast on at least one section per page type (home, menu, promotions, branches, contact) against the pre-feature baseline; confirm no perceptible regression
-- [ ] T016 [US2] Run a Lighthouse pass on `/` (or the project's existing Lighthouse check) to confirm the score stays ≥90 after the new watermark asset ships (SC-005)
+- [X] T010 [P] [US2] Re-export `assets/source/Fondo webp.webp` at a pre-baked ~10–15% opacity (blended against transparent) and compressed, saving the result to `specs/024-menu-image-refresh-express-branding/assets/output/sumo-watermark.webp` (per research.md R4)
+- [X] T011 [US2] Copy the produced asset to `public/patterns/sumo-watermark.webp` (create the `public/patterns/` directory if it doesn't exist)
+- [X] T012 [US2] Add a `watermark` entry to `backgroundImage` in `tailwind.config.ts`, alongside the existing `hero-pop` entry, referencing `url('/patterns/sumo-watermark.webp')` with `background-repeat: repeat` semantics
+- [X] T013 [US2] Edit `app/layouts/default.vue`'s root wrapper `div` to add the new `bg-watermark` utility (or equivalent Tailwind class from T012) alongside the existing `bg-bg`, so both the solid color and the tiled pattern paint together on the same element
+- [X] T014 [US2] Visually verify on `/` that the watermark is visible in the header/marquee/footer chrome and does not visually clash with `HomeHero.vue`'s own `bg-hero-pop` section (per research.md R4 — occlusion inside the Hero section is expected and acceptable)
+- [X] T015 [US2] Spot-check text/content contrast on at least one section per page type (home, menu, promotions, branches, contact) against the pre-feature baseline; confirm no perceptible regression
+- [X] T016 [US2] Run a Lighthouse pass on `/` (or the project's existing Lighthouse check) to confirm the score stays ≥90 after the new watermark asset ships (SC-005)
 
 **Checkpoint**: User Story 2 is fully functional and independently verifiable (SC-002, SC-003).
 
@@ -102,15 +102,15 @@ header/footer logo are pixel-identical to before.
 
 ### Tests for User Story 3
 
-- [ ] T017 [P] [US3] Create `app/composables/maps/adapters/mapboxAdapter.spec.ts`: assert that the marker element produced for `color: 'blue'` has an `<img>` `src` pointing at the new Express asset, and the marker element produced for `color: 'orange'` still points at `/brand/sumo-vertical.svg`; mock `mapbox-gl` via the existing centralized mock convention (do not add a new ad-hoc mock) — write this test FIRST so it fails before T019
+- [X] T017 [P] [US3] Create `app/composables/maps/adapters/mapboxAdapter.spec.ts`: assert that the marker element produced for `color: 'blue'` has an `<img>` `src` pointing at the new Express asset, and the marker element produced for `color: 'orange'` still points at `/brand/sumo-vertical.svg`; mock `mapbox-gl` via the existing centralized mock convention (do not add a new ad-hoc mock) — write this test FIRST so it fails before T019
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Convert/optimize `assets/source/Logo .webp` (the vertical Express lockup) into `public/brand/sumo-express-vertical.svg` (or `.webp` if vector conversion isn't feasible), used unmodified per Article VII — save the intermediate/converted file first to `specs/024-menu-image-refresh-express-branding/assets/output/`
-- [ ] T019 [US3] In `app/composables/maps/adapters/mapboxAdapter.ts`, export `makeMarkerElement` (or extract an equivalently testable seam) and branch its `img.src` assignment: `color === 'blue'` → `/brand/sumo-express-vertical.svg`, `color === 'orange'` → unchanged `/brand/sumo-vertical.svg` (depends on T018; makes T017 pass)
-- [ ] T020 [US3] Run the full test suite and confirm `mapboxAdapter.spec.ts` passes and no existing `MapView.spec.ts` test regresses
-- [ ] T021 [P] [US3] Add (or extend) a fixture/variant in `app/components/ui/MapView.stories.ts` and/or `app/features/branches/components/BranchCard.stories.ts` demonstrating an Express-branded marker next to an AYCE marker, per Article VII Storybook coverage
-- [ ] T022 [US3] Manually verify on the branch map that Express pins show the new mark, AYCE pins are unchanged, and `app/components/layout/SiteLogo.vue` (or equivalent global logo component) has zero diff (`git diff` shows no changes to it)
+- [X] T018 [P] [US3] Convert/optimize `assets/source/Logo .webp` (the vertical Express lockup) into `public/brand/sumo-express-vertical.svg` (or `.webp` if vector conversion isn't feasible), used unmodified per Article VII — save the intermediate/converted file first to `specs/024-menu-image-refresh-express-branding/assets/output/`
+- [X] T019 [US3] In `app/composables/maps/adapters/mapboxAdapter.ts`, export `makeMarkerElement` (or extract an equivalently testable seam) and branch its `img.src` assignment: `color === 'blue'` → `/brand/sumo-express-vertical.svg`, `color === 'orange'` → unchanged `/brand/sumo-vertical.svg` (depends on T018; makes T017 pass)
+- [X] T020 [US3] Run the full test suite and confirm `mapboxAdapter.spec.ts` passes and no existing `MapView.spec.ts` test regresses
+- [X] T021 [P] [US3] Add (or extend) a fixture/variant in `app/components/ui/MapView.stories.ts` and/or `app/features/branches/components/BranchCard.stories.ts` demonstrating an Express-branded marker next to an AYCE marker, per Article VII Storybook coverage
+- [X] T022 [US3] Manually verify on the branch map that Express pins show the new mark, AYCE pins are unchanged, and `app/components/layout/SiteLogo.vue` (or equivalent global logo component) has zero diff (`git diff` shows no changes to it)
 
 **Checkpoint**: User Story 3 is fully functional and independently verifiable (SC-004).
 
@@ -120,11 +120,11 @@ header/footer logo are pixel-identical to before.
 
 **Purpose**: Final gates across all three stories.
 
-- [ ] T023 [P] Run Biome lint + format across all changed files
-- [ ] T024 [P] Run `vue-tsc --noEmit` and confirm no new type errors
-- [ ] T025 Run the full Vitest suite and confirm 100% pass, including the new `mapboxAdapter.spec.ts`
-- [ ] T026 Run through the full `quickstart.md` verification checklist (SC-001 through SC-005) end-to-end
-- [ ] T027 Confirm via `git diff` that `menu-sets.ts` and any other menu category/chip logic have zero changes (explicit out-of-scope guardrail from spec.md)
+- [X] T023 [P] Run Biome lint + format across all changed files
+- [X] T024 [P] Run `vue-tsc --noEmit` and confirm no new type errors
+- [X] T025 Run the full Vitest suite and confirm 100% pass, including the new `mapboxAdapter.spec.ts`
+- [X] T026 Run through the full `quickstart.md` verification checklist (SC-001 through SC-005) end-to-end
+- [X] T027 Confirm via `git diff` that `menu-sets.ts` and any other menu category/chip logic have zero changes (explicit out-of-scope guardrail from spec.md)
 
 ---
 
