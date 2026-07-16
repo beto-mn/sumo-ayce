@@ -214,7 +214,7 @@
       "description": "PART A (done, reviewer-approved): app/features/menu/menu-sets.ts hardcoded the per-view category/drink-group membership (AYCE_BUFFET_SET, AYCE_CARTA_SET, EXPRESS_SET, DRINKS_SET) consumed by useMenuFilters.ts to build MenuShell.vue's chip row, never cross-checked against what menu-queries.ts actually returns from menu_categories/drink_group — a category removed from the DB without updating menu-sets.ts left a dead/blank chip. Fixed via a pure filterAvailableKeys() guard in menu-sets.ts wired into useMenuFilters/MenuShell (drops curated-set keys absent from the fetched FullMenuResult), plus a CI regression test in tests/db/menu-seeds.test.ts asserting every curated-set key exists in the active seed. sauces/drinkSubGroups tables explicitly out of scope (still in active use). PART B (client-requested, in progress, no formal spec — implemented directly per client instruction): the /menu page (app/pages/menu.vue) fetches via useAsyncData keyed by `menu-${apiType}-${modality}`; only data/error are read today, no pending/status, no loading branch — switching type/modality leaves stale chips/cards mounted with no feedback until the new fetch resolves. Add loading skeletons for the category/drink-group filter chips (MenuCategoryChips.vue) and the dish cards (MenuDishGrid.vue → MenuDishCard.vue) shown while pending, respecting prefers-reduced-motion, on this same branch/feature — do not create a separate feature entry for this.",
       "spec_path": "specs/023-menu-chip-db-drift-guard",
       "sdd": true,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": 24,
