@@ -1,16 +1,12 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import type { FullMenuCategory, FullMenuSauce } from '@/types/menu'
+import type { FullMenuCategory } from '@/types/menu'
 import MenuDishGrid from './MenuDishGrid.vue'
 
 vi.stubGlobal('useI18n', () => ({
   t: (k: string) => k,
   locale: { value: 'es' },
 }))
-
-const sauces: FullMenuSauce[] = [
-  { id: 's1', name: { es: 'BBQ', en: 'BBQ' }, imageUrl: null, spiceLevel: 0 },
-]
 
 const categories: FullMenuCategory[] = [
   {
@@ -30,7 +26,6 @@ const categories: FullMenuCategory[] = [
         includedInAyce: true,
         drinkGroup: null,
         drinkSubGroup: null,
-        requiresSauce: false,
         featured: false,
         highlightBackground: false,
         optionGroups: [],
@@ -63,7 +58,6 @@ function mountGrid(
   return mount(MenuDishGrid, {
     props: {
       categories,
-      sauces,
       modality: 'buffet',
       ...overrides,
     },
@@ -148,7 +142,6 @@ describe('MenuDishGrid', () => {
           includedInAyce: false,
           drinkGroup: null,
           drinkSubGroup: null,
-          requiresSauce: false,
           featured: false,
           highlightBackground: false,
           optionGroups: [],
@@ -165,6 +158,80 @@ describe('MenuDishGrid', () => {
     const cardIdx = section.html().indexOf('dish-card-stub')
     expect(noteIdx).toBeGreaterThan(-1)
     expect(noteIdx).toBeLessThan(cardIdx)
+  })
+
+  it('sizes the category-note box to fit its content instead of stretching full-width (feature 028, Part D)', () => {
+    const comboSection: FullMenuCategory = {
+      key: 'kids',
+      name: { es: 'Combo Infantil', en: 'Kids Combo' },
+      note: {
+        es: 'Incluye papas a la francesa (100 g)…',
+        en: 'Includes french fries (100 g)…',
+      },
+      displayOrder: 0,
+      dishes: [],
+    }
+    const wrapper = mountGrid({ categories: [comboSection] })
+    const note = wrapper.find('[data-testid="category-note"]')
+    expect(note.classes()).toContain('w-fit')
+    expect(note.classes()).not.toContain('w-full')
+  })
+
+  it('renders the wings category note ABOVE the thermometer graphic (feature 028, Part C)', () => {
+    const wingsWithNote: FullMenuCategory = {
+      key: 'wings',
+      name: { es: 'Alitas & Boneless', en: 'Wings & Boneless' },
+      note: {
+        es: 'Escoge tu salsa favorita',
+        en: 'Choose your favorite sauce',
+      },
+      displayOrder: 0,
+      dishes: [],
+    }
+    const wrapper = mountGrid({ categories: [wingsWithNote] })
+    const note = wrapper.find('[data-testid="category-note"]')
+    const thermometer = wrapper.find('[data-testid="wings-thermometer"]')
+    expect(note.exists()).toBe(true)
+    expect(note.text()).toBe('Escoge tu salsa favorita')
+    expect(thermometer.exists()).toBe(true)
+    const section = wrapper.find('section')
+    const noteIdx = section.html().indexOf('category-note')
+    const thermometerIdx = section.html().indexOf('wings-thermometer')
+    expect(noteIdx).toBeGreaterThan(-1)
+    expect(noteIdx).toBeLessThan(thermometerIdx)
+  })
+
+  // ── Sauce heat thermometer (feature 028, US2) ───────────────────────────────
+  it('renders the thermometer graphic exactly once for the "wings" category', () => {
+    const wrapper = mountGrid()
+    const thermometer = wrapper.findAll('[data-testid="wings-thermometer"]')
+    expect(thermometer).toHaveLength(1)
+    expect(thermometer[0]?.attributes('src')).toBe(
+      '/menu/thermometer/sauce-heat-thermometer.webp'
+    )
+  })
+
+  it('renders the thermometer at full section width, not a small capped icon (client feedback: err bigger, legible legend)', () => {
+    const wrapper = mountGrid()
+    const thermometer = wrapper.get('[data-testid="wings-thermometer"]')
+    expect(thermometer.classes()).toContain('w-full')
+    expect(thermometer.classes()).not.toEqual(
+      expect.arrayContaining([expect.stringMatching(/^max-w-\[\d+px\]$/)])
+    )
+  })
+
+  it('does NOT render the thermometer graphic for a non-wings category', () => {
+    const wrapper = mountGrid({ categories: categories.slice(0, 1) })
+    expect(wrapper.find('[data-testid="wings-thermometer"]').exists()).toBe(
+      false
+    )
+  })
+
+  it('lazy-loads the thermometer graphic (Article V performance budget)', () => {
+    const wrapper = mountGrid()
+    const thermometer = wrapper.get('[data-testid="wings-thermometer"]')
+    expect(thermometer.attributes('loading')).toBe('lazy')
+    expect(thermometer.attributes('decoding')).toBe('async')
   })
 
   // ── Uniform rendering: every dish via MenuDishCard (Parts C & D) ───────────
@@ -191,7 +258,6 @@ describe('MenuDishGrid', () => {
       includedInAyce: false,
       drinkGroup: null,
       drinkSubGroup: null,
-      requiresSauce: false,
       featured: false,
       optionGroups: [],
     }

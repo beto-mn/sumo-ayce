@@ -269,6 +269,9 @@
     "sauce": {
       "spicy_indicator": "Spicy"
     },
+    "wings": {
+      "thermometer_alt": "Heat thermometer: our sauces ordered from mildest to spiciest"
+    },
     "cta": {
       "ver_carta": "View full menu"
     },

@@ -27,7 +27,6 @@ type AlaCartaItem = {
   featured?: boolean
   /** Explicit rail order when featured (Garantías Sumo). */
   featuredOrder?: number
-  requiresSauce?: boolean
 }
 
 // ─── APPETIZERS ───────────────────────────────────────────────────────────────
@@ -687,7 +686,6 @@ export async function seedAlaCarta() {
     badgeEn: item.badgeEn ?? null,
     featured: item.featured ?? false,
     drinkGroup: null,
-    requiresSauce: item.requiresSauce ?? false,
     isActive: true,
     displayOrder: item.featuredOrder ?? i,
   }))

@@ -18,6 +18,17 @@ function categoryNote(category: FullMenuCategory): string | null {
   if (!category.note) return null
   return category.note[locale.value as 'es' | 'en'] || category.note.es
 }
+
+/**
+ * The sauce heat-thermometer legend graphic mounts ONCE per "Alitas &
+ * Boneless" ("wings") category section — never per dish (research.md R4) — a
+ * single swappable asset reference with no hardcoded crop/positioning
+ * (FR-012, so any future designer revision remains a drop-in file swap with
+ * zero code changes).
+ */
+function showThermometer(category: FullMenuCategory): boolean {
+  return category.key === 'wings'
+}
 </script>
 
 <template>
@@ -32,14 +43,31 @@ function categoryNote(category: FullMenuCategory): string | null {
         {{ categoryName(category) }}
       </h2>
       <!-- Optional section note at the TOP (e.g. Kids "Combo Infantil" inclusions).
-           Same yellow-pop treatment as the drink-group promo note. -->
+           Same yellow-pop treatment as the drink-group promo note. `w-fit
+           max-w-full` (feature 028, Part D) sizes the box to its text content
+           instead of always stretching full-width — hugs short text (wings
+           note) while long text (kids note) still wraps/fills naturally. -->
       <div
         v-if="categoryNote(category)"
         data-testid="category-note"
-        class="mb-6 rounded-pop border-pop border-ink bg-yellow px-4 py-3 font-disp font-extrabold text-kicker shadow-pop-sm"
+        class="mb-6 w-fit max-w-full rounded-pop border-pop border-ink bg-yellow px-4 py-3 font-disp font-extrabold text-kicker shadow-pop-sm"
       >
         {{ categoryNote(category) }}
       </div>
+      <!-- Section-level heat-thermometer legend (feature 028, Part B) — sized
+           to be actually read (mild → spicy across the sauce catalog), not a
+           small decorative icon: full section width on mobile, spanning up to
+           the page's own max-width on desktop (client feedback: err bigger,
+           noticeably larger than a per-dish card image). -->
+      <img
+        v-if="showThermometer(category)"
+        data-testid="wings-thermometer"
+        class="mb-6 h-auto w-full"
+        src="/menu/thermometer/sauce-heat-thermometer.webp"
+        :alt="t('menu.wings.thermometer_alt')"
+        loading="lazy"
+        decoding="async"
+      />
       <p v-if="category.dishes.length === 0" class="text-soft">
         {{ t('menu.category.empty') }}
       </p>

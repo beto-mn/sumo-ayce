@@ -22,7 +22,6 @@ type ExpressItem = {
   badgeEs?: string
   badgeEn?: string
   featured?: boolean
-  requiresSauce?: boolean
 }
 
 // ─── APPETIZERS ───────────────────────────────────────────────────────────────
@@ -549,7 +548,6 @@ export async function seedExpressMenu() {
     badgeEn: item.badgeEn ?? null,
     featured: item.featured ?? false,
     drinkGroup: null,
-    requiresSauce: item.requiresSauce ?? false,
     isActive: true,
     displayOrder: i,
   }))

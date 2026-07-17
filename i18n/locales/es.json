@@ -269,6 +269,9 @@
     "sauce": {
       "spicy_indicator": "Picante"
     },
+    "wings": {
+      "thermometer_alt": "Termómetro de picor: nuestras salsas ordenadas de más suave a más picante"
+    },
     "cta": {
       "ver_carta": "Ver carta completa"
     },

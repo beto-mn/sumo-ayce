@@ -141,7 +141,6 @@ export async function seedKidsMenu() {
     badgeEn: null,
     featured: item.featured ?? false,
     drinkGroup: null,
-    requiresSauce: false,
     isActive: true,
     displayOrder: i,
     highlightBackground: item.highlightBackground ?? false,

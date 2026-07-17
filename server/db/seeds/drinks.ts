@@ -870,7 +870,6 @@ export async function seedDrinks() {
     drinkSubGroupId: d.drinkSubGroupKey
       ? (subGroupIdByKey[d.drinkSubGroupKey] ?? null)
       : null,
-    requiresSauce: false,
     isActive: true,
     displayOrder: i,
   }))

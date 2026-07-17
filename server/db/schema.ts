@@ -309,7 +309,6 @@ export const menuItems = pgTable(
     drinkSubGroupId: uuid('drink_sub_group_id').references(
       () => drinkSubGroups.id
     ),
-    requiresSauce: boolean('requires_sauce').notNull().default(false),
     isActive: boolean('is_active').notNull().default(true),
     displayOrder: integer('display_order').notNull().default(0),
     createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -324,22 +323,6 @@ export const menuItems = pgTable(
     check('menu_items_price_nonnegative', sql`price IS NULL OR price >= 0`),
     check('menu_items_order_nonnegative', sql`${t.displayOrder} >= 0`),
   ]
-)
-
-export const sauces = pgTable(
-  'sauces',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    nameEs: varchar('name_es', { length: 60 }).notNull(),
-    nameEn: varchar('name_en', { length: 60 }).notNull(),
-    // 0 = no heat, 1 = mild, 2 = medium, 3 = hot, 4 = extra hot
-    spiceLevel: integer('spice_level').notNull().default(0),
-    fileName: text('file_name'),
-    isActive: boolean('is_active').notNull().default(true),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  },
-  t => [check('sauces_spice_level_nonnegative', sql`${t.spiceLevel} >= 0`)]
 )
 
 export const drinkGroups = pgTable('drink_group', {

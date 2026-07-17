@@ -20,6 +20,16 @@ describe('default layout', () => {
     expect(root.classes()).toContain('bg-repeat')
   })
 
+  it('constrains the watermark tile to its pre-refresh on-screen footprint (feature 028 US1)', () => {
+    // FR-003: the new, higher-resolution artwork source (781×1056) must still
+    // render at the same on-screen tile size as the previous 300×405 file —
+    // an explicit background-size prevents the pattern from appearing ~2.6x
+    // larger/less dense (research.md R1).
+    const wrapper = mount(DefaultLayout, { global: { stubs } })
+    const root = wrapper.get('div')
+    expect(root.classes()).toContain('bg-[length:300px_405px]')
+  })
+
   it('still renders header, marquee, main slot, and footer', () => {
     const wrapper = mount(DefaultLayout, {
       global: { stubs },
