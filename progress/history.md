@@ -956,3 +956,49 @@ clean, CHECKPOINTS C1–C7 pass.
 - Pre-existing `resetDrinkChildren()` FK-ordering bug (feature 027) still
   blocks a full `pnpm db:seed` re-run against any DB with live option groups —
   unrelated to 028, not fixed here.
+
+---
+
+### ADDENDUM (2026-07-18) — Parts C & D, then final re-close + commit history rewrite
+
+Feature 028 was reopened TWICE more after the closure above, both same-day,
+both small in-place amendments (same "pending → spec_ready → human approval →
+in_progress → reviewing → reviewer → done" cycle, no new branch/spec folder):
+
+- **Part C** — client wanted the copy "Escoge tu salsa favorita" / "Choose
+  your favorite sauce" on the "Alitas & Boneless" section. Initially
+  mis-scoped as a brand-new feature 029 on its own branch off `master`
+  (discovered mid-flight to be the wrong call, since it depends on Part B's
+  thermometer graphic which only exists on 028's own unmerged branch) —
+  caught, reverted (deleted the `feat/029` branch/spec folder, dropped the
+  stashed edits), and correctly folded in as Part C of 028 instead. Delivered
+  by reusing the pre-existing `menu_categories.noteEs`/`noteEn` mechanism
+  (same one already live for "kids") — no new schema, no new component.
+  Reviewer **APPROVED** first pass.
+- **Part D** — client caught, via screenshot, that the Part C note rendered
+  as an oversized full-width pill (the `category-note` `<div>` had no width
+  constraint; fine for the long "kids" paragraph, wrong for the short wings
+  text). Fix: `w-fit max-w-full` on the note box — hugs short text while the
+  long kids note still wraps/fills exactly as before (verified against
+  Tailwind's actual `fit-content` semantics, not guessed). Reviewer
+  **APPROVED**.
+- **Commit history rewrite** (human-requested, post-Part-D-approval): all
+  work across Rounds 1-2 plus Parts C/D had accumulated as a mix of prior
+  commits (`df3a13c`, `aa4460b`, etc.) and uncommitted working-tree changes.
+  Human asked to undo ALL commits on the branch and redo them via
+  `/commit-flow`, all dated 2026-07-17. Executed: `git reset` to `master`
+  (safe — branch had no upstream, nothing pushed), then re-grouped the full
+  cumulative diff into 7 atomic commits respecting "never mix types" (the
+  Part C feat and Part D fix touch the same lines of `MenuDishGrid.vue`/
+  `.spec.ts`/`.stories.ts`, so an intermediate file state was reconstructed by
+  hand to split them cleanly rather than commit a mixed feat+fix): watermark
+  refresh (`feat`) → drop legacy `sauces` table/option-group scaffolding
+  (`revert`, 2 commits — 6 seed files were missed on the first pass and
+  caught before the tracking commit) → thermometer graphic + wings note
+  (`feat`) → note width fix (`fix`) → spec-kit docs (`docs`) → tracking
+  records (`chore`) → done-status flip (`chore`). All 8 commits' author/
+  committer dates rewritten to 2026-07-17 via `git filter-branch --env-filter`
+  (no remote/upstream on this branch — safe, no force-push needed).
+  `./init.sh` re-verified green after every commit and after the rewrite.
+- **Final state**: `done`, reviewer-approved for all of Parts A-D, clean
+  atomic history, `./init.sh` green (1020 tests).
