@@ -63,7 +63,9 @@ describe('MenuSaucePicker — flavour mode (Vaso Sumo)', () => {
   it('renders flavour options with no spice indicator', () => {
     const wrapper = mountPicker({
       options: FLAVOR_OPTIONS,
-      pickerLabel: 'menu.vaso_sumo.picker_label',
+      // DB-driven group label (feature 027 Part E) — not an i18n key, since
+      // Vaso Sumo's flavors are now sourced from `menu_item_option_groups`.
+      pickerLabel: 'Sabor',
     })
     expect(wrapper.findAll('button')).toHaveLength(3)
     expect(wrapper.find('[aria-label]').exists()).toBe(false)
@@ -72,9 +74,11 @@ describe('MenuSaucePicker — flavour mode (Vaso Sumo)', () => {
   it('renders the picker label heading', () => {
     const wrapper = mountPicker({
       options: FLAVOR_OPTIONS,
-      pickerLabel: 'menu.vaso_sumo.picker_label',
+      // DB-driven group label (feature 027 Part E) — not an i18n key, since
+      // Vaso Sumo's flavors are now sourced from `menu_item_option_groups`.
+      pickerLabel: 'Sabor',
     })
-    expect(wrapper.text()).toContain('menu.vaso_sumo.picker_label')
+    expect(wrapper.text()).toContain('Sabor')
   })
 
   it('pre-selects the first option (always a valid single-active choice)', () => {

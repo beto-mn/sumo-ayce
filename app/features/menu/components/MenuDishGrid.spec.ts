@@ -32,6 +32,8 @@ const categories: FullMenuCategory[] = [
         drinkSubGroup: null,
         requiresSauce: false,
         featured: false,
+        highlightBackground: false,
+        optionGroups: [],
       },
     ],
   },
@@ -45,7 +47,11 @@ const categories: FullMenuCategory[] = [
 ]
 
 const stubs = {
-  MenuDishCard: { template: '<div class="dish-card-stub" />' },
+  MenuDishCard: {
+    props: ['dish', 'modality', 'highlightBackground'],
+    template:
+      '<div class="dish-card-stub" :data-id="dish.id" :data-highlight="highlightBackground" />',
+  },
 }
 
 function mountGrid(
@@ -144,6 +150,8 @@ describe('MenuDishGrid', () => {
           drinkSubGroup: null,
           requiresSauce: false,
           featured: false,
+          highlightBackground: false,
+          optionGroups: [],
         },
       ],
     }
@@ -157,5 +165,75 @@ describe('MenuDishGrid', () => {
     const cardIdx = section.html().indexOf('dish-card-stub')
     expect(noteIdx).toBeGreaterThan(-1)
     expect(noteIdx).toBeLessThan(cardIdx)
+  })
+
+  // ── Uniform rendering: every dish via MenuDishCard (Parts C & D) ───────────
+  describe('uniform MenuDishCard rendering', () => {
+    function ramenCategory(
+      dishes: FullMenuCategory['dishes']
+    ): FullMenuCategory {
+      return {
+        key: 'ramen',
+        name: { es: 'Ramen', en: 'Ramen' },
+        note: null,
+        displayOrder: 0,
+        dishes,
+      }
+    }
+
+    const baseDish = {
+      name: { es: 'D', en: 'D' },
+      description: { es: 'd', en: 'd' },
+      imageUrl: null,
+      badge: null,
+      price: '149.00',
+      incluido: false,
+      includedInAyce: false,
+      drinkGroup: null,
+      drinkSubGroup: null,
+      requiresSauce: false,
+      featured: false,
+      optionGroups: [],
+    }
+
+    it('renders "Ramen XL" as a normal MenuDishCard, identical to its sibling dish (FR-012)', () => {
+      const wrapper = mountGrid({
+        categories: [
+          ramenCategory([
+            { ...baseDish, id: 'ramen-xl', highlightBackground: false },
+            { ...baseDish, id: 'ramen-regular', highlightBackground: false },
+          ]),
+        ],
+      })
+      expect(wrapper.findAll('.dish-card-stub')).toHaveLength(2)
+      expect(
+        wrapper.findAll('.dish-card-stub').map(c => c.attributes('data-id'))
+      ).toEqual(['ramen-xl', 'ramen-regular'])
+    })
+
+    it('passes highlightBackground=true to MenuDishCard for the flagged dish', () => {
+      const wrapper = mountGrid({
+        categories: [
+          ramenCategory([
+            { ...baseDish, id: 'kids-ayce', highlightBackground: true },
+          ]),
+        ],
+      })
+      const card = wrapper.find('.dish-card-stub')
+      expect(card.exists()).toBe(true)
+      expect(card.attributes('data-highlight')).toBe('true')
+    })
+
+    it('passes highlightBackground=false to MenuDishCard for every other dish', () => {
+      const wrapper = mountGrid({
+        categories: [
+          ramenCategory([
+            { ...baseDish, id: 'plain', highlightBackground: false },
+          ]),
+        ],
+      })
+      const card = wrapper.find('.dish-card-stub')
+      expect(card.attributes('data-highlight')).toBe('false')
+    })
   })
 })

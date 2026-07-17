@@ -266,17 +266,6 @@
     "skeleton": {
       "loading": "Cargando menú…"
     },
-    "vaso_sumo": {
-      "picker_label": "Elige tu base",
-      "flavor": {
-        "ron": "Ron",
-        "tequila": "Tequila",
-        "vodka": "Vodka",
-        "whisky": "Whisky",
-        "new_mix": "New Mix",
-        "jack_daniels": "Jack Daniel's"
-      }
-    },
     "sauce": {
       "spicy_indicator": "Picante"
     },
