@@ -119,6 +119,8 @@ export const CATEGORIES: {
     nameEn: 'Wings & Boneless',
     displayOrder: 12,
     isActive: true,
+    noteEs: 'Escoge tu salsa favorita',
+    noteEn: 'Choose your favorite sauce',
   },
   {
     key: 'sauces',

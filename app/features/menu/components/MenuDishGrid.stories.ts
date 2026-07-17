@@ -23,7 +23,6 @@ const categories: FullMenuCategory[] = [
         includedInAyce: true,
         drinkGroup: null,
         drinkSubGroup: null,
-        requiresSauce: false,
         featured: false,
         highlightBackground: false,
         optionGroups: [],
@@ -42,7 +41,6 @@ const categories: FullMenuCategory[] = [
         includedInAyce: true,
         drinkGroup: null,
         drinkSubGroup: null,
-        requiresSauce: false,
         featured: false,
         highlightBackground: false,
         optionGroups: [],
@@ -69,7 +67,6 @@ const categories: FullMenuCategory[] = [
         includedInAyce: true,
         drinkGroup: null,
         drinkSubGroup: null,
-        requiresSauce: false,
         featured: false,
         highlightBackground: false,
         optionGroups: [],
@@ -127,7 +124,6 @@ export const CartaModality: Story = {
             includedInAyce: false,
             drinkGroup: null,
             drinkSubGroup: null,
-            requiresSauce: false,
             featured: false,
             highlightBackground: false,
             optionGroups: [],
@@ -182,7 +178,6 @@ export const KidsList: Story = {
             includedInAyce: true,
             drinkGroup: null,
             drinkSubGroup: null,
-            requiresSauce: false,
             featured: false,
             // Part D: orange→blue gradient behind the image panel, scoped to
             // this one dish only.
@@ -214,7 +209,6 @@ export const KidsList: Story = {
             includedInAyce: false,
             drinkGroup: null,
             drinkSubGroup: null,
-            requiresSauce: false,
             featured: false,
             highlightBackground: false,
             optionGroups: [],
@@ -260,7 +254,6 @@ export const RamenXlWithOptionGroups: Story = {
             includedInAyce: false,
             drinkGroup: null,
             drinkSubGroup: null,
-            requiresSauce: false,
             featured: true,
             highlightBackground: false,
             optionGroups: [
@@ -331,7 +324,71 @@ export const RamenXlWithOptionGroups: Story = {
             includedInAyce: false,
             drinkGroup: null,
             drinkSubGroup: null,
-            requiresSauce: false,
+            featured: false,
+            highlightBackground: false,
+            optionGroups: [],
+          },
+        ],
+      },
+    ],
+  },
+}
+
+/**
+ * "Alitas & Boneless" section — the heat-thermometer legend graphic mounts
+ * ONCE at the section level (not per dish); each Wings/Boneless dish shows NO
+ * interactive sauce-selection control — sauce choice is descriptive text
+ * only (spec.md Revision 2026-07-17, FR-006-REV — the interactive picker was
+ * scrapped after the client saw the final thermometer graphic). The category
+ * note ("Escoge tu salsa favorita") reuses the same yellow-pop note box as
+ * the Kids "Combo Infantil" note (feature 028, Part C).
+ */
+export const WingsSectionWithThermometer: Story = {
+  name: 'Alitas & Boneless: section-level thermometer, descriptive sauce text only',
+  args: {
+    modality: 'buffet',
+    categories: [
+      {
+        key: 'wings',
+        name: { es: 'Alitas & Boneless', en: 'Wings & Boneless' },
+        note: {
+          es: 'Escoge tu salsa favorita',
+          en: 'Choose your favorite sauce',
+        },
+        displayOrder: 0,
+        dishes: [
+          {
+            id: 'alitas-ayce',
+            name: { es: 'Alitas', en: 'Chicken Wings' },
+            description: {
+              es: '5 alitas de pollo con una salsa a elegir.',
+              en: '5 chicken wings with your choice of sauce.',
+            },
+            imageUrl: 'https://placehold.co/400x300',
+            badge: null,
+            price: null,
+            incluido: true,
+            includedInAyce: true,
+            drinkGroup: null,
+            drinkSubGroup: null,
+            featured: false,
+            highlightBackground: false,
+            optionGroups: [],
+          },
+          {
+            id: 'boneless-ayce',
+            name: { es: 'Boneless', en: 'Boneless' },
+            description: {
+              es: 'Trozos de pechuga empanizados con una salsa a elegir.',
+              en: 'Breaded chicken bites with your choice of sauce.',
+            },
+            imageUrl: 'https://placehold.co/400x300',
+            badge: null,
+            price: null,
+            incluido: true,
+            includedInAyce: true,
+            drinkGroup: null,
+            drinkSubGroup: null,
             featured: false,
             highlightBackground: false,
             optionGroups: [],
