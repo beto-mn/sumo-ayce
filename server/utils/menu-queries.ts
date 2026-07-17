@@ -1,5 +1,7 @@
 import { and, asc, eq, inArray, or } from 'drizzle-orm'
 import type {
+  DishOptionChoice,
+  DishOptionGroup,
   DrinkGroup,
   DrinkGroupMeta,
   FeaturedDishRow,
@@ -15,6 +17,8 @@ import {
   drinkGroups,
   drinkSubGroups,
   menuCategories,
+  menuItemOptionChoices,
+  menuItemOptionGroups,
   menuItems,
   sauces,
 } from '../db/schema'
@@ -151,6 +155,7 @@ interface MenuQueryRow {
   drinkSubGroupOrder: number | null
   requiresSauce: boolean
   featured: boolean
+  highlightBackground: boolean
 }
 
 interface SauceQueryRow {
@@ -171,7 +176,8 @@ function resolveModality(
 
 function toFullMenuDish(
   row: MenuQueryRow,
-  modality: MenuModality
+  modality: MenuModality,
+  optionGroupsByDish: Map<string, DishOptionGroup[]>
 ): FullMenuDish {
   const isCarta = modality === 'carta'
   const drinkSubGroup =
@@ -213,12 +219,15 @@ function toFullMenuDish(
     drinkSubGroup,
     requiresSauce: row.requiresSauce,
     featured: row.featured,
+    highlightBackground: row.highlightBackground,
+    optionGroups: optionGroupsByDish.get(row.dishId) ?? [],
   }
 }
 
 function groupByCategory(
   rows: MenuQueryRow[],
-  modality: MenuModality
+  modality: MenuModality,
+  optionGroupsByDish: Map<string, DishOptionGroup[]>
 ): FullMenuCategory[] {
   const byKey = new Map<string, FullMenuCategory>()
   for (const row of rows) {
@@ -236,7 +245,7 @@ function groupByCategory(
       }
       byKey.set(row.categoryKey, category)
     }
-    category.dishes.push(toFullMenuDish(row, modality))
+    category.dishes.push(toFullMenuDish(row, modality, optionGroupsByDish))
   }
   return [...byKey.values()]
 }
@@ -270,6 +279,7 @@ const MENU_ROW_SELECTION = {
   drinkSubGroupOrder: drinkSubGroups.displayOrder,
   requiresSauce: menuItems.requiresSauce,
   featured: menuItems.featured,
+  highlightBackground: menuItems.highlightBackground,
 }
 
 async function queryMenuRows(
@@ -358,6 +368,98 @@ async function querySauces(): Promise<FullMenuSauce[]> {
   }))
 }
 
+interface OptionGroupQueryRow {
+  id: string
+  menuItemId: string
+  key: string
+  nameEs: string
+  nameEn: string
+}
+
+interface OptionChoiceQueryRow {
+  id: string
+  optionGroupId: string
+  nameEs: string
+  nameEn: string
+  priceDelta: string
+}
+
+/**
+ * Returns a `menuItemId → DishOptionGroup[]` map for every dish ID given, in
+ * one batched pair of queries (groups, then their choices) — mirrors the
+ * existing `querySauces`/`queryDrinkGroups` batched-query style (no N+1 per
+ * dish). A group whose active choices ended up empty is dropped entirely
+ * (edge case: an empty picker is never shown). Dishes with no configured
+ * groups are simply absent from the returned map (callers default to `[]`).
+ */
+async function queryOptionGroupsByMenuItem(
+  menuItemIds: string[]
+): Promise<Map<string, DishOptionGroup[]>> {
+  if (menuItemIds.length === 0) return new Map()
+
+  const groupRows: OptionGroupQueryRow[] = await db
+    .select({
+      id: menuItemOptionGroups.id,
+      menuItemId: menuItemOptionGroups.menuItemId,
+      key: menuItemOptionGroups.key,
+      nameEs: menuItemOptionGroups.nameEs,
+      nameEn: menuItemOptionGroups.nameEn,
+    })
+    .from(menuItemOptionGroups)
+    .where(
+      and(
+        inArray(menuItemOptionGroups.menuItemId, menuItemIds),
+        eq(menuItemOptionGroups.isActive, true)
+      )
+    )
+    .orderBy(asc(menuItemOptionGroups.displayOrder))
+
+  if (groupRows.length === 0) return new Map()
+
+  const groupIds = groupRows.map(g => g.id)
+  const choiceRows: OptionChoiceQueryRow[] = await db
+    .select({
+      id: menuItemOptionChoices.id,
+      optionGroupId: menuItemOptionChoices.optionGroupId,
+      nameEs: menuItemOptionChoices.nameEs,
+      nameEn: menuItemOptionChoices.nameEn,
+      priceDelta: menuItemOptionChoices.priceDelta,
+    })
+    .from(menuItemOptionChoices)
+    .where(
+      and(
+        inArray(menuItemOptionChoices.optionGroupId, groupIds),
+        eq(menuItemOptionChoices.isActive, true)
+      )
+    )
+    .orderBy(asc(menuItemOptionChoices.displayOrder))
+
+  const choicesByGroup = new Map<string, DishOptionChoice[]>()
+  for (const choice of choiceRows) {
+    const choices = choicesByGroup.get(choice.optionGroupId) ?? []
+    choices.push({
+      id: choice.id,
+      name: { es: choice.nameEs, en: choice.nameEn },
+      priceDelta: choice.priceDelta,
+    })
+    choicesByGroup.set(choice.optionGroupId, choices)
+  }
+
+  const groupsByDish = new Map<string, DishOptionGroup[]>()
+  for (const group of groupRows) {
+    const choices = choicesByGroup.get(group.id) ?? []
+    if (choices.length === 0) continue
+    const groups = groupsByDish.get(group.menuItemId) ?? []
+    groups.push({
+      key: group.key,
+      name: { es: group.nameEs, en: group.nameEn },
+      choices,
+    })
+    groupsByDish.set(group.menuItemId, groups)
+  }
+  return groupsByDish
+}
+
 interface DrinkGroupQueryRow {
   groupKey: string
   nameEs: string | null
@@ -413,10 +515,13 @@ export async function getFullMenu(params: {
         const rows = await queryKidsRows()
         const sauceCatalog = await querySauces()
         const drinkGroupMeta = await queryDrinkGroups()
+        const optionGroupsByDish = await queryOptionGroupsByMenuItem(
+          rows.map(r => r.dishId)
+        )
         return {
           locationType: 'kids' as const,
           modality: 'carta' as const,
-          categories: groupByCategory(rows, 'carta'),
+          categories: groupByCategory(rows, 'carta', optionGroupsByDish),
           sauces: sauceCatalog,
           drinkGroups: drinkGroupMeta,
         }
@@ -426,10 +531,13 @@ export async function getFullMenu(params: {
       const rows = await queryMenuRows(params.locationType, modality)
       const sauceCatalog = await querySauces()
       const drinkGroupMeta = await queryDrinkGroups()
+      const optionGroupsByDish = await queryOptionGroupsByMenuItem(
+        rows.map(r => r.dishId)
+      )
       return {
         locationType: params.locationType,
         modality,
-        categories: groupByCategory(rows, modality),
+        categories: groupByCategory(rows, modality, optionGroupsByDish),
         sauces: sauceCatalog,
         drinkGroups: drinkGroupMeta,
       }

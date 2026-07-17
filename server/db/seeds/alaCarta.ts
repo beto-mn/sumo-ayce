@@ -215,9 +215,12 @@ const RAMEN: AlaCartaItem[] = [
     nameEs: 'Ramen XL',
     nameEn: 'Ramen XL',
     descriptionEs:
-      'Ramen XL en caldo de tu elección, con proteína a elegir y toppings extras al gusto.',
+      'Ramen XL en caldo de tu elección, con proteína a elegir y toppings extras al gusto. Verduras: cebollín, naruto, chicoria, cebolla morada y granos de elote amarillo.',
     descriptionEn:
-      'XL ramen in your choice of broth, with your choice of protein and extra toppings.',
+      'XL ramen in your choice of broth, with your choice of protein and extra toppings. Vegetables: green onion, naruto, chicory, red onion and yellow corn kernels.',
+    // Renders as a completely normal dish card (feature 027 Part C, revised) —
+    // its "build your own" options come from the option-groups tables, seeded
+    // separately by `seedMenuItemOptions()` (server/db/seeds/menuItemOptions.ts).
     fileName: 'menu/ala-carta/ramen_xl.webp',
     featured: true,
     featuredOrder: 8,

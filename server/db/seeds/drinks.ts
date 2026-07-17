@@ -123,9 +123,11 @@ const CANTARITOS: DrinkSeed[] = [
   {
     // Consolidated: the six Vaso Sumo bases (Ron, Tequila, Vodka, Whisky,
     // New Mix, Jack Daniel's — all $159, same cup image) are ONE card whose
-    // base is chosen with the flavour selector (i18n keys
-    // `menu.vaso_sumo.flavor.*`). No per-base detail is shown; the card uses one
-    // generic description for every base.
+    // base is chosen with the flavour selector. The 6 flavor choices are now
+    // DB-driven via the "flavor" option group seeded by
+    // `seedMenuItemOptions()` (feature 027 Part E), not a hardcoded i18n
+    // list. No per-base detail is shown; the card uses one generic
+    // description for every base.
     nameEs: 'Vaso Sumo',
     nameEn: 'Sumo Cup',
     descriptionEs:

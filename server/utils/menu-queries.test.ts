@@ -20,6 +20,8 @@ vi.mock('../db/schema', async importOriginal => {
     sauces: {},
     drinkGroups: {},
     drinkSubGroups: actual.drinkSubGroups,
+    menuItemOptionGroups: {},
+    menuItemOptionChoices: {},
   }
 })
 vi.mock('../api/v1/menu/resolveImageUrl', () => ({
@@ -206,6 +208,23 @@ type MenuQueryRow = {
   drinkGroup: string | null
   requiresSauce: boolean
   featured: boolean
+  highlightBackground: boolean
+}
+
+type OptionGroupRow = {
+  id: string
+  menuItemId: string
+  key: string
+  nameEs: string
+  nameEn: string
+}
+
+type OptionChoiceRow = {
+  id: string
+  optionGroupId: string
+  nameEs: string
+  nameEn: string
+  priceDelta: string
 }
 
 type SauceRow = {
@@ -226,12 +245,15 @@ type DrinkGroupRow = {
 }
 
 // First select(...) → dishes-with-category; second select(...) → sauces;
-// third select(...) → drink groups (.from → .orderBy).
+// third select(...) → drink groups (.from → .orderBy); fourth (+ fifth, only
+// when the fourth returned rows) select(...) → option groups + their choices.
 // The dishes query chains: .from → .innerJoin → .leftJoin (drinkGroups) → .leftJoin (drinkSubGroups) → .where → .orderBy
 function mockMenuChains(
   menuRows: MenuQueryRow[],
   sauceRows: SauceRow[],
-  drinkGroupRows: DrinkGroupRow[] = []
+  drinkGroupRows: DrinkGroupRow[] = [],
+  optionGroupRows: OptionGroupRow[] = [],
+  optionChoiceRows: OptionChoiceRow[] = []
 ): void {
   const innerChain = {
     where: vi.fn().mockReturnValue({
@@ -260,6 +282,24 @@ function mockMenuChains(
         orderBy: vi.fn().mockResolvedValue(drinkGroupRows),
       }),
     })
+  if (menuRows.length > 0) {
+    mockDbSelect.mockReturnValueOnce({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          orderBy: vi.fn().mockResolvedValue(optionGroupRows),
+        }),
+      }),
+    })
+    if (optionGroupRows.length > 0) {
+      mockDbSelect.mockReturnValueOnce({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            orderBy: vi.fn().mockResolvedValue(optionChoiceRows),
+          }),
+        }),
+      })
+    }
+  }
 }
 
 const menuRow = (over: Partial<MenuQueryRow> = {}): MenuQueryRow => ({
@@ -282,6 +322,7 @@ const menuRow = (over: Partial<MenuQueryRow> = {}): MenuQueryRow => ({
   drinkGroup: null,
   requiresSauce: true,
   featured: false,
+  highlightBackground: false,
   ...over,
 })
 
@@ -429,6 +470,126 @@ describe('getFullMenu', () => {
     ).categories.flatMap(c => c.dishes)
     expect(dishes.find(d => d.id === 'star')?.featured).toBe(true)
     expect(dishes.find(d => d.id === 'plain')?.featured).toBe(false)
+  })
+
+  // ── highlightBackground projection (Part D) ────────────────────────────────
+  it('projects highlightBackground=true for the flagged dish (e.g. Kids AYCE)', async () => {
+    mockMenuChains(
+      [menuRow({ dishId: 'kids-ayce', highlightBackground: true })],
+      []
+    )
+    const dishes = (
+      await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
+    ).categories.flatMap(c => c.dishes)
+    expect(dishes.find(d => d.id === 'kids-ayce')?.highlightBackground).toBe(
+      true
+    )
+  })
+
+  it('projects highlightBackground=false for every other (unflagged) dish', async () => {
+    mockMenuChains(
+      [menuRow({ dishId: 'plain', highlightBackground: false })],
+      []
+    )
+    const dishes = (
+      await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
+    ).categories.flatMap(c => c.dishes)
+    expect(dishes.find(d => d.id === 'plain')?.highlightBackground).toBe(false)
+  })
+
+  // ── optionGroups projection (Parts C & E) ───────────────────────────────────
+  it('projects optionGroups=[] for a dish with no configured option groups', async () => {
+    mockMenuChains([menuRow({ dishId: 'plain' })], [])
+    const dishes = (
+      await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
+    ).categories.flatMap(c => c.dishes)
+    expect(dishes.find(d => d.id === 'plain')?.optionGroups).toEqual([])
+  })
+
+  it('projects optionGroups with their choices, correctly ordered and shaped (e.g. Ramen XL)', async () => {
+    mockMenuChains(
+      [menuRow({ dishId: 'ramen-xl' })],
+      [],
+      [],
+      [
+        {
+          id: 'g1',
+          menuItemId: 'ramen-xl',
+          key: 'noodle_base',
+          nameEs: 'Base de fideo',
+          nameEn: 'Noodle base',
+        },
+        {
+          id: 'g2',
+          menuItemId: 'ramen-xl',
+          key: 'protein',
+          nameEs: 'Proteína',
+          nameEn: 'Protein',
+        },
+      ],
+      [
+        {
+          id: 'c1',
+          optionGroupId: 'g1',
+          nameEs: 'Pollo',
+          nameEn: 'Chicken',
+          priceDelta: '0.00',
+        },
+        {
+          id: 'c2',
+          optionGroupId: 'g2',
+          nameEs: 'Res',
+          nameEn: 'Beef',
+          priceDelta: '0.00',
+        },
+      ]
+    )
+    const dishes = (
+      await getFullMenu({ locationType: 'ayce', modality: 'carta' })
+    ).categories.flatMap(c => c.dishes)
+    const ramenXl = dishes.find(d => d.id === 'ramen-xl')
+    expect(ramenXl?.optionGroups).toEqual([
+      {
+        key: 'noodle_base',
+        name: { es: 'Base de fideo', en: 'Noodle base' },
+        choices: [
+          {
+            id: 'c1',
+            name: { es: 'Pollo', en: 'Chicken' },
+            priceDelta: '0.00',
+          },
+        ],
+      },
+      {
+        key: 'protein',
+        name: { es: 'Proteína', en: 'Protein' },
+        choices: [
+          { id: 'c2', name: { es: 'Res', en: 'Beef' }, priceDelta: '0.00' },
+        ],
+      },
+    ])
+  })
+
+  it('drops a group entirely when it has zero active choices (no empty picker shown)', async () => {
+    mockMenuChains(
+      [menuRow({ dishId: 'ramen-xl' })],
+      [],
+      [],
+      [
+        {
+          id: 'g1',
+          menuItemId: 'ramen-xl',
+          key: 'noodle_base',
+          nameEs: 'Base de fideo',
+          nameEn: 'Noodle base',
+        },
+      ],
+      []
+    )
+    const dishes = (
+      await getFullMenu({ locationType: 'ayce', modality: 'carta' })
+    ).categories.flatMap(c => c.dishes)
+    expect(dishes.find(d => d.id === 'ramen-xl')?.optionGroups).toEqual([])
   })
 
   it('shows price and incluido=false in the AYCE carta (a-la-carte) view', async () => {

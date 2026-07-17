@@ -8,6 +8,7 @@ import { seedDrinks } from './seeds/drinks'
 import { seedExpressMenu } from './seeds/expressMenu'
 import { seedKidsMenu } from './seeds/kidsMenu'
 import { seedMenuCategories } from './seeds/menuCategories'
+import { seedMenuItemOptions } from './seeds/menuItemOptions'
 import { seedSauces } from './seeds/sauces'
 
 async function main() {
@@ -24,6 +25,9 @@ async function main() {
   await seedKidsMenu()
   await seedAlaCarta()
   await seedSauces()
+  // Depends on both seedDrinks() (Vaso Sumo) and seedAlaCarta() (Ramen XL)
+  // having already inserted the menu_items rows it attaches option groups to.
+  await seedMenuItemOptions()
 
   console.log('\n✓ All seeds complete')
 }
