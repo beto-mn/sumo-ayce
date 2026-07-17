@@ -229,6 +229,34 @@ describe('PromotionCard (responsive slide)', () => {
       expect(back.classes()).toContain('min-[880px]:p-12')
     })
 
+    // ── Safari overflow + backface-visibility isolation ──────────────────────
+    it('keeps overflow-y-auto and flex layout OFF the transformed back-face element (Safari fix)', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const back = wrapper.find('[data-testid="promotion-back"]')
+      const classes = back.classes()
+      expect(classes).not.toContain('overflow-y-auto')
+      expect(classes).not.toContain('flex')
+    })
+
+    it('moves overflow-y-auto and the flex layout to a nested content wrapper with no transform (Safari fix)', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const content = wrapper.find('[data-testid="promotion-back-content"]')
+      expect(content.exists()).toBe(true)
+      expect(content.classes()).toContain('overflow-y-auto')
+      expect(content.classes()).toContain('flex')
+      expect(content.classes()).toContain('flex-col')
+      // The nested wrapper stays free of backface-visibility/transform — those live on the outer `promotion-back` element.
+      expect(content.classes().join(' ')).not.toContain('backface-visibility')
+      expect(content.classes().join(' ')).not.toContain('rotateY')
+    })
+
+    it('still renders the terms heading and text inside the nested content wrapper', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const content = wrapper.find('[data-testid="promotion-back-content"]')
+      expect(content.text()).toContain('promotions.terms.heading')
+      expect(content.text()).toContain('Válido de lunes a jueves.')
+    })
+
     it('is NOT clickable (no cursor-pointer, no aria-label) when there are no terms', () => {
       const card = mountCard(makePromo({ terms: null })).find(
         '[data-testid="promotion-card"]'
@@ -271,6 +299,88 @@ describe('PromotionCard (responsive slide)', () => {
       )
     })
 
+    // ── Safari backface-visibility hotfix (webkit-prefixed fallbacks) ────────
+    it('applies the -webkit- prefixed transform-style alongside the unprefixed one (Safari fix)', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const inner = wrapper.find('[data-testid="promotion-flip-inner"]')
+      const classes = inner.classes().join(' ')
+      expect(classes).toContain('[-webkit-transform-style:preserve-3d]')
+      expect(classes).toContain('[transform-style:preserve-3d]')
+    })
+
+    it('applies the -webkit- prefixed rotateY transform alongside the unprefixed one when flipped=true (Safari fix)', () => {
+      const wrapper = mountCard(makePromo({ terms }), { flipped: true })
+      const inner = wrapper.find('[data-testid="promotion-flip-inner"]')
+      const classes = inner.classes().join(' ')
+      expect(classes).toContain('[-webkit-transform:rotateY(180deg)]')
+      expect(classes).toContain('[transform:rotateY(180deg)]')
+    })
+
+    it('applies -webkit-backface-visibility alongside backface-visibility on the front face (Safari fix)', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const front = wrapper.find('[data-testid="promotion-front"]')
+      const classes = front.classes().join(' ')
+      expect(classes).toContain('[-webkit-backface-visibility:hidden]')
+      expect(classes).toContain('[backface-visibility:hidden]')
+    })
+
+    it('applies -webkit-backface-visibility and -webkit-transform alongside the unprefixed properties on the back face (Safari fix)', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const back = wrapper.find('[data-testid="promotion-back"]')
+      const classes = back.classes().join(' ')
+      expect(classes).toContain('[-webkit-backface-visibility:hidden]')
+      expect(classes).toContain('[backface-visibility:hidden]')
+      expect(classes).toContain('[-webkit-transform:rotateY(180deg)]')
+      expect(classes).toContain('[transform:rotateY(180deg)]')
+    })
+
+    // ── Safari compositing-layer bleed-through: DOM removal ───────────────────
+    it('removes the type pill from the DOM when flipped=true (3D-transform path)', () => {
+      const wrapper = mountCard(makePromo({ terms }), { flipped: true })
+      expect(wrapper.find('[data-testid="promotion-type"]').exists()).toBe(
+        false
+      )
+    })
+
+    it('removes the color badge from the DOM when flipped=true (3D-transform path)', () => {
+      const wrapper = mountCard(makePromo({ terms }), { flipped: true })
+      expect(wrapper.find('[data-testid="promotion-badge"]').exists()).toBe(
+        false
+      )
+    })
+
+    it('renders the type pill and color badge normally when flipped=false', () => {
+      const wrapper = mountCard(makePromo({ terms }), { flipped: false })
+      expect(wrapper.find('[data-testid="promotion-type"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="promotion-badge"]').exists()).toBe(
+        true
+      )
+    })
+
+    describe('with prefers-reduced-motion: reduce (pill/badge stay in the DOM)', () => {
+      const originalMatchMedia = window.matchMedia
+
+      beforeEach(() => {
+        window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+      })
+
+      afterEach(() => {
+        window.matchMedia = originalMatchMedia
+      })
+
+      // Cross-fade path never rotates in 3D, so the pill/badge stay mounted and fade with the front face's opacity transition.
+      it('keeps the type pill and color badge in the DOM when flipped=true (they fade via the parent opacity transition, not v-if)', async () => {
+        const wrapper = mountCard(makePromo({ terms }), { flipped: true })
+        await wrapper.vm.$nextTick()
+        expect(wrapper.find('[data-testid="promotion-type"]').exists()).toBe(
+          true
+        )
+        expect(wrapper.find('[data-testid="promotion-badge"]').exists()).toBe(
+          true
+        )
+      })
+    })
+
     // ── Reduced motion: cross-fade instead of a 3D rotate ─────────────────────
     describe('with prefers-reduced-motion: reduce', () => {
       const originalMatchMedia = window.matchMedia
@@ -285,8 +395,7 @@ describe('PromotionCard (responsive slide)', () => {
 
       it('never applies the 3D rotate transform, even when flipped=true', async () => {
         const wrapper = mountCard(makePromo({ terms }), { flipped: true })
-        // `reducedMotion` is set inside onMounted; the resulting re-render is
-        // scheduled on the next tick, not synchronous with mount().
+        // `reducedMotion` is set inside onMounted; its re-render is async, not synchronous with mount().
         await wrapper.vm.$nextTick()
         const inner = wrapper.find('[data-testid="promotion-flip-inner"]')
         expect(inner.classes().join(' ')).not.toContain(

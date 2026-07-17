@@ -124,15 +124,18 @@ const movilSrc = computed(
         :class="[
           reducedMotion
             ? ''
-            : 'transition-transform duration-500 [transform-style:preserve-3d] motion-reduce:transition-none',
-          !reducedMotion && flipped ? '[transform:rotateY(180deg)]' : '',
+            : 'transition-transform duration-500 [-webkit-transform-style:preserve-3d] [transform-style:preserve-3d] motion-reduce:transition-none',
+          !reducedMotion && flipped
+            ? '[-webkit-transform:rotateY(180deg)] [transform:rotateY(180deg)]'
+            : '',
         ]"
       >
-        <!-- FRONT FACE: image, type pill, color badge — unchanged from before. -->
+        <!-- FRONT FACE: image, type pill, color badge. -->
         <div
           data-testid="promotion-front"
           :class="[
-            !reducedMotion && '[backface-visibility:hidden]',
+            !reducedMotion &&
+              '[-webkit-backface-visibility:hidden] [backface-visibility:hidden]',
             reducedMotion ? 'transition-opacity duration-300' : '',
             reducedMotion && flipped ? 'pointer-events-none opacity-0' : '',
           ]"
@@ -162,8 +165,13 @@ const movilSrc = computed(
             {{ imageAlt }}
           </div>
 
-          <!-- Type pill (branch scope), top-left. Color-coded + labeled for a11y. -->
+          <!-- Type pill (branch scope), top-left. Removed from the DOM while
+               flipped instead of CSS-hidden — Safari doesn't reliably apply
+               backface-visibility to absolutely-positioned+transformed
+               descendants under preserve-3d. Reduced-motion keeps it in the
+               DOM since that path cross-fades opacity instead of rotating. -->
           <span
+            v-if="reducedMotion || !flipped"
             data-testid="promotion-type"
             :data-type="promotion.type"
             :class="[
@@ -174,8 +182,9 @@ const movilSrc = computed(
             {{ typeLabel }}
           </span>
 
-          <!-- Color badge overlay (acf.color), top-right. -->
+          <!-- Color badge overlay (acf.color), top-right — same DOM-removal fix as the type pill above. -->
           <UiSticker
+            v-if="reducedMotion || !flipped"
             data-testid="promotion-badge"
             class="absolute top-3 right-3 z-10"
             :tone="badgeTone"
@@ -185,14 +194,17 @@ const movilSrc = computed(
           </UiSticker>
         </div>
 
-        <!-- BACK FACE: Terms & Conditions (only offered when both languages exist). -->
+        <!-- BACK FACE: Terms & Conditions. Overflow/scroll lives on the inner
+             `promotion-back-content` div, not this transformed element — Safari
+             breaks backface-visibility hiding when overflow-y is on the same
+             element as a 3D transform. -->
         <div
           v-if="hasTerms"
           data-testid="promotion-back"
-          class="absolute inset-0 flex flex-col gap-3 overflow-y-auto rounded-pop border-pop border-ink bg-panel p-6 shadow-pop-sm min-[520px]:p-9 min-[880px]:p-12"
+          class="absolute inset-0 rounded-pop border-pop border-ink bg-panel p-6 shadow-pop-sm min-[520px]:p-9 min-[880px]:p-12"
           :class="[
             !reducedMotion &&
-              '[backface-visibility:hidden] [transform:rotateY(180deg)]',
+              '[-webkit-backface-visibility:hidden] [backface-visibility:hidden] [-webkit-transform:rotateY(180deg)] [transform:rotateY(180deg)]',
             reducedMotion ? 'transition-opacity duration-300' : '',
             reducedMotion
               ? flipped
@@ -203,10 +215,17 @@ const movilSrc = computed(
                 : '',
           ]"
         >
-          <h3 class="font-disp font-extrabold uppercase text-dish-title">
-            {{ t('promotions.terms.heading') }}
-          </h3>
-          <p class="whitespace-pre-line text-body text-ink">{{ termsText }}</p>
+          <div
+            data-testid="promotion-back-content"
+            class="flex h-full w-full flex-col gap-3 overflow-y-auto"
+          >
+            <h3 class="font-disp font-extrabold uppercase text-dish-title">
+              {{ t('promotions.terms.heading') }}
+            </h3>
+            <p class="whitespace-pre-line text-body text-ink">
+              {{ termsText }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
