@@ -20,7 +20,6 @@ function makeDish(overrides: Partial<FullMenuDish> = {}): FullMenuDish {
     includedInAyce: true,
     drinkGroup: null,
     drinkSubGroup: null,
-    requiresSauce: false,
     featured: false,
     highlightBackground: false,
     optionGroups: [],
@@ -104,10 +103,9 @@ describe('MenuDishCard', () => {
     expect(wrapper.text()).toContain('128.00')
   })
 
-  it('never renders a sauce picker (removed from wings — FR-021)', () => {
-    // Even a formerly sauce-requiring wings dish shows no picker on the card.
-    const wrapper = mountCard(makeDish({ requiresSauce: true }))
-    expect(wrapper.find('.sauce-picker-stub').exists()).toBe(false)
+  it('never renders a sauce picker for a dish with no configured option groups (FR-021)', () => {
+    const wrapper = mountCard(makeDish({ optionGroups: [] }))
+    expect(wrapper.find('.picker-stub').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('menu.dish.sauce_required')
   })
 

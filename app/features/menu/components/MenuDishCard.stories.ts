@@ -16,7 +16,6 @@ const base: FullMenuDish = {
   includedInAyce: true,
   drinkGroup: null,
   drinkSubGroup: null,
-  requiresSauce: false,
   featured: false,
   highlightBackground: false,
   optionGroups: [],
@@ -79,7 +78,6 @@ export const WingsWithoutSaucePicker: Story = {
     dish: {
       ...base,
       name: { es: 'Boneless', en: 'Boneless' },
-      requiresSauce: true,
     },
   },
 }

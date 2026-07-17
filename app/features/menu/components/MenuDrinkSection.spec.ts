@@ -20,7 +20,6 @@ function dish(over: Partial<FullMenuDish> & { id: string }): FullMenuDish {
     includedInAyce: false,
     drinkGroup: 'sodas',
     drinkSubGroup: null,
-    requiresSauce: false,
     featured: false,
     highlightBackground: false,
     optionGroups: [],
