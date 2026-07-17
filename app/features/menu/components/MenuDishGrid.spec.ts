@@ -160,6 +160,23 @@ describe('MenuDishGrid', () => {
     expect(noteIdx).toBeLessThan(cardIdx)
   })
 
+  it('sizes the category-note box to fit its content instead of stretching full-width (feature 028, Part D)', () => {
+    const comboSection: FullMenuCategory = {
+      key: 'kids',
+      name: { es: 'Combo Infantil', en: 'Kids Combo' },
+      note: {
+        es: 'Incluye papas a la francesa (100 g)…',
+        en: 'Includes french fries (100 g)…',
+      },
+      displayOrder: 0,
+      dishes: [],
+    }
+    const wrapper = mountGrid({ categories: [comboSection] })
+    const note = wrapper.find('[data-testid="category-note"]')
+    expect(note.classes()).toContain('w-fit')
+    expect(note.classes()).not.toContain('w-full')
+  })
+
   it('renders the wings category note ABOVE the thermometer graphic (feature 028, Part C)', () => {
     const wingsWithNote: FullMenuCategory = {
       key: 'wings',

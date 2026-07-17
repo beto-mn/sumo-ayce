@@ -153,6 +153,14 @@ export const EmptyCategory: Story = {
  * 1) "All You Can Eat Kids" ($179 buffet, no note); 2) "Combo Infantil" (the
  * $149 combos) with the inclusion NOTE (yellow pop box) at the top of that
  * section only. Headings are i18n copy; the note is DB-driven.
+ *
+ * Manual visual QA (feature 028, Part D): the "Combo Infantil" note's long
+ * inclusions paragraph should render exactly as before — fully readable,
+ * wrapping naturally across both desktop and the Mobile (360px) viewport,
+ * NOT clipped or oddly narrow — despite the box now sizing to fit-content
+ * (`w-fit max-w-full`) rather than always stretching full-width. Compare
+ * against `WingsSectionWithThermometer`'s short note, which should hug its
+ * text tightly instead.
  */
 export const KidsList: Story = {
   args: {
@@ -342,6 +350,12 @@ export const RamenXlWithOptionGroups: Story = {
  * scrapped after the client saw the final thermometer graphic). The category
  * note ("Escoge tu salsa favorita") reuses the same yellow-pop note box as
  * the Kids "Combo Infantil" note (feature 028, Part C).
+ *
+ * Manual visual QA (feature 028, Part D): this short note should render as a
+ * compact box that hugs its text (`w-fit max-w-full`) — NOT an oversized,
+ * mostly-empty full-width pill — at both desktop and the Mobile (360px)
+ * viewport. Contrast against `KidsList`'s long note, which should still fill
+ * its available width by virtue of its own text length.
  */
 export const WingsSectionWithThermometer: Story = {
   name: 'Alitas & Boneless: section-level thermometer, descriptive sauce text only',
