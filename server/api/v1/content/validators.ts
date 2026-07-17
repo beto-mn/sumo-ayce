@@ -41,6 +41,12 @@ const acfSchema = z.object({
   imagen_desktop: z.union([z.number(), z.string(), z.boolean()]).nullish(),
   imagen_tablet: z.union([z.number(), z.string(), z.boolean()]).nullish(),
   imagen_movil: z.union([z.number(), z.string(), z.boolean()]).nullish(),
+  // Terms & Conditions (assumed field keys, research.md R4). Nullish — NOT
+  // required like `badge_es` — so a promo with the field absent, empty, or
+  // filled in only one language still parses successfully; `mapPromotion`
+  // decides whether the pair counts as "complete" (both non-empty).
+  tyc_es: z.string().nullish(),
+  tyc_en: z.string().nullish(),
 })
 
 /**
@@ -110,6 +116,19 @@ function toMediaId(value: unknown): number | null {
   return null
 }
 
+/**
+ * Bilingual-completeness projection for Terms & Conditions (FR-008,
+ * research.md R4a): `terms` is set ONLY when BOTH `tyc_es` AND `tyc_en` are
+ * non-empty after trimming. Deliberately NO same-language fallback branch
+ * (unlike `badge_en`'s fallback to `badge_es`) — a partially-filled pair must
+ * never render, so it resolves to `null` identically to a fully-empty pair.
+ */
+function toTerms(acf: Pick<WpPromotionAcf, 'tyc_es' | 'tyc_en'>) {
+  const es = acf.tyc_es?.trim()
+  const en = acf.tyc_en?.trim()
+  return es && en ? { es, en } : null
+}
+
 /** Map a validated raw WP item to a `ParsedPromotion` (pre image-resolution). */
 function mapPromotion(raw: RawPromotion): ParsedPromotion {
   const { acf } = raw
@@ -124,6 +143,7 @@ function mapPromotion(raw: RawPromotion): ParsedPromotion {
     desktopMediaId: toMediaId(acf.imagen_desktop),
     tabletMediaId: toMediaId(acf.imagen_tablet),
     movilMediaId: toMediaId(acf.imagen_movil),
+    terms: toTerms(acf),
   }
 }
 

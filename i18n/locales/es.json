@@ -112,6 +112,10 @@
       "next": "Promoción siguiente",
       "goToSlide": "Ir a la promoción {n}"
     },
+    "terms": {
+      "heading": "Términos y condiciones",
+      "cardLabel": "Toca para ver los términos y condiciones"
+    },
     "seo": {
       "title": "Promociones Sumo",
       "description": "Descubre todas las promociones activas de SUMO All You Can Eat. Martes 2x1, cumpleañeros, jueves especiales y más."

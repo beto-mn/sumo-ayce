@@ -112,6 +112,10 @@
       "next": "Next promotion",
       "goToSlide": "Go to promotion {n}"
     },
+    "terms": {
+      "heading": "Terms & Conditions",
+      "cardLabel": "Tap to see the terms and conditions"
+    },
     "seo": {
       "title": "Sumo Promotions",
       "description": "Discover all active SUMO All You Can Eat promotions. Tuesdays 2for1, birthdays, specials and more."

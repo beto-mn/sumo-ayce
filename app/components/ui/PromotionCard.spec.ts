@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Promotion } from '@/types/content'
 
 // Stub Nuxt globals
@@ -29,12 +29,19 @@ function makePromo(overrides: Partial<Promotion> = {}): Promotion {
     imageDesktopUrl: 'https://cdn.test/desktop.jpg',
     imageTabletUrl: 'https://cdn.test/tablet.jpg',
     imageMovilUrl: 'https://cdn.test/movil.jpg',
+    terms: null,
     ...overrides,
   }
 }
 
-const mountCard = (promotion: Promotion) =>
-  mount(PromotionCard, { props: { promotion }, global: { stubs } })
+const mountCard = (
+  promotion: Promotion,
+  props: Partial<{ flipped: boolean }> = {}
+) =>
+  mount(PromotionCard, {
+    props: { promotion, ...props },
+    global: { stubs },
+  })
 
 describe('PromotionCard (responsive slide)', () => {
   beforeEach(() => {
@@ -194,5 +201,112 @@ describe('PromotionCard (responsive slide)', () => {
     const img = mountCard(makePromo()).find('[data-testid="promotion-img"]')
     expect(img.classes()).toContain('w-full')
     expect(img.classes()).not.toContain('object-cover')
+  })
+
+  // ── Flip-to-terms (Part A) ──────────────────────────────────────────────────
+  describe('flip-to-terms', () => {
+    const terms = { es: 'Válido de lunes a jueves.', en: 'Valid Mon–Thu.' }
+
+    it('does NOT render a back face when the promo has no terms', () => {
+      const wrapper = mountCard(makePromo({ terms: null }))
+      expect(wrapper.find('[data-testid="promotion-back"]').exists()).toBe(
+        false
+      )
+    })
+
+    it('renders a back face with the ES terms text when both languages are configured', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const back = wrapper.find('[data-testid="promotion-back"]')
+      expect(back.exists()).toBe(true)
+      expect(back.text()).toContain('Válido de lunes a jueves.')
+    })
+
+    it('scales padding progressively: p-6 mobile, p-9 tablet (min-[520px]), p-12 desktop (min-[880px])', () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      const back = wrapper.find('[data-testid="promotion-back"]')
+      expect(back.classes()).toContain('p-6')
+      expect(back.classes()).toContain('min-[520px]:p-9')
+      expect(back.classes()).toContain('min-[880px]:p-12')
+    })
+
+    it('is NOT clickable (no cursor-pointer, no aria-label) when there are no terms', () => {
+      const card = mountCard(makePromo({ terms: null })).find(
+        '[data-testid="promotion-card"]'
+      )
+      expect(card.classes()).not.toContain('cursor-pointer')
+      expect(card.attributes('aria-label')).toBeUndefined()
+    })
+
+    it('is clickable (cursor-pointer + aria-label) when both languages are configured', () => {
+      const card = mountCard(makePromo({ terms })).find(
+        '[data-testid="promotion-card"]'
+      )
+      expect(card.classes()).toContain('cursor-pointer')
+      expect(card.attributes('aria-label')).toBe('promotions.terms.cardLabel')
+    })
+
+    it('emits "flip" when clicked and terms are present', async () => {
+      const wrapper = mountCard(makePromo({ terms }))
+      await wrapper.find('[data-testid="promotion-card"]').trigger('click')
+      expect(wrapper.emitted('flip')).toHaveLength(1)
+    })
+
+    it('does NOT emit "flip" when clicked and there are no terms', async () => {
+      const wrapper = mountCard(makePromo({ terms: null }))
+      await wrapper.find('[data-testid="promotion-card"]').trigger('click')
+      expect(wrapper.emitted('flip')).toBeUndefined()
+    })
+
+    it('rotates the flip-inner container 180deg when flipped=true', () => {
+      const wrapper = mountCard(makePromo({ terms }), { flipped: true })
+      const inner = wrapper.find('[data-testid="promotion-flip-inner"]')
+      expect(inner.classes().join(' ')).toContain('[transform:rotateY(180deg)]')
+    })
+
+    it('does NOT rotate the flip-inner container when flipped=false', () => {
+      const wrapper = mountCard(makePromo({ terms }), { flipped: false })
+      const inner = wrapper.find('[data-testid="promotion-flip-inner"]')
+      expect(inner.classes().join(' ')).not.toContain(
+        '[transform:rotateY(180deg)]'
+      )
+    })
+
+    // ── Reduced motion: cross-fade instead of a 3D rotate ─────────────────────
+    describe('with prefers-reduced-motion: reduce', () => {
+      const originalMatchMedia = window.matchMedia
+
+      beforeEach(() => {
+        window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+      })
+
+      afterEach(() => {
+        window.matchMedia = originalMatchMedia
+      })
+
+      it('never applies the 3D rotate transform, even when flipped=true', async () => {
+        const wrapper = mountCard(makePromo({ terms }), { flipped: true })
+        // `reducedMotion` is set inside onMounted; the resulting re-render is
+        // scheduled on the next tick, not synchronous with mount().
+        await wrapper.vm.$nextTick()
+        const inner = wrapper.find('[data-testid="promotion-flip-inner"]')
+        expect(inner.classes().join(' ')).not.toContain(
+          '[transform:rotateY(180deg)]'
+        )
+      })
+
+      it('cross-fades the back face to full opacity when flipped=true', async () => {
+        const wrapper = mountCard(makePromo({ terms }), { flipped: true })
+        await wrapper.vm.$nextTick()
+        const back = wrapper.find('[data-testid="promotion-back"]')
+        expect(back.classes()).toContain('opacity-100')
+      })
+
+      it('keeps the back face hidden (opacity-0) when flipped=false', async () => {
+        const wrapper = mountCard(makePromo({ terms }), { flipped: false })
+        await wrapper.vm.$nextTick()
+        const back = wrapper.find('[data-testid="promotion-back"]')
+        expect(back.classes()).toContain('opacity-0')
+      })
+    })
   })
 })

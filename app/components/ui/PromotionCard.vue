@@ -1,10 +1,48 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { Promotion } from '@/types/content'
 
-const props = defineProps<{ promotion: Promotion }>()
+const props = defineProps<{
+  promotion: Promotion
+  /** Whether this card currently shows its back face (owned by the carousel). */
+  flipped?: boolean
+}>()
+
+const emit = defineEmits<{ flip: [] }>()
 
 const { t, locale } = useI18n()
+
+/**
+ * The flip affordance is offered ONLY when Terms & Conditions exist in BOTH
+ * languages (bilingual-completeness rule, FR-008) — `promotion.terms` is
+ * already normalized to `null` for any partial/absent pair upstream
+ * (`parsePromotions`/`mapPromotion`), so this single check is sufficient.
+ */
+const hasTerms = computed(() => props.promotion.terms !== null)
+
+/** Locale-aware terms text; empty string when there are no terms (never rendered then). */
+const termsText = computed(() => {
+  const terms = props.promotion.terms
+  if (!terms) return ''
+  return locale.value === 'en' ? terms.en : terms.es
+})
+
+/** Clicking anywhere on the card toggles the flip — but only when there ARE terms to show. */
+function onCardClick(): void {
+  if (hasTerms.value) emit('flip')
+}
+
+/**
+ * Reduced-motion swaps the 3D rotate for an opacity cross-fade (research.md
+ * R3) — same `matchMedia` detection already used in `PromotionsCarousel.vue`.
+ */
+const reducedMotion = ref(false)
+onMounted(() => {
+  reducedMotion.value = Boolean(
+    typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  )
+})
 
 /**
  * Badge tone from `acf.color`, falling back to orange. Drives the UiSticker
@@ -73,53 +111,104 @@ const movilSrc = computed(
     :class="[
       'relative isolate block w-full',
       promotion.type === 'express' && 'scope-express',
+      hasTerms && 'cursor-pointer',
     ]"
+    :aria-label="hasTerms ? t('promotions.terms.cardLabel') : undefined"
+    @click="onCardClick"
   >
-    <!-- The promo IMAGE *is* the slide — no card frame/letterbox. Full-bleed,
-         natural aspect. Responsive <picture>: mobile ≤520, tablet ≤880, desktop
-         baseline. -->
-    <picture v-if="hasImage" data-testid="promotion-picture" class="block">
-      <source :srcset="movilSrc" media="(max-width: 520px)" />
-      <source :srcset="tabletSrc" media="(max-width: 880px)" />
-      <img
-        data-testid="promotion-img"
-        :src="desktopSrc"
-        :alt="imageAlt"
-        class="block h-auto w-full"
-        loading="lazy"
-        decoding="async"
-      />
-    </picture>
+    <!-- Perspective wrapper: harmless when reduced-motion swaps to a cross-fade. -->
+    <div class="relative [perspective:1200px]">
+      <div
+        data-testid="promotion-flip-inner"
+        class="relative"
+        :class="[
+          reducedMotion
+            ? ''
+            : 'transition-transform duration-500 [transform-style:preserve-3d] motion-reduce:transition-none',
+          !reducedMotion && flipped ? '[transform:rotateY(180deg)]' : '',
+        ]"
+      >
+        <!-- FRONT FACE: image, type pill, color badge — unchanged from before. -->
+        <div
+          data-testid="promotion-front"
+          :class="[
+            !reducedMotion && '[backface-visibility:hidden]',
+            reducedMotion ? 'transition-opacity duration-300' : '',
+            reducedMotion && flipped ? 'pointer-events-none opacity-0' : '',
+          ]"
+        >
+          <!-- The promo IMAGE *is* the slide — no card frame/letterbox. Full-bleed,
+               natural aspect. Responsive <picture>: mobile ≤520, tablet ≤880, desktop
+               baseline. -->
+          <picture v-if="hasImage" data-testid="promotion-picture" class="block">
+            <source :srcset="movilSrc" media="(max-width: 520px)" />
+            <source :srcset="tabletSrc" media="(max-width: 880px)" />
+            <img
+              data-testid="promotion-img"
+              :src="desktopSrc"
+              :alt="imageAlt"
+              class="block h-auto w-full"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
 
-    <!-- No-image fallback keeps the slide from collapsing / showing a broken img. -->
-    <div
-      v-else
-      data-testid="promotion-noimage"
-      class="flex aspect-video w-full items-center justify-center bg-bg2 font-disp font-extrabold uppercase text-soft"
-    >
-      {{ imageAlt }}
+          <!-- No-image fallback keeps the slide from collapsing / showing a broken img. -->
+          <div
+            v-else
+            data-testid="promotion-noimage"
+            class="flex aspect-video w-full items-center justify-center bg-bg2 font-disp font-extrabold uppercase text-soft"
+          >
+            {{ imageAlt }}
+          </div>
+
+          <!-- Type pill (branch scope), top-left. Color-coded + labeled for a11y. -->
+          <span
+            data-testid="promotion-type"
+            :data-type="promotion.type"
+            :class="[
+              'absolute top-3 left-3 z-10 inline-flex items-center rounded-pop-full border-pop-sm border-ink px-3 py-1 font-disp text-kicker font-extrabold uppercase',
+              typePillClass,
+            ]"
+          >
+            {{ typeLabel }}
+          </span>
+
+          <!-- Color badge overlay (acf.color), top-right. -->
+          <UiSticker
+            data-testid="promotion-badge"
+            class="absolute top-3 right-3 z-10"
+            :tone="badgeTone"
+            :rotate="-6"
+          >
+            {{ badgeLabel }}
+          </UiSticker>
+        </div>
+
+        <!-- BACK FACE: Terms & Conditions (only offered when both languages exist). -->
+        <div
+          v-if="hasTerms"
+          data-testid="promotion-back"
+          class="absolute inset-0 flex flex-col gap-3 overflow-y-auto rounded-pop border-pop border-ink bg-panel p-6 shadow-pop-sm min-[520px]:p-9 min-[880px]:p-12"
+          :class="[
+            !reducedMotion &&
+              '[backface-visibility:hidden] [transform:rotateY(180deg)]',
+            reducedMotion ? 'transition-opacity duration-300' : '',
+            reducedMotion
+              ? flipped
+                ? 'opacity-100'
+                : 'pointer-events-none opacity-0'
+              : !flipped
+                ? 'pointer-events-none'
+                : '',
+          ]"
+        >
+          <h3 class="font-disp font-extrabold uppercase text-dish-title">
+            {{ t('promotions.terms.heading') }}
+          </h3>
+          <p class="whitespace-pre-line text-body text-ink">{{ termsText }}</p>
+        </div>
+      </div>
     </div>
-
-    <!-- Type pill (branch scope), top-left. Color-coded + labeled for a11y. -->
-    <span
-      data-testid="promotion-type"
-      :data-type="promotion.type"
-      :class="[
-        'absolute top-3 left-3 z-10 inline-flex items-center rounded-pop-full border-pop-sm border-ink px-3 py-1 font-disp text-kicker font-extrabold uppercase',
-        typePillClass,
-      ]"
-    >
-      {{ typeLabel }}
-    </span>
-
-    <!-- Color badge overlay (acf.color), top-right. -->
-    <UiSticker
-      data-testid="promotion-badge"
-      class="absolute top-3 right-3 z-10"
-      :tone="badgeTone"
-      :rotate="-6"
-    >
-      {{ badgeLabel }}
-    </UiSticker>
   </article>
 </template>

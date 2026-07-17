@@ -12,8 +12,10 @@ import PromotionsCarousel from './PromotionsCarousel.vue'
 
 const stubs = {
   UiPromotionCard: {
-    props: ['promotion'],
-    template: '<div class="card-stub" :data-id="promotion.id" />',
+    props: ['promotion', 'flipped'],
+    emits: ['flip'],
+    template:
+      '<div class="card-stub" :data-id="promotion.id" :data-flipped="flipped" @click="$emit(\'flip\')" />',
   },
 }
 
@@ -29,6 +31,7 @@ function makePromo(id: string): Promotion {
     imageDesktopUrl: 'https://cdn.test/d.jpg',
     imageTabletUrl: null,
     imageMovilUrl: null,
+    terms: null,
   }
 }
 
@@ -138,5 +141,44 @@ describe('PromotionsCarousel', () => {
     const wrapper = mountCarousel([makePromo('1'), makePromo('2')])
     const section = wrapper.find('section')
     expect(section.attributes('aria-label')).toBe('promotions.carousel.label')
+  })
+
+  // ── Flip state ownership (Part A) ───────────────────────────────────────────
+  describe('flip state', () => {
+    it('passes flipped=false to every card by default', () => {
+      const wrapper = mountCarousel([makePromo('1'), makePromo('2')])
+      const cards = wrapper.findAll('.card-stub')
+      expect(cards[0]?.attributes('data-flipped')).toBe('false')
+      expect(cards[1]?.attributes('data-flipped')).toBe('false')
+    })
+
+    it('flips only the clicked card, leaving the others unflipped', async () => {
+      const wrapper = mountCarousel([makePromo('1'), makePromo('2')])
+      await wrapper.findAll('.card-stub')[0]?.trigger('click')
+      const cards = wrapper.findAll('.card-stub')
+      expect(cards[0]?.attributes('data-flipped')).toBe('true')
+      expect(cards[1]?.attributes('data-flipped')).toBe('false')
+    })
+
+    it('toggles a flipped card back to front on a second click', async () => {
+      const wrapper = mountCarousel([makePromo('1'), makePromo('2')])
+      const card = wrapper.findAll('.card-stub')[0]
+      await card?.trigger('click')
+      expect(card?.attributes('data-flipped')).toBe('true')
+      await card?.trigger('click')
+      expect(card?.attributes('data-flipped')).toBe('false')
+    })
+
+    it('resets the flipped card to its front face when navigating to another slide (FR-004)', async () => {
+      const wrapper = mountCarousel([makePromo('1'), makePromo('2')])
+      await wrapper.findAll('.card-stub')[0]?.trigger('click')
+      expect(wrapper.findAll('.card-stub')[0]?.attributes('data-flipped')).toBe(
+        'true'
+      )
+      await wrapper.find('[data-testid="carousel-next"]').trigger('click')
+      expect(wrapper.findAll('.card-stub')[0]?.attributes('data-flipped')).toBe(
+        'false'
+      )
+    })
   })
 })

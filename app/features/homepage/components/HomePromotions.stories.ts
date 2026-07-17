@@ -14,6 +14,7 @@ function promo(id: string, overrides: Partial<Promotion> = {}): Promotion {
     imageDesktopUrl: `https://placehold.co/1200x675/F37021/ffffff?text=Promo+${id}`,
     imageTabletUrl: `https://placehold.co/880x880/E85A9B/ffffff?text=Promo+${id}`,
     imageMovilUrl: `https://placehold.co/520x650/F5C518/1A1209?text=Promo+${id}`,
+    terms: null,
     ...overrides,
   }
 }
