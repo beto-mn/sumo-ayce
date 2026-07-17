@@ -98,7 +98,6 @@ export interface FullMenuDish {
   includedInAyce: boolean
   drinkGroup: DrinkGroup | null
   drinkSubGroup: DrinkSubGroup | null
-  requiresSauce: boolean
   /** True for the curated "Garantía Sumo" dishes — the card shows a star badge. */
   featured: boolean
   /**
@@ -124,13 +123,6 @@ export interface FullMenuCategory {
   dishes: FullMenuDish[]
 }
 
-export interface FullMenuSauce {
-  id: string
-  name: Bilingual
-  imageUrl: string | null
-  spiceLevel: number
-}
-
 /**
  * Group-level metadata for the Bebidas view: deterministic display order and a
  * single group-level promo note (e.g. the Destilados "2x1 / Combo Mezcladores"
@@ -153,8 +145,6 @@ export interface FullMenuResult {
   /** The resolved effective modality (Express is coerced to 'buffet'; Kids uses 'carta' pricing). */
   modality: MenuModality
   categories: FullMenuCategory[]
-  /** The active sauce-picker catalog (the 12 Wings & Boneless sauces). */
-  sauces: FullMenuSauce[]
   /** Ordered drink-group metadata (order + group-level promo) for the Bebidas view. */
   drinkGroups: DrinkGroupMeta[]
 }

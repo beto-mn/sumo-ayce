@@ -202,9 +202,15 @@ describe('menu categories seed', () => {
     expect(kids?.noteEn).toContain('yakimeshi')
   })
 
-  it('leaves every non-kids category without a note', () => {
+  it('carries the sauce-choice note (bilingual) on the wings category', () => {
+    const wings = CATEGORIES.find(c => c.key === 'wings')
+    expect(wings?.noteEs).toContain('salsa favorita')
+    expect(wings?.noteEn).toContain('favorite sauce')
+  })
+
+  it('leaves every category other than kids/wings without a note', () => {
     for (const cat of CATEGORIES) {
-      if (cat.key === 'kids') continue
+      if (cat.key === 'kids' || cat.key === 'wings') continue
       expect(cat.noteEs ?? null).toBeNull()
       expect(cat.noteEn ?? null).toBeNull()
     }

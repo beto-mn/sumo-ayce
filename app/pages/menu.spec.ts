@@ -30,7 +30,6 @@ const EMPTY_MENU: FullMenuResult = {
   locationType: 'ayce',
   modality: 'buffet',
   categories: [],
-  sauces: [],
   drinkGroups: [],
 }
 const REAL_MENU: FullMenuResult = {
@@ -45,7 +44,6 @@ const REAL_MENU: FullMenuResult = {
       dishes: [],
     },
   ],
-  sauces: [],
   drinkGroups: [],
 }
 

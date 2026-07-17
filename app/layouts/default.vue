@@ -2,7 +2,7 @@
 
 <template>
   <div
-    class="min-h-screen flex flex-col bg-bg bg-watermark bg-repeat text-ink [&>*]:min-w-0"
+    class="min-h-screen flex flex-col bg-bg bg-watermark bg-repeat bg-[length:300px_405px] text-ink [&>*]:min-w-0"
   >
     <SiteHeader />
     <SiteMarquee />

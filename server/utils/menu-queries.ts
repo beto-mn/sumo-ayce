@@ -8,7 +8,6 @@ import type {
   FullMenuCategory,
   FullMenuDish,
   FullMenuResult,
-  FullMenuSauce,
   MenuCategoryKey,
   MenuModality,
 } from '@/types/menu'
@@ -20,7 +19,6 @@ import {
   menuItemOptionChoices,
   menuItemOptionGroups,
   menuItems,
-  sauces,
 } from '../db/schema'
 import { db } from './db'
 import { isTransientDbError, withDbRetry } from './db-retry'
@@ -153,17 +151,8 @@ interface MenuQueryRow {
   drinkSubGroupPromoEs: string | null
   drinkSubGroupPromoEn: string | null
   drinkSubGroupOrder: number | null
-  requiresSauce: boolean
   featured: boolean
   highlightBackground: boolean
-}
-
-interface SauceQueryRow {
-  id: string
-  nameEs: string
-  nameEn: string
-  spiceLevel: number
-  fileName: string | null
 }
 
 /** À-la-carte (`carta`) is AYCE-only; Express is always coerced to the buffet view. */
@@ -217,7 +206,6 @@ function toFullMenuDish(
     includedInAyce: row.includedInAyce,
     drinkGroup: row.drinkGroup as FullMenuDish['drinkGroup'],
     drinkSubGroup,
-    requiresSauce: row.requiresSauce,
     featured: row.featured,
     highlightBackground: row.highlightBackground,
     optionGroups: optionGroupsByDish.get(row.dishId) ?? [],
@@ -277,7 +265,6 @@ const MENU_ROW_SELECTION = {
   drinkSubGroupPromoEs: drinkSubGroups.promoEs,
   drinkSubGroupPromoEn: drinkSubGroups.promoEn,
   drinkSubGroupOrder: drinkSubGroups.displayOrder,
-  requiresSauce: menuItems.requiresSauce,
   featured: menuItems.featured,
   highlightBackground: menuItems.highlightBackground,
 }
@@ -347,27 +334,6 @@ function ayceModalityFilter(
   )
 }
 
-async function querySauces(): Promise<FullMenuSauce[]> {
-  const rows: SauceQueryRow[] = await db
-    .select({
-      id: sauces.id,
-      nameEs: sauces.nameEs,
-      nameEn: sauces.nameEn,
-      spiceLevel: sauces.spiceLevel,
-      fileName: sauces.fileName,
-    })
-    .from(sauces)
-    .where(eq(sauces.isActive, true))
-    .orderBy(asc(sauces.spiceLevel))
-
-  return rows.map(row => ({
-    id: row.id,
-    name: { es: row.nameEs, en: row.nameEn },
-    imageUrl: resolveImageUrl(row.fileName),
-    spiceLevel: row.spiceLevel,
-  }))
-}
-
 interface OptionGroupQueryRow {
   id: string
   menuItemId: string
@@ -387,10 +353,10 @@ interface OptionChoiceQueryRow {
 /**
  * Returns a `menuItemId → DishOptionGroup[]` map for every dish ID given, in
  * one batched pair of queries (groups, then their choices) — mirrors the
- * existing `querySauces`/`queryDrinkGroups` batched-query style (no N+1 per
- * dish). A group whose active choices ended up empty is dropped entirely
- * (edge case: an empty picker is never shown). Dishes with no configured
- * groups are simply absent from the returned map (callers default to `[]`).
+ * existing `queryDrinkGroups` batched-query style (no N+1 per dish). A group
+ * whose active choices ended up empty is dropped entirely (edge case: an
+ * empty picker is never shown). Dishes with no configured groups are simply
+ * absent from the returned map (callers default to `[]`).
  */
 async function queryOptionGroupsByMenuItem(
   menuItemIds: string[]
@@ -513,7 +479,6 @@ export async function getFullMenu(params: {
     return await withDbRetry('getFullMenu', async () => {
       if (params.locationType === 'kids') {
         const rows = await queryKidsRows()
-        const sauceCatalog = await querySauces()
         const drinkGroupMeta = await queryDrinkGroups()
         const optionGroupsByDish = await queryOptionGroupsByMenuItem(
           rows.map(r => r.dishId)
@@ -522,14 +487,12 @@ export async function getFullMenu(params: {
           locationType: 'kids' as const,
           modality: 'carta' as const,
           categories: groupByCategory(rows, 'carta', optionGroupsByDish),
-          sauces: sauceCatalog,
           drinkGroups: drinkGroupMeta,
         }
       }
 
       const modality = resolveModality(params.locationType, params.modality)
       const rows = await queryMenuRows(params.locationType, modality)
-      const sauceCatalog = await querySauces()
       const drinkGroupMeta = await queryDrinkGroups()
       const optionGroupsByDish = await queryOptionGroupsByMenuItem(
         rows.map(r => r.dishId)
@@ -538,7 +501,6 @@ export async function getFullMenu(params: {
         locationType: params.locationType,
         modality,
         categories: groupByCategory(rows, modality, optionGroupsByDish),
-        sauces: sauceCatalog,
         drinkGroups: drinkGroupMeta,
       }
     })
@@ -561,7 +523,6 @@ export function emptyMenuResult(
     locationType,
     modality: locationType === 'express' ? 'buffet' : modality,
     categories: [],
-    sauces: [],
     drinkGroups: [],
   }
 }

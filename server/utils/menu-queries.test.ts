@@ -17,7 +17,6 @@ vi.mock('../db/schema', async importOriginal => {
     ...actual,
     menuItems: {},
     menuCategories: {},
-    sauces: {},
     drinkGroups: {},
     drinkSubGroups: actual.drinkSubGroups,
     menuItemOptionGroups: {},
@@ -206,7 +205,6 @@ type MenuQueryRow = {
   price: string | null
   includedInAyce: boolean
   drinkGroup: string | null
-  requiresSauce: boolean
   featured: boolean
   highlightBackground: boolean
 }
@@ -227,14 +225,6 @@ type OptionChoiceRow = {
   priceDelta: string
 }
 
-type SauceRow = {
-  id: string
-  nameEs: string
-  nameEn: string
-  spiceLevel: number
-  fileName: string | null
-}
-
 type DrinkGroupRow = {
   groupKey: string
   nameEs: string | null
@@ -244,13 +234,12 @@ type DrinkGroupRow = {
   promoEn: string | null
 }
 
-// First select(...) → dishes-with-category; second select(...) → sauces;
-// third select(...) → drink groups (.from → .orderBy); fourth (+ fifth, only
-// when the fourth returned rows) select(...) → option groups + their choices.
+// First select(...) → dishes-with-category; second select(...) → drink groups
+// (.from → .orderBy); third (+ fourth, only when the third returned rows)
+// select(...) → option groups + their choices.
 // The dishes query chains: .from → .innerJoin → .leftJoin (drinkGroups) → .leftJoin (drinkSubGroups) → .where → .orderBy
 function mockMenuChains(
   menuRows: MenuQueryRow[],
-  sauceRows: SauceRow[],
   drinkGroupRows: DrinkGroupRow[] = [],
   optionGroupRows: OptionGroupRow[] = [],
   optionChoiceRows: OptionChoiceRow[] = []
@@ -267,13 +256,6 @@ function mockMenuChains(
       from: vi.fn().mockReturnValue({
         innerJoin: vi.fn().mockReturnValue({
           leftJoin: leftJoin1,
-        }),
-      }),
-    })
-    .mockReturnValueOnce({
-      from: vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          orderBy: vi.fn().mockResolvedValue(sauceRows),
         }),
       }),
     })
@@ -320,18 +302,8 @@ const menuRow = (over: Partial<MenuQueryRow> = {}): MenuQueryRow => ({
   price: '120.00',
   includedInAyce: true,
   drinkGroup: null,
-  requiresSauce: true,
   featured: false,
   highlightBackground: false,
-  ...over,
-})
-
-const sauceRow = (over: Partial<SauceRow> = {}): SauceRow => ({
-  id: 'sauce-1',
-  nameEs: 'BBQ',
-  nameEn: 'BBQ',
-  spiceLevel: 0,
-  fileName: null,
   ...over,
 })
 
@@ -354,23 +326,20 @@ describe('locationScope', () => {
 
 describe('getFullMenu', () => {
   it('groups dishes under their category preserving query order', async () => {
-    mockMenuChains(
-      [
-        menuRow({
-          categoryKey: 'entradas',
-          categoryNameEs: 'Entradas',
-          categoryOrder: 0,
-          dishId: 'a',
-        }),
-        menuRow({
-          categoryKey: 'alitas',
-          categoryNameEs: 'Alitas',
-          categoryOrder: 1,
-          dishId: 'b',
-        }),
-      ],
-      []
-    )
+    mockMenuChains([
+      menuRow({
+        categoryKey: 'entradas',
+        categoryNameEs: 'Entradas',
+        categoryOrder: 0,
+        dishId: 'a',
+      }),
+      menuRow({
+        categoryKey: 'alitas',
+        categoryNameEs: 'Alitas',
+        categoryOrder: 1,
+        dishId: 'b',
+      }),
+    ])
     const result = await getFullMenu({
       locationType: 'ayce',
       modality: 'buffet',
@@ -380,32 +349,29 @@ describe('getFullMenu', () => {
   })
 
   it('returns the kids category items (with per-item includedInAyce + note) for the kids view', async () => {
-    mockMenuChains(
-      [
-        // Query orders by displayOrder; the $179 AYCE Niños item is displayOrder 0.
-        menuRow({
-          categoryKey: 'kids',
-          categoryNameEs: 'Menú Kids',
-          categoryNameEn: 'Kids Menu',
-          categoryNoteEs: 'Incluye papas a la francesa…',
-          categoryNoteEn: 'Includes french fries…',
-          dishId: 'kids-ayce',
-          price: '179.00',
-          includedInAyce: true,
-        }),
-        menuRow({
-          categoryKey: 'kids',
-          categoryNameEs: 'Menú Kids',
-          categoryNameEn: 'Kids Menu',
-          categoryNoteEs: 'Incluye papas a la francesa…',
-          categoryNoteEn: 'Includes french fries…',
-          dishId: 'kid-burger',
-          price: '149.00',
-          includedInAyce: false,
-        }),
-      ],
-      []
-    )
+    mockMenuChains([
+      // Query orders by displayOrder; the $179 AYCE Niños item is displayOrder 0.
+      menuRow({
+        categoryKey: 'kids',
+        categoryNameEs: 'Menú Kids',
+        categoryNameEn: 'Kids Menu',
+        categoryNoteEs: 'Incluye papas a la francesa…',
+        categoryNoteEn: 'Includes french fries…',
+        dishId: 'kids-ayce',
+        price: '179.00',
+        includedInAyce: true,
+      }),
+      menuRow({
+        categoryKey: 'kids',
+        categoryNameEs: 'Menú Kids',
+        categoryNameEn: 'Kids Menu',
+        categoryNoteEs: 'Incluye papas a la francesa…',
+        categoryNoteEn: 'Includes french fries…',
+        dishId: 'kid-burger',
+        price: '149.00',
+        includedInAyce: false,
+      }),
+    ])
     const result = await getFullMenu({
       locationType: 'kids',
       modality: 'buffet',
@@ -430,16 +396,13 @@ describe('getFullMenu', () => {
   })
 
   it('exposes the bilingual category note when present (e.g. Kids inclusions)', async () => {
-    mockMenuChains(
-      [
-        menuRow({
-          categoryKey: 'kids',
-          categoryNoteEs: 'Incluye papas…',
-          categoryNoteEn: 'Includes fries…',
-        }),
-      ],
-      []
-    )
+    mockMenuChains([
+      menuRow({
+        categoryKey: 'kids',
+        categoryNoteEs: 'Incluye papas…',
+        categoryNoteEn: 'Includes fries…',
+      }),
+    ])
     const category = (
       await getFullMenu({ locationType: 'ayce', modality: 'carta' })
     ).categories[0]
@@ -450,7 +413,7 @@ describe('getFullMenu', () => {
   })
 
   it('returns note=null for a category without a note', async () => {
-    mockMenuChains([menuRow({ categoryKey: 'alitas' })], [])
+    mockMenuChains([menuRow({ categoryKey: 'alitas' })])
     const category = (
       await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     ).categories[0]
@@ -458,13 +421,10 @@ describe('getFullMenu', () => {
   })
 
   it('exposes the featured (Garantía Sumo) flag per dish', async () => {
-    mockMenuChains(
-      [
-        menuRow({ dishId: 'star', featured: true }),
-        menuRow({ dishId: 'plain', featured: false }),
-      ],
-      []
-    )
+    mockMenuChains([
+      menuRow({ dishId: 'star', featured: true }),
+      menuRow({ dishId: 'plain', featured: false }),
+    ])
     const dishes = (
       await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     ).categories.flatMap(c => c.dishes)
@@ -474,10 +434,9 @@ describe('getFullMenu', () => {
 
   // ── highlightBackground projection (Part D) ────────────────────────────────
   it('projects highlightBackground=true for the flagged dish (e.g. Kids AYCE)', async () => {
-    mockMenuChains(
-      [menuRow({ dishId: 'kids-ayce', highlightBackground: true })],
-      []
-    )
+    mockMenuChains([
+      menuRow({ dishId: 'kids-ayce', highlightBackground: true }),
+    ])
     const dishes = (
       await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     ).categories.flatMap(c => c.dishes)
@@ -487,10 +446,7 @@ describe('getFullMenu', () => {
   })
 
   it('projects highlightBackground=false for every other (unflagged) dish', async () => {
-    mockMenuChains(
-      [menuRow({ dishId: 'plain', highlightBackground: false })],
-      []
-    )
+    mockMenuChains([menuRow({ dishId: 'plain', highlightBackground: false })])
     const dishes = (
       await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     ).categories.flatMap(c => c.dishes)
@@ -499,7 +455,7 @@ describe('getFullMenu', () => {
 
   // ── optionGroups projection (Parts C & E) ───────────────────────────────────
   it('projects optionGroups=[] for a dish with no configured option groups', async () => {
-    mockMenuChains([menuRow({ dishId: 'plain' })], [])
+    mockMenuChains([menuRow({ dishId: 'plain' })])
     const dishes = (
       await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     ).categories.flatMap(c => c.dishes)
@@ -509,7 +465,6 @@ describe('getFullMenu', () => {
   it('projects optionGroups with their choices, correctly ordered and shaped (e.g. Ramen XL)', async () => {
     mockMenuChains(
       [menuRow({ dishId: 'ramen-xl' })],
-      [],
       [],
       [
         {
@@ -574,7 +529,6 @@ describe('getFullMenu', () => {
     mockMenuChains(
       [menuRow({ dishId: 'ramen-xl' })],
       [],
-      [],
       [
         {
           id: 'g1',
@@ -593,7 +547,7 @@ describe('getFullMenu', () => {
   })
 
   it('shows price and incluido=false in the AYCE carta (a-la-carte) view', async () => {
-    mockMenuChains([menuRow({ price: '120.00', includedInAyce: true })], [])
+    mockMenuChains([menuRow({ price: '120.00', includedInAyce: true })])
     const result = await getFullMenu({
       locationType: 'ayce',
       modality: 'carta',
@@ -605,7 +559,7 @@ describe('getFullMenu', () => {
   })
 
   it('shows incluido (no price) in the AYCE buffet view', async () => {
-    mockMenuChains([menuRow({ price: '120.00', includedInAyce: true })], [])
+    mockMenuChains([menuRow({ price: '120.00', includedInAyce: true })])
     const result = await getFullMenu({
       locationType: 'ayce',
       modality: 'buffet',
@@ -616,7 +570,7 @@ describe('getFullMenu', () => {
   })
 
   it('reflects included_in_ayce=false as incluido=false in the buffet view', async () => {
-    mockMenuChains([menuRow({ includedInAyce: false })], [])
+    mockMenuChains([menuRow({ includedInAyce: false })])
     const result = await getFullMenu({
       locationType: 'ayce',
       modality: 'buffet',
@@ -625,7 +579,7 @@ describe('getFullMenu', () => {
   })
 
   it('coerces Express + carta to the buffet view and reports the coercion', async () => {
-    mockMenuChains([menuRow({ includedInAyce: true })], [])
+    mockMenuChains([menuRow({ includedInAyce: true })])
     const result = await getFullMenu({
       locationType: 'express',
       modality: 'carta',
@@ -637,7 +591,7 @@ describe('getFullMenu', () => {
   })
 
   it('omits the price in carta when the dish has no price yet (null passes through)', async () => {
-    mockMenuChains([menuRow({ price: null })], [])
+    mockMenuChains([menuRow({ price: null })])
     const result = await getFullMenu({
       locationType: 'ayce',
       modality: 'carta',
@@ -645,59 +599,21 @@ describe('getFullMenu', () => {
     expect(result.categories[0]?.dishes[0]?.price).toBeNull()
   })
 
-  it('exposes drinkGroup and requiresSauce on each dish', async () => {
-    mockMenuChains(
-      [
-        menuRow({
-          categoryKey: 'bebidas',
-          drinkGroup: 'sodas',
-          requiresSauce: false,
-        }),
-      ],
-      []
-    )
+  it('exposes drinkGroup on each dish', async () => {
+    mockMenuChains([
+      menuRow({
+        categoryKey: 'bebidas',
+        drinkGroup: 'sodas',
+      }),
+    ])
     const dish = (
       await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     ).categories[0]?.dishes[0]
     expect(dish?.drinkGroup).toBe('sodas')
-    expect(dish?.requiresSauce).toBe(false)
-  })
-
-  it('returns the active sauce catalog ordered by the query', async () => {
-    mockMenuChains(
-      [],
-      [
-        sauceRow({ id: 's1', nameEs: 'BBQ', spiceLevel: 0 }),
-        sauceRow({
-          id: 's2',
-          nameEs: 'Buffalo',
-          nameEn: 'Buffalo',
-          spiceLevel: 1,
-        }),
-      ]
-    )
-    const result = await getFullMenu({
-      locationType: 'ayce',
-      modality: 'buffet',
-    })
-    expect(result.sauces).toEqual([
-      {
-        id: 's1',
-        name: { es: 'BBQ', en: 'BBQ' },
-        imageUrl: null,
-        spiceLevel: 0,
-      },
-      {
-        id: 's2',
-        name: { es: 'Buffalo', en: 'Buffalo' },
-        imageUrl: null,
-        spiceLevel: 1,
-      },
-    ])
   })
 
   it('resolves dish imageUrl to a fully-qualified URL when fileName is non-null', async () => {
-    mockMenuChains([menuRow({ fileName: 'menu/ayce/boneless.webp' })], [])
+    mockMenuChains([menuRow({ fileName: 'menu/ayce/boneless.webp' })])
     const result = await getFullMenu({
       locationType: 'ayce',
       modality: 'buffet',
@@ -709,34 +625,11 @@ describe('getFullMenu', () => {
     expect(dish?.imageUrl).toMatch(/^https:\/\//)
   })
 
-  it('resolves sauce imageUrl to a fully-qualified URL when fileName is non-null', async () => {
-    mockMenuChains(
-      [],
-      [
-        sauceRow({
-          id: 's1',
-          nameEs: 'BBQ',
-          spiceLevel: 0,
-          fileName: 'menu/sauces/bbq.webp',
-        }),
-      ]
-    )
-    const result = await getFullMenu({
-      locationType: 'ayce',
-      modality: 'buffet',
-    })
-    const sauce = result.sauces[0]
-    expect(sauce?.imageUrl).toBe(
-      'https://blob.example.com/menu/sauces/bbq.webp'
-    )
-    expect(sauce?.imageUrl).toMatch(/^https:\/\//)
-  })
-
   // US3 SC2 — only Express and 'both' items appear for locationType=express.
   // The WHERE clause is built by locationScope() via inArray(locationType, ['express','both']).
   // This test verifies the correct value list is passed to inArray when locationType='express'.
   it('applies Express location filter via inArray(locationType, ["express","both"])', async () => {
-    mockMenuChains([menuRow()], [])
+    mockMenuChains([menuRow()])
     await getFullMenu({ locationType: 'express', modality: 'buffet' })
     // The first arg is menuItems.locationType (undefined in schema mock — that's fine).
     const [, valuesExpress] = mockInArray.mock.calls[0] as [unknown, string[]]
@@ -744,7 +637,7 @@ describe('getFullMenu', () => {
   })
 
   it('applies AYCE location filter via inArray(locationType, ["ayce","both"])', async () => {
-    mockMenuChains([menuRow()], [])
+    mockMenuChains([menuRow()])
     await getFullMenu({ locationType: 'ayce', modality: 'buffet' })
     const [, valuesAyce] = mockInArray.mock.calls[0] as [unknown, string[]]
     expect(valuesAyce).toEqual(['ayce', 'both'])
@@ -752,7 +645,6 @@ describe('getFullMenu', () => {
 
   it('exposes drink groups in ascending display order with their DB name', async () => {
     mockMenuChains(
-      [],
       [],
       [
         {
@@ -800,7 +692,6 @@ describe('getFullMenu', () => {
 
   it('carries the Destilados group-level promo once (beers has none)', async () => {
     mockMenuChains(
-      [],
       [],
       [
         {
