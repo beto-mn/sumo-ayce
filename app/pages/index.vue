@@ -30,7 +30,7 @@ useSeoMeta({
 
     <!-- Centered content sections. -->
     <div
-      class="home__sections container-pop flex flex-col gap-12 pb-4 min-w-0 w-full [&>*]:min-w-0"
+      class="home__sections container-pop flex flex-col gap-12 pb-16 min-w-0 w-full [&>*]:min-w-0"
     >
       <HomeTypeSelector />
       <HomeFeaturedRail :dishes="dishes" />
