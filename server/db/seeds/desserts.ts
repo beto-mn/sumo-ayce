@@ -116,7 +116,6 @@ export async function seedDesserts() {
     badgeEn: item.badgeEn ?? null,
     featured: item.featured ?? false,
     drinkGroup: null,
-    requiresSauce: false,
     isActive: true,
     displayOrder: item.featuredOrder ?? i,
   }))
