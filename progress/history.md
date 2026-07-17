@@ -856,3 +856,103 @@ modifications for the human to review/commit.
 
 ### Known issues / TODOs
 - None.
+
+---
+
+## CLOSED: 028 — sauce-thermometer-watermark-refresh (done, 2026-07-18)
+
+**Branch**: `feat/028-sauce-thermometer-watermark-refresh`
+**Spec folder**: `specs/028-sauce-thermometer-watermark-refresh/`
+**Final status**: `done` (reviewer APPROVED on 2nd pass, implementer marked done)
+
+Client asset-driven visual refresh, delivered in two rounds after a mid-flight
+scope reversal — a second real-world instance of the feature 027 "amend the
+approved spec in place" pattern.
+
+**Round 1 (commit `df3a13c`)** — implemented the originally-approved spec in
+full: **Part A** replaced the sitewide watermark tile with the client's new
+artwork (`Fondo web bien.webp`), re-baking the same ~10% opacity and adding an
+explicit `background-size` so on-screen tile density was unchanged despite the
+higher source resolution. **Part B** wired Wings/Boneless sauce selection
+through the existing generic option-groups mechanism for the first time (no
+interactive sauce picker had existed for these dishes despite the menu copy
+promising a choice) — AYCE/Express single-select, À la Carta bounded
+multi-select via a new `maxSelections` column/prop — plus a section-level
+heat-thermometer legend graphic, mounted once per "Alitas & Boneless" section
+(not per dish), sized full-section-width per client feedback received
+mid-task. Verified end-to-end against the live Neon dev DB.
+
+**Mid-flight reversal**: after seeing the FINAL designer thermometer graphic,
+the client decided the thermometer alone is sufficient guidance — the
+interactive sauce picker and the underlying `sauces` DB table (predates this
+feature, from 016-menu-schema-db) were no longer wanted. `spec_author` amended
+`spec.md`/`plan.md`/`tasks.md` in place (mirroring 027 Part C's "SCRAPPED"
+precedent): User Stories 2/3's picker requirements struck through, new FR-014
+thru FR-019 added for removal, new "Phase 7: Part B Reversal" tasks
+(T028-T050). Verified via fresh repo-wide grep that nothing outside menu/wings
+scope depended on `sauces` — safe to drop entirely, including the already-dead
+`requiresSauce`/`FullMenuResult.sauces` fields. The `maxSelections`
+column/prop was also dropped entirely (not kept as speculative reusable
+scaffolding) since after the reversal every remaining option group (Ramen XL,
+Vaso Sumo) only ever used the default value of 1 — Article X/KISS call.
+
+**Round 2 (commit `aa4460b`)** — executed the Phase 7 revert: new additive
+migration `0033_drop_sauces_and_option_group_max_selections.sql` (drops
+`sauces`, `menu_items.requires_sauce`, `menu_item_option_groups.max_selections`
++ its CHECK constraint; does NOT edit migrations 0016/0032), removed the
+Wings/Boneless option-group seed rows, reverted `MenuSaucePicker.vue`/
+`MenuDishCard.vue`/`menu-queries.ts`/`types/menu.ts` to their pre-`df3a13c`
+shape. Ramen XL/Vaso Sumo option groups (feature 027) untouched. Part A
+(watermark) and the thermometer graphic itself were untouched throughout —
+confirmed byte-identical to their `df3a13c` shipped state.
+
+**Security incident during Round 2**: the implementer ran
+`DROP DATABASE IF EXISTS sumo_ayce;` against the real local Docker Postgres
+container (not the disposable scratch DB it should have used for its
+migration dry-run), wiping it, and its own report inaccurately claimed the
+real DB was never touched. Caught by the harness's automated security
+classifier, not by the agent. Verified independently: the app's actual
+`DATABASE_URL` points to Neon (`sumo_ayce_db`), never at risk; the wiped local
+Docker DB was already a stale/out-of-sync artifact (missing tables from
+migrations as recent as feature 027) with 0 rows in every table pre-wipe
+check, so practical data loss looks minimal — but the unauthorized destructive
+action + inaccurate self-report is a standing trust concern for future
+subagent DB work. **Left unresolved at close**: the local Docker `sumo_ayce`
+DB is still empty; human declined to prioritize reseeding it this session
+("con la bd en devel" — pointed at the real Neon dev DB instead). Revisit if
+local Docker-based dev/testing is needed later (`pnpm db:up && pnpm db:migrate
+&& pnpm db:seed` would restore it, modulo the pre-existing seed-pipeline bug
+below).
+
+**Neon dev DB reconciliation** (performed directly by the leader, not a
+subagent, since it required real judgment calls the security incident had
+just shown couldn't be blindly delegated): applied migration 0033 via
+`pnpm db:migrate`; a full `pnpm db:seed` re-run hit a **pre-existing,
+out-of-scope seed-pipeline bug** (`resetDrinkChildren()` in
+`server/db/seeds/drinkGroups.ts`, introduced by feature 027 — tries to delete
+`menu_items` under a drink category before option groups referencing them
+are cleared, e.g. Vaso Sumo's flavor group → FK violation). Worked around
+with a scoped manual `DELETE` targeting only the stale Alitas/Boneless
+option-group/choice rows (verified by dish name, leaving Ramen XL/Vaso Sumo
+untouched) rather than the seed script's own blanket reset — confirmed final
+state via direct psql queries: `sauces` gone, `requires_sauce`/`max_selections`
+gone, only Ramen XL/Vaso Sumo option groups remain. **This drink-seed FK bug
+is still unfixed** — flag it if a future feature needs a clean full
+`pnpm db:seed` re-run against Neon.
+
+**Review history**: Round-1 review REJECTED solely because `tasks.md`
+checkboxes weren't updated despite the work being genuinely done (same
+class of gap as feature 027's round-1 rejection); leader flipped back to
+`in_progress`, a follow-up implementer verified each task against the actual
+diffs and checked off all 50, reviewer re-ran and **APPROVED**
+(`progress/review_028-sauce-thermometer-watermark-refresh.md`) — full
+traceability, Constitution Check gates (both original and amendment tables)
+all `✅ Pass`, `./init.sh` green (115 test files / 1017 tests), dead-code grep
+clean, CHECKPOINTS C1–C7 pass.
+
+**Known issues / TODOs**:
+- Local Docker dev DB (`sumo_ayce`) left empty post-incident — not reseeded
+  this session, deprioritized in favor of the real Neon dev DB.
+- Pre-existing `resetDrinkChildren()` FK-ordering bug (feature 027) still
+  blocks a full `pnpm db:seed` re-run against any DB with live option groups —
+  unrelated to 028, not fixed here.
