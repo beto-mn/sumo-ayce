@@ -33,6 +33,18 @@ const layoutModules = import.meta.glob<{ default: Component }>(
   { eager: true }
 )
 
+// Menu feature components reference each other by BARE name via Nuxt's
+// feature-component auto-import (nuxt.config.ts `components` config) — e.g.
+// `MenuDishCard.vue` renders `<MenuSaucePicker>`, `MenuDishGrid.vue` renders
+// `<MenuDishCard>`. Storybook has no such transform, so register the whole
+// directory globally (bare filename, no prefix) the same way `ui/` is
+// registered above, so composed menu stories render their real children
+// instead of failing to resolve them.
+const menuModules = import.meta.glob<{ default: Component }>(
+  '../app/features/menu/components/*.vue',
+  { eager: true }
+)
+
 type Messages = Record<string, unknown>
 const locales: Record<string, Messages> = { es, en }
 const currentLocale = ref<'es' | 'en'>('es')
@@ -157,6 +169,10 @@ setup((app: App) => {
   }
   for (const mod of Object.values(layoutModules)) {
     app.component('SiteLogo', mod.default)
+  }
+  for (const [path, mod] of Object.entries(menuModules)) {
+    const base = path.split('/').pop()?.replace('.vue', '')
+    if (base) app.component(base, mod.default)
   }
 })
 

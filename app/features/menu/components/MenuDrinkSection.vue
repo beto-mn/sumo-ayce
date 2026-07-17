@@ -15,7 +15,7 @@ const props = defineProps<{
   activeGroup: string
 }>()
 
-const { t, locale } = useI18n()
+const { locale } = useI18n()
 
 type SubGroup = {
   key: string
@@ -65,24 +65,22 @@ const subGroups = computed<SubGroup[]>(() => {
   return [...map.values()].sort((a, b) => a.order - b.order)
 })
 
-const vasoSumoFlavors: PickerOption[] = [
-  { id: 'ron', label: '' },
-  { id: 'tequila', label: '' },
-  { id: 'vodka', label: '' },
-  { id: 'whisky', label: '' },
-  { id: 'new_mix', label: '' },
-  { id: 'jack_daniels', label: '' },
-]
-
-const flavorOptions = computed<PickerOption[]>(() =>
-  vasoSumoFlavors.map(f => ({
-    ...f,
-    label: t(`menu.vaso_sumo.flavor.${f.id}`),
+/**
+ * One `MenuSaucePicker` per DB-configured option group on a drink (e.g. Vaso
+ * Sumo's "Sabor" flavor picker, feature 027 Part E) — a fully generic loop
+ * that works for ANY drink with option groups, not a Vaso-Sumo-specific
+ * special case. `MenuSaucePicker.vue` itself is unchanged (research.md R6a).
+ */
+function groupChoices(
+  group: FullMenuDish['optionGroups'][number]
+): PickerOption[] {
+  return group.choices.map(choice => ({
+    id: choice.id,
+    label: choice.name[locale.value as 'es' | 'en'] ?? choice.name.es,
   }))
-)
-
-function isVasoSumo(drink: FullMenuDish): boolean {
-  return drink.name.es === 'Vaso Sumo'
+}
+function groupLabel(group: FullMenuDish['optionGroups'][number]): string {
+  return group.name[locale.value as 'es' | 'en'] ?? group.name.es
 }
 
 function drinkName(drink: FullMenuDish): string {
@@ -150,10 +148,14 @@ function cardSpan(drink: FullMenuDish): string {
         :price="drink.price"
         :image-url="drink.imageUrl"
       >
+        <!-- DB-driven "build your own" option groups (Part E) — e.g. Vaso
+             Sumo's "Sabor" flavor picker. Generic: works for any drink with
+             option groups, not a Vaso-Sumo-specific special case. -->
         <MenuSaucePicker
-          v-if="isVasoSumo(drink)"
-          :options="flavorOptions"
-          :picker-label="t('menu.vaso_sumo.picker_label')"
+          v-for="group in drink.optionGroups"
+          :key="group.key"
+          :options="groupChoices(group)"
+          :picker-label="groupLabel(group)"
         />
       </MenuDrinkCard>
     </div>

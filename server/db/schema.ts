@@ -295,6 +295,16 @@ export const menuItems = pgTable(
     badgeEs: varchar('badge_es', { length: 40 }),
     badgeEn: varchar('badge_en', { length: 40 }),
     featured: boolean('featured').notNull().default(false),
+    /**
+     * Per-dish highlight flag (independent of category membership): applies a
+     * colored (orange→blue gradient) background to the card's image panel
+     * (e.g. All You Can Eat Kids). `false` (default) everywhere else. Directly
+     * analogous to `featured` above — a plain boolean, not an enum, since
+     * there is exactly one condition to flag (see feature 027 research.md R5).
+     */
+    highlightBackground: boolean('highlight_background')
+      .notNull()
+      .default(false),
     drinkGroupId: uuid('drink_group_id').references(() => drinkGroups.id),
     drinkSubGroupId: uuid('drink_sub_group_id').references(
       () => drinkSubGroups.id
@@ -367,5 +377,67 @@ export const drinkSubGroups = pgTable(
   },
   t => [
     index('drink_sub_group_group_order_idx').on(t.drinkGroupId, t.displayOrder),
+  ]
+)
+
+// ─── Menu item option groups (generic, reusable "build your own" mechanism) ────
+// Attachable to ANY menu item (dish or drink), not Ramen/Vaso-Sumo-specific in
+// shape — feature 027 Parts C & E (Ramen XL build-your-own, Vaso Sumo flavors).
+
+export const menuItemOptionGroups = pgTable(
+  'menu_item_option_groups',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    menuItemId: uuid('menu_item_id')
+      .notNull()
+      .references(() => menuItems.id),
+    // Slug identifying the group within its menu item, e.g. 'noodle_base',
+    // 'protein', 'extra_protein', 'flavor'.
+    key: varchar('key', { length: 60 }).notNull(),
+    nameEs: varchar('name_es', { length: 80 }).notNull(),
+    nameEn: varchar('name_en', { length: 80 }).notNull(),
+    displayOrder: integer('display_order').notNull().default(0),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [
+    uniqueIndex('menu_item_option_groups_menu_item_key_unique').on(
+      t.menuItemId,
+      t.key
+    ),
+    index('menu_item_option_groups_menu_item_idx').on(
+      t.menuItemId,
+      t.displayOrder
+    ),
+  ]
+)
+
+export const menuItemOptionChoices = pgTable(
+  'menu_item_option_choices',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    optionGroupId: uuid('option_group_id')
+      .notNull()
+      .references(() => menuItemOptionGroups.id),
+    nameEs: varchar('name_es', { length: 80 }).notNull(),
+    nameEn: varchar('name_en', { length: 80 }).notNull(),
+    priceDelta: decimal('price_delta', { precision: 8, scale: 2 })
+      .notNull()
+      .default('0.00'),
+    displayOrder: integer('display_order').notNull().default(0),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  t => [
+    check(
+      'menu_item_option_choices_price_nonnegative',
+      sql`${t.priceDelta} >= 0`
+    ),
+    index('menu_item_option_choices_group_idx').on(
+      t.optionGroupId,
+      t.displayOrder
+    ),
   ]
 )

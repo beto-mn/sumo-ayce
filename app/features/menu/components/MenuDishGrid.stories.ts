@@ -25,6 +25,8 @@ const categories: FullMenuCategory[] = [
         drinkSubGroup: null,
         requiresSauce: false,
         featured: false,
+        highlightBackground: false,
+        optionGroups: [],
       },
       {
         id: 'd2',
@@ -42,6 +44,8 @@ const categories: FullMenuCategory[] = [
         drinkSubGroup: null,
         requiresSauce: false,
         featured: false,
+        highlightBackground: false,
+        optionGroups: [],
       },
     ],
   },
@@ -67,6 +71,8 @@ const categories: FullMenuCategory[] = [
         drinkSubGroup: null,
         requiresSauce: false,
         featured: false,
+        highlightBackground: false,
+        optionGroups: [],
       },
     ],
   },
@@ -80,7 +86,7 @@ const meta = {
   argTypes: {
     categories: {
       description:
-        'The single active category (as a one-element array) to render',
+        'The single active category (as a one-element array) to render. Every dish renders uniformly via MenuDishCard — differences (highlighted background, DB-driven option-group pickers) are prop-driven, not a per-dish component swap.',
       control: { type: 'object' },
     },
     modality: {
@@ -123,6 +129,8 @@ export const CartaModality: Story = {
             drinkSubGroup: null,
             requiresSauce: false,
             featured: false,
+            highlightBackground: false,
+            optionGroups: [],
           },
         ],
       },
@@ -176,6 +184,10 @@ export const KidsList: Story = {
             drinkSubGroup: null,
             requiresSauce: false,
             featured: false,
+            // Part D: orange→blue gradient behind the image panel, scoped to
+            // this one dish only.
+            highlightBackground: true,
+            optionGroups: [],
           },
         ],
       },
@@ -204,6 +216,8 @@ export const KidsList: Story = {
             drinkSubGroup: null,
             requiresSauce: false,
             featured: false,
+            highlightBackground: false,
+            optionGroups: [],
           },
         ],
       },
@@ -213,4 +227,117 @@ export const KidsList: Story = {
 
 export const Mobile: Story = {
   parameters: { viewport: { defaultViewport: 'mobile1' } },
+}
+
+/**
+ * Part C (revised): "Ramen XL" renders as a completely NORMAL MenuDishCard —
+ * identical in layout to its sibling dish — but additionally shows its 3
+ * DB-driven "build your own" option-group pickers beneath its description.
+ * No hero/showcase visual treatment of any kind (FR-012).
+ */
+export const RamenXlWithOptionGroups: Story = {
+  name: 'Ramen category: Ramen XL build-your-own + normal sibling dish',
+  args: {
+    modality: 'carta',
+    categories: [
+      {
+        key: 'ramen',
+        name: { es: 'Ramen', en: 'Ramen' },
+        note: null,
+        displayOrder: 0,
+        dishes: [
+          {
+            id: 'ramen-xl',
+            name: { es: 'Ramen XL', en: 'Ramen XL' },
+            description: {
+              es: 'Ramen XL en caldo de tu elección, con proteína a elegir y toppings extras al gusto.',
+              en: 'XL ramen in your choice of broth, with your choice of protein and extra toppings.',
+            },
+            imageUrl: 'https://placehold.co/400x300',
+            badge: null,
+            price: '149.00',
+            incluido: false,
+            includedInAyce: false,
+            drinkGroup: null,
+            drinkSubGroup: null,
+            requiresSauce: false,
+            featured: true,
+            highlightBackground: false,
+            optionGroups: [
+              {
+                key: 'noodle_base',
+                name: { es: 'Base de fideo', en: 'Noodle base' },
+                choices: [
+                  {
+                    id: 'nb1',
+                    name: { es: 'Pollo', en: 'Chicken' },
+                    priceDelta: '0.00',
+                  },
+                  {
+                    id: 'nb2',
+                    name: { es: 'Camarón cremoso', en: 'Creamy shrimp' },
+                    priceDelta: '0.00',
+                  },
+                ],
+              },
+              {
+                key: 'protein',
+                name: { es: 'Proteína', en: 'Protein' },
+                choices: [
+                  {
+                    id: 'p1',
+                    name: { es: 'Res', en: 'Beef' },
+                    priceDelta: '0.00',
+                  },
+                  {
+                    id: 'p2',
+                    name: { es: 'Camarón', en: 'Shrimp' },
+                    priceDelta: '0.00',
+                  },
+                ],
+              },
+              {
+                key: 'extra_protein',
+                name: { es: 'Añade extra proteína', en: 'Add extra protein' },
+                choices: [
+                  {
+                    id: 'ep1',
+                    name: { es: 'No, gracias', en: 'No, thanks' },
+                    priceDelta: '0.00',
+                  },
+                  {
+                    id: 'ep2',
+                    name: {
+                      es: 'Sí, extra proteína (+$29)',
+                      en: 'Yes, extra protein (+$29)',
+                    },
+                    priceDelta: '29.00',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'ramen-normal',
+            name: { es: 'Ramen Tradicional', en: 'Traditional Ramen' },
+            description: {
+              es: 'Ramen clásico en caldo shoyu.',
+              en: 'Classic shoyu-broth ramen.',
+            },
+            imageUrl: 'https://placehold.co/400x300',
+            badge: null,
+            price: '119.00',
+            incluido: false,
+            includedInAyce: false,
+            drinkGroup: null,
+            drinkSubGroup: null,
+            requiresSauce: false,
+            featured: false,
+            highlightBackground: false,
+            optionGroups: [],
+          },
+        ],
+      },
+    ],
+  },
 }

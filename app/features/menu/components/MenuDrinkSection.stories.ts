@@ -1,8 +1,6 @@
-import type { Decorator, Meta, StoryObj } from '@storybook/vue3-vite'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { DrinkGroupMeta, FullMenuDish } from '@/types/menu'
-import MenuDrinkCard from './MenuDrinkCard.vue'
 import MenuDrinkSection from './MenuDrinkSection.vue'
-import MenuSaucePicker from './MenuSaucePicker.vue'
 
 function sub(key: string, es: string, en: string, order: number) {
   return {
@@ -32,6 +30,8 @@ const drinks: FullMenuDish[] = [
     drinkSubGroup: null,
     requiresSauce: false,
     featured: false,
+    highlightBackground: false,
+    optionGroups: [],
   },
   {
     id: 'vs',
@@ -49,6 +49,39 @@ const drinks: FullMenuDish[] = [
     drinkSubGroup: null,
     requiresSauce: false,
     featured: false,
+    highlightBackground: false,
+    // Part E: the flavor picker is now DB-driven via optionGroups, not a
+    // hardcoded i18n-keyed special case for "Vaso Sumo" specifically.
+    optionGroups: [
+      {
+        key: 'flavor',
+        name: { es: 'Sabor', en: 'Flavor' },
+        choices: [
+          { id: 'f1', name: { es: 'Ron', en: 'Rum' }, priceDelta: '0.00' },
+          {
+            id: 'f2',
+            name: { es: 'Tequila', en: 'Tequila' },
+            priceDelta: '0.00',
+          },
+          { id: 'f3', name: { es: 'Vodka', en: 'Vodka' }, priceDelta: '0.00' },
+          {
+            id: 'f4',
+            name: { es: 'Whisky', en: 'Whisky' },
+            priceDelta: '0.00',
+          },
+          {
+            id: 'f5',
+            name: { es: 'New Mix', en: 'New Mix' },
+            priceDelta: '0.00',
+          },
+          {
+            id: 'f6',
+            name: { es: "Jack Daniel's", en: "Jack Daniel's" },
+            priceDelta: '0.00',
+          },
+        ],
+      },
+    ],
   },
 ]
 
@@ -66,6 +99,8 @@ const beers: FullMenuDish[] = [
     drinkSubGroup: sub('caguamon', 'Caguamón', 'Beer Bag', 0),
     requiresSauce: false,
     featured: false,
+    highlightBackground: false,
+    optionGroups: [],
   },
   {
     id: 'indio',
@@ -85,6 +120,8 @@ const beers: FullMenuDish[] = [
     ),
     requiresSauce: false,
     featured: false,
+    highlightBackground: false,
+    optionGroups: [],
   },
 ]
 
@@ -102,6 +139,8 @@ const destilados: FullMenuDish[] = [
     drinkSubGroup: sub('ron', 'Ron', 'Rum', 0),
     requiresSauce: false,
     featured: false,
+    highlightBackground: false,
+    optionGroups: [],
   },
 ]
 
@@ -148,12 +187,6 @@ const meta = {
       control: { type: 'text' },
     },
   },
-  decorators: [
-    (story => ({
-      components: { story, MenuDrinkCard, MenuSaucePicker },
-      template: '<story />',
-    })) as Decorator,
-  ],
 } satisfies Meta<typeof MenuDrinkSection>
 
 export default meta

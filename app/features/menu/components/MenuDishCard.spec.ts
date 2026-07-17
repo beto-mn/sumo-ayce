@@ -22,15 +22,29 @@ function makeDish(overrides: Partial<FullMenuDish> = {}): FullMenuDish {
     drinkSubGroup: null,
     requiresSauce: false,
     featured: false,
+    highlightBackground: false,
+    optionGroups: [],
     ...overrides,
   }
 }
 
 function mountCard(
   dish: FullMenuDish,
-  modality: 'buffet' | 'carta' = 'buffet'
+  modality: 'buffet' | 'carta' = 'buffet',
+  highlightBackground = false
 ) {
-  return mount(MenuDishCard, { props: { dish, modality } })
+  return mount(MenuDishCard, {
+    props: { dish, modality, highlightBackground },
+    global: {
+      stubs: {
+        MenuSaucePicker: {
+          props: ['options', 'pickerLabel'],
+          template:
+            '<div class="picker-stub" :data-label="pickerLabel" :data-count="options.length" />',
+        },
+      },
+    },
+  })
 }
 
 describe('MenuDishCard', () => {
@@ -105,8 +119,10 @@ describe('MenuDishCard', () => {
     expect(badge.exists()).toBe(true)
     expect(badge.attributes('src')).toBe('/brand/garantia-sumo.webp')
     expect(badge.attributes('alt')).toBe('menu.guarantee_alt')
-    // 64px star, pinned top-left clear of the top-right pink badge.
-    expect(badge.classes()).toContain('size-16')
+    // 96px star (bumped from 64px — "no se nota" client feedback), pinned
+    // top-left clear of the top-right pink badge.
+    expect(badge.classes()).toContain('size-24')
+    expect(badge.classes()).not.toContain('size-16')
     expect(badge.classes()).toContain('left-2')
     expect(badge.classes()).toContain('top-2')
   })
@@ -121,5 +137,75 @@ describe('MenuDishCard', () => {
       '[data-testid="guarantee-badge"]'
     )
     expect(badge.exists()).toBe(true)
+  })
+
+  // ── Highlighted image panel (Part D — "All You Can Eat Kids") ──────────────
+  it('uses the default panel background when highlightBackground is false/unset', () => {
+    const panel = mountCard(makeDish()).find('[data-testid="dish-image-panel"]')
+    expect(panel.classes()).toContain('bg-accent/20')
+    expect(panel.classes()).not.toContain('from-orange')
+  })
+
+  it('swaps the panel to the orange→blue gradient when highlightBackground is true', () => {
+    const panel = mountCard(makeDish(), 'buffet', true).find(
+      '[data-testid="dish-image-panel"]'
+    )
+    expect(panel.classes()).toContain('from-orange')
+    expect(panel.classes()).toContain('to-blue')
+    expect(panel.classes()).not.toContain('bg-accent/20')
+  })
+
+  it('does not affect dish name/description/price legibility when highlighted', () => {
+    const wrapper = mountCard(
+      makeDish({ price: '179.00', incluido: false }),
+      'carta',
+      true
+    )
+    expect(wrapper.text()).toContain('Bora Bora Roll')
+    expect(wrapper.text()).toContain('179.00')
+  })
+
+  // ── DB-driven option groups (Part C — "build your own" Ramen XL) ───────────
+  it('shows no picker section for a dish with no configured option groups', () => {
+    const wrapper = mountCard(makeDish({ optionGroups: [] }))
+    expect(wrapper.findAll('.picker-stub')).toHaveLength(0)
+  })
+
+  it('renders one MenuSaucePicker per configured option group, in order', () => {
+    const wrapper = mountCard(
+      makeDish({
+        optionGroups: [
+          {
+            key: 'noodle_base',
+            name: { es: 'Base de fideo', en: 'Noodle base' },
+            choices: [
+              {
+                id: 'c1',
+                name: { es: 'Pollo', en: 'Chicken' },
+                priceDelta: '0.00',
+              },
+              {
+                id: 'c2',
+                name: { es: 'Camarón cremoso', en: 'Creamy shrimp' },
+                priceDelta: '0.00',
+              },
+            ],
+          },
+          {
+            key: 'protein',
+            name: { es: 'Proteína', en: 'Protein' },
+            choices: [
+              { id: 'c3', name: { es: 'Res', en: 'Beef' }, priceDelta: '0.00' },
+            ],
+          },
+        ],
+      })
+    )
+    const pickers = wrapper.findAll('.picker-stub')
+    expect(pickers).toHaveLength(2)
+    expect(pickers[0]?.attributes('data-label')).toBe('Base de fideo')
+    expect(pickers[0]?.attributes('data-count')).toBe('2')
+    expect(pickers[1]?.attributes('data-label')).toBe('Proteína')
+    expect(pickers[1]?.attributes('data-count')).toBe('1')
   })
 })

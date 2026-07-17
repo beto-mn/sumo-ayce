@@ -22,6 +22,8 @@ function dish(over: Partial<FullMenuDish> & { id: string }): FullMenuDish {
     drinkSubGroup: null,
     requiresSauce: false,
     featured: false,
+    highlightBackground: false,
+    optionGroups: [],
     ...over,
   }
 }
@@ -159,29 +161,50 @@ describe('MenuDrinkSection', () => {
     expect(noImageCard?.classes()).toContain('col-span-1')
   })
 
-  it('mounts the flavour picker for the consolidated Vaso Sumo card', () => {
+  // ── DB-driven option groups (Part E — Vaso Sumo flavor migration) ──────────
+  const vasoSumoFlavorGroup = {
+    key: 'flavor',
+    name: { es: 'Sabor', en: 'Flavor' },
+    choices: [
+      { id: 'f1', name: { es: 'Ron', en: 'Rum' }, priceDelta: '0.00' },
+      { id: 'f2', name: { es: 'Tequila', en: 'Tequila' }, priceDelta: '0.00' },
+      { id: 'f3', name: { es: 'Vodka', en: 'Vodka' }, priceDelta: '0.00' },
+      { id: 'f4', name: { es: 'Whisky', en: 'Whisky' }, priceDelta: '0.00' },
+      { id: 'f5', name: { es: 'New Mix', en: 'New Mix' }, priceDelta: '0.00' },
+      {
+        id: 'f6',
+        name: { es: "Jack Daniel's", en: "Jack Daniel's" },
+        priceDelta: '0.00',
+      },
+    ],
+  }
+
+  it('mounts one MenuSaucePicker per configured option group on the Vaso Sumo card', () => {
     const drinks = [
       dish({
         id: 'v1',
         drinkGroup: 'cantaritos_sumo_cups',
         name: { es: 'Vaso Sumo', en: 'Sumo Cup' },
+        optionGroups: [vasoSumoFlavorGroup],
       }),
       dish({
         id: 'c1',
         drinkGroup: 'cantaritos_sumo_cups',
         name: { es: 'Cantarito Fest', en: 'Cantarito Fest' },
+        optionGroups: [],
       }),
     ]
     const wrapper = mountSection(drinks, 'cantaritos_sumo_cups')
     expect(wrapper.findAll('.picker-stub')).toHaveLength(1)
   })
 
-  it("offers SIX Vaso Sumo bases including Jack Daniel's", () => {
+  it("offers SIX Vaso Sumo flavors including Jack Daniel's, sourced from optionGroups", () => {
     const drinks = [
       dish({
         id: 'v1',
         drinkGroup: 'cantaritos_sumo_cups',
         name: { es: 'Vaso Sumo', en: 'Sumo Cup' },
+        optionGroups: [vasoSumoFlavorGroup],
       }),
     ]
     const picker = mountSection(drinks, 'cantaritos_sumo_cups').find(
@@ -190,12 +213,25 @@ describe('MenuDrinkSection', () => {
     expect(picker.attributes('data-count')).toBe('6')
     const labels = picker.findAll('.picker-opt').map(o => o.text())
     expect(labels).toEqual([
-      'menu.vaso_sumo.flavor.ron',
-      'menu.vaso_sumo.flavor.tequila',
-      'menu.vaso_sumo.flavor.vodka',
-      'menu.vaso_sumo.flavor.whisky',
-      'menu.vaso_sumo.flavor.new_mix',
-      'menu.vaso_sumo.flavor.jack_daniels',
+      'Ron',
+      'Tequila',
+      'Vodka',
+      'Whisky',
+      'New Mix',
+      "Jack Daniel's",
     ])
+  })
+
+  it('shows no picker for a drink with no configured option groups', () => {
+    const drinks = [
+      dish({
+        id: 'plain',
+        drinkGroup: 'cantaritos_sumo_cups',
+        name: { es: 'Cantarito Fest', en: 'Cantarito Fest' },
+        optionGroups: [],
+      }),
+    ]
+    const wrapper = mountSection(drinks, 'cantaritos_sumo_cups')
+    expect(wrapper.findAll('.picker-stub')).toHaveLength(0)
   })
 })

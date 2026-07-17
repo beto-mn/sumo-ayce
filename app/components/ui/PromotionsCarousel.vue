@@ -14,6 +14,19 @@ const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true, align: 'start' })
 const selectedIndex = ref(0)
 const scrollSnaps = ref<number[]>([])
 
+/**
+ * ID of the promo currently showing its back face (Terms & Conditions), if
+ * any. Only one card is ever flipped at a time — owned here (not in
+ * `PromotionCard`) so navigating away from a flipped slide can reset it in
+ * one place (research.md R2).
+ */
+const flippedId = ref<string | null>(null)
+
+/** Toggles the flip state for one promo; flipping another resets any other. */
+function toggleFlip(id: string): void {
+  flippedId.value = flippedId.value === id ? null : id
+}
+
 /** Navigation (dots/arrows) is only meaningful with more than one slide. */
 const hasMultiple = computed(() => props.promotions.length > 1)
 
@@ -50,6 +63,10 @@ function onSelect(): void {
   const api = emblaApi.value
   if (!api) return
   selectedIndex.value = api.selectedScrollSnap()
+  // Never leave a visitor stuck on a stale back face after navigating away
+  // from that slide (FR-004) — drag, arrows, and dots all funnel through
+  // Embla's `select`/`reInit` events, already wired to this handler.
+  flippedId.value = null
 }
 
 function scrollTo(index: number): void {
@@ -108,7 +125,11 @@ onBeforeUnmount(() => {
           class="min-w-0 shrink-0 grow-0 basis-full"
           data-testid="carousel-slide"
         >
-          <UiPromotionCard :promotion="promo" />
+          <UiPromotionCard
+            :promotion="promo"
+            :flipped="promo.id === flippedId"
+            @flip="toggleFlip(promo.id)"
+          />
         </div>
       </div>
     </div>

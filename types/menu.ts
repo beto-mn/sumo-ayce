@@ -65,6 +65,25 @@ export interface DrinkSubGroup {
   displayOrder: number
 }
 
+/** A single selectable choice within a `DishOptionGroup` (e.g. "Camarón cremoso"). */
+export interface DishOptionChoice {
+  id: string
+  name: Bilingual
+  /** Decimal-as-string price addition for selecting this choice; matches the existing `price: string | null` convention. */
+  priceDelta: string
+}
+
+/**
+ * A generic, reusable "build your own" option group attached to a menu item
+ * (e.g. "Base de fideo", "Proteína", "Añade extra proteína", "Sabor"). Not
+ * specific to any one dish — any menu item may have zero or more of these.
+ */
+export interface DishOptionGroup {
+  key: string
+  name: Bilingual
+  choices: DishOptionChoice[]
+}
+
 export interface FullMenuDish {
   id: string
   name: Bilingual
@@ -82,6 +101,18 @@ export interface FullMenuDish {
   requiresSauce: boolean
   /** True for the curated "Garantía Sumo" dishes — the card shows a star badge. */
   featured: boolean
+  /**
+   * Per-dish highlight flag, independent of category membership: `true` →
+   * `MenuDishCard` renders the orange→blue gradient image-panel background
+   * (e.g. All You Can Eat Kids); `false` (default) → unchanged.
+   */
+  highlightBackground: boolean
+  /**
+   * DB-driven "build your own" option groups attached to this dish/drink
+   * (e.g. Ramen XL's noodle-base/protein/extra-protein, Vaso Sumo's flavor).
+   * `[]` for the overwhelming majority of dishes with no groups configured.
+   */
+  optionGroups: DishOptionGroup[]
 }
 
 export interface FullMenuCategory {

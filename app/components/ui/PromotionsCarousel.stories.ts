@@ -23,6 +23,7 @@ function promo(id: string, overrides: Partial<Promotion> = {}): Promotion {
     imageDesktopUrl: `https://placehold.co/1200x675/F37021/ffffff?text=Promo+${id}`,
     imageTabletUrl: `https://placehold.co/880x880/E85A9B/ffffff?text=Promo+${id}`,
     imageMovilUrl: `https://placehold.co/520x650/F5C518/1A1209?text=Promo+${id}`,
+    terms: null,
     ...overrides,
   }
 }
@@ -34,7 +35,7 @@ const meta = {
   argTypes: {
     promotions: {
       description:
-        "Promotion slides — ONE full-bleed promo image per view at every breakpoint. Embla enables touch/drag; dots and prev/next arrows appear only with more than one slide. The nav (arrows + active dot) is color-coded by the ACTIVE slide's type: AYCE=orange, Express=blue, Ambos=orange→blue. Respects prefers-reduced-motion (no auto-advance motion).",
+        "Promotion slides — ONE full-bleed promo image per view at every breakpoint. Embla enables touch/drag; dots and prev/next arrows appear only with more than one slide. The nav (arrows + active dot) is color-coded by the ACTIVE slide's type: AYCE=orange, Express=blue, Ambos=orange→blue. Respects prefers-reduced-motion (no auto-advance motion). A card with a bilingual `terms` pair can be clicked/tapped to flip and reveal its Terms & Conditions; only one card is ever flipped at a time, and navigating (drag/arrows/dots) resets it.",
       control: { type: 'object' },
       table: { category: 'Content' },
     },
@@ -107,4 +108,25 @@ export const MobileViewport: Story = {
 export const DesktopViewport: Story = {
   name: 'Desktop viewport (full-bleed, 1 per view)',
   parameters: { viewport: { defaultViewport: 'desktop' } },
+}
+
+/**
+ * The first slide carries Terms & Conditions in BOTH languages — click/tap
+ * it to see it flip and reveal the back face. Navigating away (arrows/dots)
+ * resets it to the front face (FR-004).
+ */
+export const WithFlippableTerms: Story = {
+  name: 'Flippable slide (click to reveal Terms & Conditions)',
+  args: {
+    promotions: [
+      promo('1', {
+        terms: {
+          es: 'Válido de lunes a jueves, no acumulable con otras promociones.',
+          en: 'Valid Monday through Thursday, not combinable with other promotions.',
+        },
+      }),
+      promo('2'),
+      promo('3'),
+    ],
+  },
 }

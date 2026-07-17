@@ -18,8 +18,15 @@ function promo(overrides: Partial<Promotion> = {}): Promotion {
     imageDesktopUrl: DESKTOP,
     imageTabletUrl: TABLET,
     imageMovilUrl: MOVIL,
+    terms: null,
     ...overrides,
   }
+}
+
+/** Bilingual Terms & Conditions used by the `Flipped`/`NoTerms` stories below. */
+const TERMS = {
+  es: 'Válido de lunes a jueves, no acumulable con otras promociones. Aplica solo en sucursales participantes.',
+  en: 'Valid Monday through Thursday, not combinable with other promotions. Applies only at participating branches.',
 }
 
 const meta = {
@@ -29,12 +36,18 @@ const meta = {
   argTypes: {
     promotion: {
       description:
-        'Promotion object: badge (bilingual), decoded title, color, type, and the three responsive image URLs (desktop/tablet/mobile). The promo IMAGE is the full-bleed slide — no card frame. Two overlays: a labeled TYPE pill top-left (AYCE=orange, Express=blue, Ambos=orange→blue) and the WP color/day badge top-right.',
+        'Promotion object: badge (bilingual), decoded title, color, type, the three responsive image URLs (desktop/tablet/mobile), and an optional bilingual `terms` pair. The promo IMAGE is the full-bleed slide — no card frame. Two overlays: a labeled TYPE pill top-left (AYCE=orange, Express=blue, Ambos=orange→blue) and the WP color/day badge top-right.',
       control: { type: 'object' },
       table: { category: 'Content' },
     },
+    flipped: {
+      description:
+        'Whether the card currently shows its back face (Terms & Conditions). Owned by the parent carousel — offered as a clickable affordance only when `promotion.terms` is non-null (bilingual-completeness rule).',
+      control: { type: 'boolean' },
+      table: { category: 'Behavior' },
+    },
   },
-  args: { promotion: promo() },
+  args: { promotion: promo(), flipped: false },
 } satisfies Meta<typeof PromotionCard>
 
 export default meta
@@ -139,4 +152,42 @@ export const MobileViewport: Story = {
 export const DesktopViewport: Story = {
   name: 'Desktop viewport',
   parameters: { viewport: { defaultViewport: 'desktop' } },
+}
+
+// ── Flip-to-terms (Part A) ──────────────────────────────────────────────────
+
+/**
+ * Both `tyc_es`/`tyc_en` are present — the card offers the flip affordance
+ * (cursor-pointer, aria-label) and, with `flipped: true`, shows its back
+ * face with the Terms & Conditions text.
+ */
+export const Flipped: Story = {
+  name: 'Flipped (Terms & Conditions back face)',
+  args: {
+    promotion: promo({ terms: TERMS }),
+    flipped: true,
+  },
+}
+
+/** Same promo as `Flipped`, front face — click it to see the flip toggle live. */
+export const Flippable: Story = {
+  name: 'Flippable (click to flip)',
+  args: {
+    promotion: promo({ terms: TERMS }),
+    flipped: false,
+  },
+}
+
+/**
+ * No Terms & Conditions configured (or only ONE language filled in — both
+ * cases resolve to `terms: null` upstream, per the bilingual-completeness
+ * rule) — the card offers NO flip affordance at all: no cursor-pointer, no
+ * aria-label, clicking it does nothing.
+ */
+export const NoTerms: Story = {
+  name: 'No terms (no flip affordance)',
+  args: {
+    promotion: promo({ terms: null }),
+    flipped: false,
+  },
 }

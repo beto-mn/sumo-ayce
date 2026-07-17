@@ -37,6 +37,7 @@ const PROMO_RESPONSE: PromotionsResult = {
       imageDesktopUrl: 'https://cdn.example.com/promo.jpg',
       imageTabletUrl: null,
       imageMovilUrl: null,
+      terms: null,
     },
     {
       id: '2',
@@ -49,6 +50,7 @@ const PROMO_RESPONSE: PromotionsResult = {
       imageDesktopUrl: null,
       imageTabletUrl: null,
       imageMovilUrl: null,
+      terms: null,
     },
   ],
 }

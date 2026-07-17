@@ -112,6 +112,10 @@
       "next": "Promoción siguiente",
       "goToSlide": "Ir a la promoción {n}"
     },
+    "terms": {
+      "heading": "Términos y condiciones",
+      "cardLabel": "Toca para ver los términos y condiciones"
+    },
     "seo": {
       "title": "Promociones Sumo",
       "description": "Descubre todas las promociones activas de SUMO All You Can Eat. Martes 2x1, cumpleañeros, jueves especiales y más."
@@ -261,17 +265,6 @@
     "unavailable": "El menú no está disponible por el momento. Vuelve a intentarlo en unos minutos.",
     "skeleton": {
       "loading": "Cargando menú…"
-    },
-    "vaso_sumo": {
-      "picker_label": "Elige tu base",
-      "flavor": {
-        "ron": "Ron",
-        "tequila": "Tequila",
-        "vodka": "Vodka",
-        "whisky": "Whisky",
-        "new_mix": "New Mix",
-        "jack_daniels": "Jack Daniel's"
-      }
     },
     "sauce": {
       "spicy_indicator": "Picante"

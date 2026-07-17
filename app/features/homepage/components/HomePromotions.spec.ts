@@ -29,6 +29,7 @@ function makePromo(id: string, overrides: Partial<Promotion> = {}): Promotion {
     imageDesktopUrl: null,
     imageTabletUrl: null,
     imageMovilUrl: null,
+    terms: null,
     ...overrides,
   }
 }
