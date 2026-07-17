@@ -173,11 +173,21 @@ complete with `./init.sh` failing.**
    - Phase -1 gates marked
    - Known issues / TODOs (ideally an empty list)
 2. Return to the leader: `implementation complete → progress/impl_<feature>.md`
+3. The leader will flip the feature's status to `reviewing` and launch the
+   `reviewer` — this is not your job, just expect it to happen next.
 
 ### 7. If the reviewer approves later
 
-1. Mark the feature's status as `done` in `feature_list.json`.
+1. Mark the feature's status as `done` in `feature_list.json` (from `reviewing`,
+   never from anything else — if you're asked to do this from a different
+   status, something upstream skipped a step; flag it instead of proceeding).
 2. The leader will move `progress/current.md` to `progress/history.md`.
+
+### 8. If the reviewer rejects
+
+You may be relaunched with the list of what's missing. The leader will have
+already flipped the status back to `in_progress` before relaunching you —
+you don't need to touch `feature_list.json` for this.
 
 ## Rules
 

@@ -16,6 +16,12 @@ type KidsItem = {
    */
   includedInAyce?: boolean
   featured?: boolean
+  /**
+   * Per-dish highlight flag (Part D — feature 027): renders `MenuDishCard`
+   * with the orange→blue gradient image-panel background. Only "All You Can
+   * Eat Kids" carries this; every other Kids item is unaffected.
+   */
+  highlightBackground?: boolean
 }
 
 // ─── KIDS MENU ──────────────────────────────────────────────────────────────
@@ -44,6 +50,9 @@ export const KIDS_ITEMS: KidsItem[] = [
     fileName: 'menu/kids/all_you_can_eat_kids.webp',
     price: KIDS_AYCE_PRICE,
     includedInAyce: true,
+    // Part D (feature 027): orange→blue gradient behind the image panel,
+    // distinguishing this one card from the $149 combos around it.
+    highlightBackground: true,
   },
   {
     nameEs: 'Kid Burger',
@@ -135,6 +144,7 @@ export async function seedKidsMenu() {
     requiresSauce: false,
     isActive: true,
     displayOrder: i,
+    highlightBackground: item.highlightBackground ?? false,
   }))
 
   await db.insert(menuItems).values(rows)

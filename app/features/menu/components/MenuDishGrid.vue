@@ -47,11 +47,16 @@ function categoryNote(category: FullMenuCategory): string | null {
         v-else
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
       >
+        <!-- Every dish renders via the same MenuDishCard, uniformly — the
+             per-dish differences (Garantía badge, highlighted background,
+             DB-driven option-group pickers) are all prop-driven, not a
+             per-dish component swap (feature 027 Part C, revised). -->
         <MenuDishCard
           v-for="dish in category.dishes"
           :key="dish.id"
           :dish="dish"
           :modality="modality"
+          :highlight-background="dish.highlightBackground"
         />
       </div>
     </section>

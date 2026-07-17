@@ -124,4 +124,59 @@ describe('parsePromotions (NEW WordPress model)', () => {
     expect(parsed[0]).not.toHaveProperty('description')
     expect(parsed[0]).not.toHaveProperty('validity')
   })
+
+  // ── Terms & Conditions bilingual-completeness (Part A, research.md R4a) ────
+  describe('terms (tyc_es/tyc_en, bilingual-completeness rule)', () => {
+    it('projects terms when BOTH tyc_es AND tyc_en are present and non-empty', () => {
+      const raw = makeRawPromotion(
+        { id: 30 },
+        {
+          tyc_es: 'Válido de lunes a jueves.',
+          tyc_en: 'Valid Monday to Thursday.',
+        }
+      )
+      const parsed = parsePromotions([raw])
+      expect(parsed[0]?.terms).toEqual({
+        es: 'Válido de lunes a jueves.',
+        en: 'Valid Monday to Thursday.',
+      })
+    })
+
+    it('projects terms=null when BOTH tyc_es and tyc_en are absent', () => {
+      const raw = makeRawPromotion({ id: 31 }, {})
+      const parsed = parsePromotions([raw])
+      expect(parsed[0]?.terms).toBeNull()
+    })
+
+    it('projects terms=null when ONLY tyc_es is filled in (tyc_en empty) — no fallback', () => {
+      const raw = makeRawPromotion(
+        { id: 32 },
+        { tyc_es: 'Solo español.', tyc_en: '' }
+      )
+      const parsed = parsePromotions([raw])
+      expect(parsed[0]?.terms).toBeNull()
+    })
+
+    it('projects terms=null when ONLY tyc_en is filled in (tyc_es empty) — no fallback', () => {
+      const raw = makeRawPromotion(
+        { id: 33 },
+        { tyc_es: '', tyc_en: 'English only.' }
+      )
+      const parsed = parsePromotions([raw])
+      expect(parsed[0]?.terms).toBeNull()
+    })
+
+    it('projects terms=null when both are whitespace-only', () => {
+      const raw = makeRawPromotion({ id: 34 }, { tyc_es: '   ', tyc_en: '   ' })
+      const parsed = parsePromotions([raw])
+      expect(parsed[0]?.terms).toBeNull()
+    })
+
+    it('never drops the promo for missing/partial terms (still parses)', () => {
+      const raw = makeRawPromotion({ id: 35 }, { tyc_es: 'Solo español.' })
+      const parsed = parsePromotions([raw])
+      expect(parsed).toHaveLength(1)
+      expect(parsed[0]?.terms).toBeNull()
+    })
+  })
 })

@@ -11,6 +11,14 @@ You only approve or reject, with specific reasons.
 
 ## Protocol
 
+### 0. Precondition check
+
+Confirm the feature's status in `feature_list.json` is `reviewing` (the leader
+must flip it there before launching you). If it's still `in_progress` or
+anything else, STOP and tell the leader — do not review a feature whose status
+wasn't correctly transitioned, since that status is the record that this review
+actually happened.
+
 ### 1. Context load
 
 1. Read `specs/<num>-<name>/spec.md` — extract acceptance criteria.

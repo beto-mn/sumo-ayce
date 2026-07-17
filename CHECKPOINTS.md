@@ -14,7 +14,8 @@
 
 ## C2 — State is coherent
 
-- [ ] At most 1 feature in `in_progress` in `feature_list.json`
+- [ ] At most 1 feature in `in_progress` OR `reviewing` (combined) in `feature_list.json` — these are mutually-exclusive-in-time phases of the same active feature, never two different features
+- [ ] No feature went directly from `in_progress` to `done` without passing through `reviewing`
 - [ ] Every `done` feature has associated tests that pass
 - [ ] `progress/current.md` is empty (session closed) or describes the active session
 
@@ -77,6 +78,8 @@ Should return EMPTY.
 - [ ] `spec.md` has no unresolved `[NEEDS CLARIFICATION]` markers
 - [ ] Every `done` feature with `sdd: true` has all its tasks marked `[x]` in `tasks.md`
 - [ ] Each acceptance criterion in `spec.md` is covered by at least one concrete test
+- [ ] Every `done` feature with `sdd: true` has a corresponding `progress/review_<name>*.md`
+      with `Status: APPROVED` — evidence the `reviewing` phase actually ran and wasn't skipped
 
 ## C7 — Security: no sensitive data committed (per Constitution Article VI)
 

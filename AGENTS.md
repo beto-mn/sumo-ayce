@@ -38,6 +38,9 @@
 - **Do not skip the spec phase.** Any feature with `"sdd": true` goes through
   `spec_author` and gets human approval before any code is touched.
 - **Do not skip `/speckit.clarify`** if `spec.md` contains `[NEEDS CLARIFICATION]` markers.
+- **Do not skip the `reviewing` phase.** A feature must never move directly from
+  `in_progress` to `done` — it passes through `reviewing` with an actual `reviewer`
+  run in between, every time, no exceptions.
 - **Document in `progress/current.md`** while you work, not at the end.
 - **If you don't know something, search in `docs/`, `.specify/memory/` or
   `specs/<num>-<name>/`** before inventing.
@@ -45,7 +48,7 @@
 ## 4. SDD flow with spec-kit
 
 ```
-pending → [spec_author wrapping speckit.*] → spec_ready → ⏸ HUMAN → in_progress → [implementer → reviewer] → done
+pending → [spec_author wrapping speckit.*] → spec_ready → ⏸ HUMAN → in_progress → [implementer] → reviewing → [reviewer] → done
 ```
 
 1. The `leader` detects the first `pending` feature with `"sdd": true`.
@@ -61,9 +64,10 @@ pending → [spec_author wrapping speckit.*] → spec_ready → ⏸ HUMAN → in
    i. Returns reference to the `leader`
 3. **Pause.** The human reads `specs/<num>-<name>/` in full and approves (or requests changes).
 4. Once approved, the `leader` changes the status to `in_progress` and launches `implementer`.
-5. The `implementer` runs `tasks.md` task by task, marking them `[x]`. Writes tests for each acceptance criterion.
-6. The `reviewer` verifies acceptance ↔ test traceability, Phase -1 gates `[x]`, all tasks `[x]`, walks through `CHECKPOINTS.md` and runs `./init.sh`.
-7. If approved, the `reviewer` marks `done` and the `leader` moves the summary to `progress/history.md`.
+5. The `implementer` runs `tasks.md` task by task, marking them `[x]`. Writes tests for each acceptance criterion. When done, it reports back to the `leader` — it does NOT touch `feature_list.json` at this point.
+6. The `leader` changes the status to `reviewing` — **mandatory, never skipped** — then launches `reviewer`.
+7. The `reviewer` verifies acceptance ↔ test traceability, Phase -1 gates `[x]`, all tasks `[x]`, walks through `CHECKPOINTS.md` and runs `./init.sh`.
+8. If `APPROVED`, the `implementer` (not the reviewer) marks `done` in `feature_list.json`, and the `leader` moves the summary to `progress/history.md`. If `REJECTED`, the `leader` changes the status back to `in_progress` and launches another `implementer` round — repeating steps 5-7 until `APPROVED`.
 
 ## 5. Session close
 

@@ -5,7 +5,15 @@
     "one_feature_at_a_time": true,
     "require_tests_to_close": true,
     "require_approved_spec_to_implement": true,
-    "valid_status": ["pending", "spec_ready", "in_progress", "done", "blocked"],
+    "valid_status": [
+      "pending",
+      "spec_ready",
+      "in_progress",
+      "reviewing",
+      "done",
+      "blocked"
+    ],
+    "reviewing_required_before_done": true,
     "sdd_required_when": "feature has \"sdd\": true"
   },
   "features": [
@@ -196,7 +204,7 @@
       "description": "3-way primary selector (AYCE | Express | Bebidas y coctelería) with AYCE modality (All You Can Eat | Carta); curated ordered category sets per selection (buffet filters includedInAyce=true, carta false); deep-linking to any subcategory via URL query params (type/modality/category incl. drink groups) with defaults + fallback; Destilados split into its own drink group (beers_spirits renamed to beers), promo note rendered once, Caguamón-first, café image-first ordering; Vaso Sumo 5→1 consolidated card with flavour selector; non_alcoholic folded into sodas; 11 Garantías Sumo featured; sauces removed from Alitas & Boneless; hover-zoom, 'Carta'/'Menu' label, half-width no-image drink cards. Additive migration 0027 (drink_group.display_order). Full detail in specs/021-menu-experience-overhaul/.",
       "spec_path": "specs/021-menu-experience-overhaul",
       "sdd": true,
-      "status": "spec_ready"
+      "status": "done"
     },
     {
       "id": 22,
@@ -205,7 +213,7 @@
       "description": "Consolidated (former 022/023/024). PART A: hero 'ALL YOU CAN EAT' font Titan One → self-hosted Graphik Super (public/fonts/graphik-super.woff2, @font-face + .hero-headline + nuxt.config preload). PART B: WordPress promociones ACF migrated to new contract (badge_es/en, color, tipo, activa, imagen_desktop/tablet/movil media IDs; title from post title.rendered; no titulo/descripcion/vigencia/single imagen) — validators.ts + promotions.get.ts rewritten (3 images resolved with desktop fallback), UiPromotionsCarousel (embla-carousel-vue) shared by homepage + /promotions, <picture> by breakpoint, image + badge overlay; old grid/lightbox retired. Plus handleError: ExternalServiceError → WARN + 502 (graceful WP degradation). PART C: static Bolsa de trabajo card in ContactInfo.vue (ES+EN copy, test phone pill, no form). Full detail in specs/022-homepage-hero-promos-contact/.",
       "spec_path": "specs/022-homepage-hero-promos-contact",
       "sdd": true,
-      "status": "spec_ready"
+      "status": "done"
     },
     {
       "id": 23,
@@ -233,6 +241,24 @@
       "spec_path": "specs/025-menu-page-lighthouse-perf-fix",
       "sdd": true,
       "status": "pending"
+    },
+    {
+      "id": 26,
+      "name": "google-reviews-and-branches-ux",
+      "title": "Homepage Google Reviews (WordPress-backed, responsive) + Branches Map/Card UX",
+      "description": "Consolidated client request (4 parts, delivered together). PART A — Homepage 'Nos aman en Google' reviews: currently sourced from a static/hardcoded fixture (app/features/homepage/data/reviews.ts, per feature 010's original scope). Client wants this migrated to WordPress — a NEW server endpoint/ACF contract must be designed and built from scratch (no existing WP endpoint for this content; follow the established WP integration pattern in server/api/v1/content/promotions.get.ts / docs/business/wordpress-endpoints.md). Each review needs at minimum reviewer name, review text, rating, and a link to the actual Google review — clicking a review card must navigate to that Google comment/review URL. Responsive display count: mobile shows only 3 reviews, tablet 4, desktop shows all 6 (reason: too much scroll on small viewports today) — use the project's existing 520/880 breakpoint convention. If the WordPress-side ACF fields/content don't exist yet either, spec_author must flag this as a coordination dependency, not silently assume WP-side readiness. PART B — Branches page map/card click sync: clicking a Mapbox branch-pin marker on /branches must trigger the exact same behavior as clicking that branch's card (currently only card-click drives map zoom/pan; pin-click has no reciprocal action) — spec_author should inspect the existing card-click handler in app/pages/branches.vue / app/features/branches/components/BranchList.vue / BranchCard.vue and the mapbox adapter/composable, then wire marker click to invoke that same handler (single source of truth, no duplicated selection logic). PART C — Branches page mobile/tablet scroll UX: on mobile/tablet the branch card list currently causes a long full-page vertical scroll (client-provided screenshot shows cards stacking indefinitely below the map, pushing the footer far down) — client wants the card list to live in its OWN internal scrollable container on mobile/tablet, matching desktop's existing scoped-scroll layout (spec_author must confirm desktop's current layout mechanism and adapt it down to smaller breakpoints, not invent a new pattern). PART D — Branches page scroll-to-map on card click: when a card is clicked, in addition to the EXISTING map zoom/pan behavior (client confirms this already works correctly — 'el zoom al dar click a la card, ya lo hace' — do NOT rebuild it), the page should also scroll the viewport so the map is back in view, needed specifically for mobile/tablet where the user may have scrolled deep into the card list. PARTS C and D must be designed together (a contained/scrollable list container from PART C changes what 'scroll to map' means on those breakpoints) — spec_author should treat them as one coherent mobile/tablet interaction, not two independent tweaks.",
+      "spec_path": "specs/026-google-reviews-and-branches-ux",
+      "sdd": true,
+      "status": "pending"
+    },
+    {
+      "id": 27,
+      "name": "promo-flip-menu-card-tweaks",
+      "title": "Promotions Carousel Flip-to-Terms + Garantía Star Size + Ramen XL DB-Driven Options + Kids AYCE Background + Vaso Sumo Flavor Migration",
+      "description": "Consolidated client-requested visual/UX changes. PART A — Promotions carousel flip-to-terms: clicking anywhere on a promo card in app/components/ui/PromotionsCarousel.vue (used by both HomePromotions.vue on the homepage and app/pages/promotions.vue) must trigger a card-flip animation (3D flip, respecting prefers-reduced-motion with an instant/fade fallback) revealing the promotion's Terms & Conditions on the back face, sourced from WordPress ACF fields `tyc_es`/`tyc_en` on the `promociones` CPT (client is actively wiring these into WP admin now — see specs/027-promo-flip-menu-card-tweaks/assets/source/wp-admin-tyc-fields.png). The flip affordance requires BOTH `tyc_es` AND `tyc_en` to be present and non-empty — a promo with only one language filled in must NOT flip (no same-language fallback). Click-to-flip must not conflict with the carousel's existing drag/swipe (embla-carousel-vue) or the prev/next/dot navigation. PART B — Garantía Sumo star badge size: in app/features/menu/components/MenuDishCard.vue the badge (`size-16`, top-left, shown when dish.featured) is too small to notice — increase to a more prominent size while confirming it still does not overlap the top-right pink badgeEs sticker at any breakpoint. PART C (REVISED 2026-07-16, hero-image approach from the original spec is SCRAPPED) — Ramen XL renders as a NORMAL MenuDishCard (no hero image, no display_variant swap-component), but gains a DB-driven build-your-own options selector matching the client's reference composition (specs/027-promo-flip-menu-card-tweaks/assets/source/ramen-xl-reference.jpg): (1) 'Base de fideo' single-select group — Pollo, Camarón cremoso, Camarón picante, Vegetales picante; (2) 'Proteína' single-select group — Res, Camarón, Pollo; (3) an 'Añade extra proteína' add-on at +$29. ALL of these options (group labels, choices, prices) must be manageable from the DB — client must be able to add/remove/edit noodle-base or protein choices without a code change, analogous to the existing DB-driven `sauces` table/MenuSaucePicker.vue precedent (NOT the Vaso Sumo precedent, which turned out to be i18n-hardcoded, see PART E). Requires new generic DB table(s) for dish option-groups + choices (+ optional price delta per choice) attachable to any menu_item, not just Ramen XL. The abandoned hero-image artifacts from the original spec round (app/features/menu/components/MenuDishHero.vue + .spec.ts + .stories.ts, server/db/migrations/0030_add_menu_item_display_variant.sql, all currently uncommitted) should be removed/superseded as part of this revision unless spec_author finds a reason to keep any part of them. PART D — All You Can Eat Kids card background: the 'All You Can Eat Kids' item card (server/db/seeds/kidsMenu.ts, $179) looks 'sad' against its plain white image panel background — apply an orange→blue gradient behind the image for this one dish only (reusing existing brand tokens and the existing gradient precedent in PromotionsCarousel.vue's navFillClass 'all' case). Needs its own minimal per-dish targeting mechanism (spec_author to decide the simplest correct approach now that PART C no longer needs a shared display_variant column — a dedicated boolean flag or a lightweight reuse, whichever is simpler). PART E (NEW 2026-07-16) — Vaso Sumo flavor migration: the 'Vaso Sumo' drink card (server/db/seeds/drinks.ts, drinkGroup 'cantaritos_sumo_cups') currently renders its 6 base flavors (Ron, Tequila, Vodka, Whisky, New Mix, Jack Daniel's) fully hardcoded via i18n keys `menu.vaso_sumo.flavor.*` in app/features/menu/components/MenuDrinkSection.vue — NOT from the DB. Migrate this onto the SAME generic DB-driven option-groups system built for PART C, so flavors become addable/removable from the DB with no code change, same as the Ramen options. Out of scope: no changes to any other promo card content/layout, no changes to any other menu dish's card size/badge, no changes to Kids items other than the AYCE Kids item's background, no changes to menu-sets.ts curated category logic (unrelated to feature 023), no changes to any drink/dish other than Vaso Sumo and Ramen XL. Full detail in specs/027-promo-flip-menu-card-tweaks/ (spec.md, plan.md, research.md, data-model.md, tasks.md) — MUST be amended to reflect this revision before implementation resumes.",
+      "spec_path": "specs/027-promo-flip-menu-card-tweaks",
+      "sdd": true,
+      "status": "done"
     }
   ]
 }

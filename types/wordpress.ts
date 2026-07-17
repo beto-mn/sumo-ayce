@@ -41,6 +41,15 @@ export interface WpPromotionAcf {
   imagen_tablet: number
   /** Mobile image media ID; 0/dup/unresolved → desktop fallback. */
   imagen_movil: number
+  /**
+   * Terms & Conditions text (assumed field keys, pending confirmation from a
+   * live payload — see `research.md` R4). Optional/nullish, unlike the
+   * required `badge_*` pair: a promo may have neither, one, or both filled.
+   * NO same-language fallback — `Promotion.terms` is set only when BOTH are
+   * non-empty (bilingual-completeness rule, `research.md` R4a).
+   */
+  tyc_es?: string | null
+  tyc_en?: string | null
 }
 
 /** A single raw `promociones` item as returned by the REST endpoint. */

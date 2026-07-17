@@ -46,6 +46,14 @@ export interface Promotion {
   imageTabletUrl: string | null
   /** Mobile image URL; falls back to desktop when missing/duplicate. */
   imageMovilUrl: string | null
+  /**
+   * Bilingual Terms & Conditions text; `null` unless BOTH the Spanish and
+   * English content are present and non-empty upstream (bilingual-
+   * completeness rule — a promo with only one language filled in also
+   * resolves to `null`, identical to a promo with neither). Drives whether
+   * the card offers the click-to-flip affordance at all.
+   */
+  terms: Bilingual | null
 }
 
 /** Google review from a static/hardcoded fixture committed in the repo. */
