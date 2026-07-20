@@ -11,6 +11,7 @@ import {
   DRINKS_SET,
   EXPRESS_SET,
 } from '../../app/features/menu/menu-sets'
+import { ALL_ITEMS as ALA_CARTA_ITEMS } from '../../server/db/seeds/alaCarta'
 import { DRINK_GROUPS } from '../../server/db/seeds/drinkGroups'
 import { SUB_GROUPS } from '../../server/db/seeds/drinkSubGroups'
 import { ALL_DRINKS } from '../../server/db/seeds/drinks'
@@ -188,6 +189,12 @@ describe('drinks items seed', () => {
 // ─── Menu categories + Kids combos ────────────────────────────────────────────
 
 describe('menu categories seed', () => {
+  it('renames the rice category to "Arroces" in Spanish, leaving English unchanged', () => {
+    const rice = CATEGORIES.find(c => c.key === 'rice')
+    expect(rice?.nameEs).toBe('Arroces')
+    expect(rice?.nameEn).toBe('Rice')
+  })
+
   it('labels the kids category "Menú Kids" / "Kids Menu"', () => {
     const kids = CATEGORIES.find(c => c.key === 'kids')
     expect(kids?.nameEs).toBe('Menú Kids')
@@ -208,12 +215,137 @@ describe('menu categories seed', () => {
     expect(wings?.noteEn).toContain('favorite sauce')
   })
 
-  it('leaves every category other than kids/wings without a note', () => {
+  it('leaves every category other than kids/wings/the 4 à la carte-only _carta categories without a note', () => {
+    const cartaOnlyKeys = new Set([
+      'burgers_carta',
+      'hot_dogs_carta',
+      'cold_rolls_carta',
+      'hot_rolls_carta',
+    ])
     for (const cat of CATEGORIES) {
       if (cat.key === 'kids' || cat.key === 'wings') continue
+      if (cartaOnlyKeys.has(cat.key)) continue
       expect(cat.noteEs ?? null).toBeNull()
       expect(cat.noteEn ?? null).toBeNull()
     }
+  })
+
+  it('keeps the shared burgers/hot_dogs/cold_rolls/hot_rolls rows note-less (unsplit, used by AYCE-buffet/Express)', () => {
+    for (const key of ['burgers', 'hot_dogs', 'cold_rolls', 'hot_rolls']) {
+      const cat = CATEGORIES.find(c => c.key === key)
+      expect(cat?.noteEs ?? null).toBeNull()
+      expect(cat?.noteEn ?? null).toBeNull()
+    }
+  })
+
+  it.each([
+    [
+      'burgers_carta',
+      'burgers',
+      'Incluye papas a la francesa (100 g) y refresco (400 ml).',
+      'Includes french fries (100 g) and a soft drink (400 ml).',
+    ],
+    [
+      'hot_dogs_carta',
+      'hot_dogs',
+      'Incluye papas a la francesa (100 g) y refresco (400 ml).',
+      'Includes french fries (100 g) and a soft drink (400 ml).',
+    ],
+    [
+      'cold_rolls_carta',
+      'cold_rolls',
+      'Incluye tu elección de yakimeshi mixto (240 g) o ensalada sweet kani (180 g), más refresco (400 ml).',
+      'Includes your choice of mixed yakimeshi (240 g) or sweet kani salad (180 g), plus a soft drink (400 ml).',
+    ],
+    [
+      'hot_rolls_carta',
+      'hot_rolls',
+      'Incluye tu elección de yakimeshi mixto (240 g) o ensalada sweet kani (180 g), más refresco (400 ml).',
+      'Includes your choice of mixed yakimeshi (240 g) or sweet kani salad (180 g), plus a soft drink (400 ml).',
+    ],
+  ])('%s: carries the same display name as %s, plus the combo note', (cartaKey, sharedKey, expectedNoteEs, expectedNoteEn) => {
+    const cartaCat = CATEGORIES.find(c => c.key === cartaKey)
+    const sharedCat = CATEGORIES.find(c => c.key === sharedKey)
+    expect(cartaCat).toBeDefined()
+    expect(sharedCat).toBeDefined()
+    expect(cartaCat?.nameEs).toBe(sharedCat?.nameEs)
+    expect(cartaCat?.nameEn).toBe(sharedCat?.nameEn)
+    expect(cartaCat?.noteEs).toBe(expectedNoteEs)
+    expect(cartaCat?.noteEn).toBe(expectedNoteEn)
+    expect(cartaCat?.isActive).toBe(true)
+  })
+
+  it('defines exactly the 4 new _carta categories (no more, no fewer)', () => {
+    const cartaKeys = CATEGORIES.filter(c => c.key.endsWith('_carta')).map(
+      c => c.key
+    )
+    expect(cartaKeys.sort()).toEqual(
+      [
+        'burgers_carta',
+        'hot_dogs_carta',
+        'cold_rolls_carta',
+        'hot_rolls_carta',
+      ].sort()
+    )
+  })
+})
+
+// ─── À la carte seed (Part B piece-count copy + Part C category reassignment) ──
+
+describe('à la carte seed (alaCarta.ts)', () => {
+  it('appends bilingual piece-count copy ("10 Pzas." / "10 pcs.") to every cold_rolls/hot_rolls/sweet_rolls item', () => {
+    const rollItems = ALA_CARTA_ITEMS.filter(item =>
+      ['cold_rolls_carta', 'hot_rolls_carta', 'sweet_rolls'].includes(
+        item.categoryKey
+      )
+    )
+    // Sanity check the filter actually found items (guards against a silent
+    // false-positive if the categoryKey reassignment breaks this lookup).
+    expect(rollItems.length).toBeGreaterThan(0)
+    for (const item of rollItems) {
+      expect(item.descriptionEs.endsWith('10 Pzas.')).toBe(true)
+      expect(item.descriptionEn.endsWith('10 pcs.')).toBe(true)
+      // Regression guard: the append must not double up on the existing
+      // trailing period of the base description (e.g. "...chiltepín.. 10
+      // Pzas." is a typo — it must read "...chiltepín. 10 Pzas.").
+      expect(item.descriptionEs).not.toContain('..')
+      expect(item.descriptionEn).not.toContain('..')
+    }
+  })
+
+  it('does NOT add piece-count copy to non-roll items (e.g. appetizers, burgers)', () => {
+    const nonRollItems = ALA_CARTA_ITEMS.filter(
+      item =>
+        !['cold_rolls_carta', 'hot_rolls_carta', 'sweet_rolls'].includes(
+          item.categoryKey
+        )
+    )
+    for (const item of nonRollItems) {
+      expect(item.descriptionEs.endsWith('10 Pzas.')).toBe(false)
+      expect(item.descriptionEn.endsWith('10 pcs.')).toBe(false)
+    }
+  })
+
+  it('reassigns every BURGERS/HOT_DOGS/COLD_ROLLS/HOT_ROLLS item to its _carta categoryKey variant', () => {
+    const sharedKeys = ['burgers', 'hot_dogs', 'cold_rolls', 'hot_rolls']
+    for (const key of sharedKeys) {
+      expect(ALA_CARTA_ITEMS.some(item => item.categoryKey === key)).toBe(false)
+    }
+    const cartaKeys = [
+      'burgers_carta',
+      'hot_dogs_carta',
+      'cold_rolls_carta',
+      'hot_rolls_carta',
+    ]
+    for (const key of cartaKeys) {
+      expect(ALA_CARTA_ITEMS.some(item => item.categoryKey === key)).toBe(true)
+    }
+  })
+
+  it('leaves sweet_rolls (Sushi Dulce) on its original shared categoryKey (no combo, Part C out of scope)', () => {
+    expect(
+      ALA_CARTA_ITEMS.some(item => item.categoryKey === 'sweet_rolls')
+    ).toBe(true)
   })
 })
 
@@ -309,6 +441,39 @@ describe('menu-sets.ts curated keys match the active seed', () => {
         activeDrinkGroupKeys.has(key),
         `DRINKS_SET references "${key}", which has no matching active entry in the drink_group seed`
       ).toBe(true)
+    }
+  })
+
+  it('AYCE_CARTA_SET references the 4 _carta keys, not the shared keys', () => {
+    const cartaKeys = [
+      'burgers_carta',
+      'hot_dogs_carta',
+      'cold_rolls_carta',
+      'hot_rolls_carta',
+    ]
+    const sharedKeys = ['burgers', 'hot_dogs', 'cold_rolls', 'hot_rolls']
+    for (const key of cartaKeys) {
+      expect(AYCE_CARTA_SET).toContain(key)
+    }
+    for (const key of sharedKeys) {
+      expect(AYCE_CARTA_SET).not.toContain(key)
+    }
+  })
+
+  it.each([
+    ['AYCE_BUFFET_SET', AYCE_BUFFET_SET],
+    ['EXPRESS_SET', EXPRESS_SET],
+  ])('%s references the shared burgers/hot_dogs/cold_rolls/hot_rolls keys, not any _carta key', (_setName, keys) => {
+    for (const key of ['burgers', 'hot_dogs', 'cold_rolls', 'hot_rolls']) {
+      expect(keys).toContain(key)
+    }
+    for (const key of [
+      'burgers_carta',
+      'hot_dogs_carta',
+      'cold_rolls_carta',
+      'hot_rolls_carta',
+    ]) {
+      expect(keys).not.toContain(key)
     }
   })
 })

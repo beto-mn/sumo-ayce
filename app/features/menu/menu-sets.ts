@@ -25,16 +25,23 @@ export const AYCE_BUFFET_SET: MenuCategoryKey[] = [
   'wings',
 ]
 
-/** AYCE · Carta (11) — neither Sándwiches nor Burritos; Kids is a standalone view. */
+/**
+ * AYCE · Carta (11) — neither Sándwiches nor Burritos; Kids is a standalone view.
+ * Burgers/Hot Dogs/Cold Rolls/Hot Rolls reference the à la carte-only `_carta`
+ * category-key variants (feature 029, Part C — category split), which carry the
+ * combo note and are populated exclusively by à la carte items
+ * (`server/db/seeds/alaCarta.ts`). `AYCE_BUFFET_SET`/`EXPRESS_SET` keep
+ * referencing the original shared keys, populated by their own item rows.
+ */
 export const AYCE_CARTA_SET: MenuCategoryKey[] = [
   'appetizers',
   'salads',
   'rice',
   'ramen',
-  'burgers',
-  'hot_dogs',
-  'cold_rolls',
-  'hot_rolls',
+  'burgers_carta',
+  'hot_dogs_carta',
+  'cold_rolls_carta',
+  'hot_rolls_carta',
   'sweet_rolls',
   'desserts',
   'wings',

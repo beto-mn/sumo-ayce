@@ -239,6 +239,13 @@
       "when": 1783209600000,
       "tag": "0033_drop_sauces_and_option_group_max_selections",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1783296000000,
+      "tag": "0034_add_ala_carte_category_keys",
+      "breakpoints": true
     }
   ]
 }

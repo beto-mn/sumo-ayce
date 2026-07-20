@@ -30,6 +30,10 @@ export type MenuCategoryKey =
   | 'extras'
   | 'drinks'
   | 'kids'
+  | 'burgers_carta'
+  | 'hot_dogs_carta'
+  | 'cold_rolls_carta'
+  | 'hot_rolls_carta'
 
 export type DrinkGroup =
   | 'jumbo_cocktails'
