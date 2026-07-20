@@ -73,14 +73,12 @@ const RAMEN_XL_GROUPS: OptionGroupSeed[] = [
     key: 'extra_protein',
     nameEs: 'Añade extra proteína',
     nameEn: 'Add extra protein',
-    // Modeled as a same-shaped 2-choice group (default $0 "no" + priced "yes")
-    // rather than a separate add-on entity type (research.md R6a) — the price
-    // is baked into the label text, matching the client's own reference image.
+    // Single-choice group kept (not removed) so staff/client can edit the
+    // label or price from the DB without a code change (client-approved).
     choices: [
-      { nameEs: 'No, gracias', nameEn: 'No, thanks', priceDelta: '0.00' },
       {
-        nameEs: 'Sí, extra proteína (+$29)',
-        nameEn: 'Yes, extra protein (+$29)',
+        nameEs: 'Extra proteína (+$29).',
+        nameEn: 'Extra protein (+$29).',
         priceDelta: '29.00',
       },
     ],
