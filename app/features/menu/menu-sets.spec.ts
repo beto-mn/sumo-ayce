@@ -26,15 +26,17 @@ describe('menu curated sets', () => {
   })
 
   it('AYCE carta lists exactly 11 categories in the confirmed order (no kids)', () => {
+    // burgers/hot_dogs/cold_rolls/hot_rolls reference the à la carte-only
+    // `_carta` category-key variants (feature 029, Part C — category split).
     expect(AYCE_CARTA_SET).toEqual([
       'appetizers',
       'salads',
       'rice',
       'ramen',
-      'burgers',
-      'hot_dogs',
-      'cold_rolls',
-      'hot_rolls',
+      'burgers_carta',
+      'hot_dogs_carta',
+      'cold_rolls_carta',
+      'hot_rolls_carta',
       'sweet_rolls',
       'desserts',
       'wings',

@@ -19,6 +19,10 @@ type CategoryKey =
   | 'extras'
   | 'drinks'
   | 'kids'
+  | 'burgers_carta'
+  | 'hot_dogs_carta'
+  | 'cold_rolls_carta'
+  | 'hot_rolls_carta'
 
 export const CATEGORIES: {
   key: CategoryKey
@@ -45,7 +49,7 @@ export const CATEGORIES: {
   },
   {
     key: 'rice',
-    nameEs: 'Arroz',
+    nameEs: 'Arroces',
     nameEn: 'Rice',
     displayOrder: 2,
     isActive: true,
@@ -153,6 +157,51 @@ export const CATEGORIES: {
       'Incluye papas a la francesa (100 g), refresco (400 ml), sushi kids (5 pzas de cualquier rollo de nuestra carta) y un yakimeshi (240 g).',
     noteEn:
       'Includes french fries (100 g), a soft drink (400 ml), sushi kids (5 pcs of any roll from our menu) and a yakimeshi (240 g).',
+  },
+  // À la carte-only combo-note variants (feature 029, Part C — category split).
+  // Same displayed bilingual name as their shared counterpart above; carry the
+  // combo note; populated exclusively by à la carte items (server/db/seeds/alaCarta.ts).
+  // The original shared rows (burgers/hot_dogs/cold_rolls/hot_rolls) stay untouched
+  // and note-less, still populated by ayceMenu.ts/expressMenu.ts.
+  {
+    key: 'burgers_carta',
+    nameEs: 'Hamburguesas',
+    nameEn: 'Burgers',
+    displayOrder: 17,
+    isActive: true,
+    noteEs: 'Incluye papas a la francesa (100 g) y refresco (400 ml).',
+    noteEn: 'Includes french fries (100 g) and a soft drink (400 ml).',
+  },
+  {
+    key: 'hot_dogs_carta',
+    nameEs: 'Hot Dogs',
+    nameEn: 'Hot Dogs',
+    displayOrder: 18,
+    isActive: true,
+    noteEs: 'Incluye papas a la francesa (100 g) y refresco (400 ml).',
+    noteEn: 'Includes french fries (100 g) and a soft drink (400 ml).',
+  },
+  {
+    key: 'cold_rolls_carta',
+    nameEs: 'Sushi Frío',
+    nameEn: 'Cold Rolls',
+    displayOrder: 19,
+    isActive: true,
+    noteEs:
+      'Incluye tu elección de yakimeshi mixto (240 g) o ensalada sweet kani (180 g), más refresco (400 ml).',
+    noteEn:
+      'Includes your choice of mixed yakimeshi (240 g) or sweet kani salad (180 g), plus a soft drink (400 ml).',
+  },
+  {
+    key: 'hot_rolls_carta',
+    nameEs: 'Sushi Caliente',
+    nameEn: 'Hot Rolls',
+    displayOrder: 20,
+    isActive: true,
+    noteEs:
+      'Incluye tu elección de yakimeshi mixto (240 g) o ensalada sweet kani (180 g), más refresco (400 ml).',
+    noteEn:
+      'Includes your choice of mixed yakimeshi (240 g) or sweet kani salad (180 g), plus a soft drink (400 ml).',
   },
 ]
 

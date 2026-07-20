@@ -53,10 +53,10 @@ return only the reference. Never the full content in chat.
 <!-- SPECKIT START -->
 ## Active Feature
 
-**Branch**: `feat/028-sauce-thermometer-watermark-refresh`
-**Plan**: `specs/028-sauce-thermometer-watermark-refresh/plan.md`
-**Spec**: `specs/028-sauce-thermometer-watermark-refresh/spec.md`
-**Data Model**: `specs/028-sauce-thermometer-watermark-refresh/data-model.md`
-**Quickstart**: `specs/028-sauce-thermometer-watermark-refresh/quickstart.md`
-**Research**: `specs/028-sauce-thermometer-watermark-refresh/research.md`
+**Branch**: `feat/029-alacarta-combo-notes-menu-copy`
+**Plan**: `specs/029-alacarta-combo-notes-menu-copy/plan.md`
+**Spec**: `specs/029-alacarta-combo-notes-menu-copy/spec.md`
+**Data Model**: `specs/029-alacarta-combo-notes-menu-copy/data-model.md`
+**Quickstart**: `specs/029-alacarta-combo-notes-menu-copy/quickstart.md`
+**Research**: `specs/029-alacarta-combo-notes-menu-copy/research.md`
 <!-- SPECKIT END -->
