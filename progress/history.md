@@ -1002,3 +1002,171 @@ in_progress → reviewing → reviewer → done" cycle, no new branch/spec folde
   `./init.sh` re-verified green after every commit and after the rewrite.
 - **Final state**: `done`, reviewer-approved for all of Parts A-D, clean
   atomic history, `./init.sh` green (1020 tests).
+
+---
+
+## CLOSED: 029 — alacarta-combo-notes-menu-copy (done, 2026-07-20)
+
+**Branch**: `feat/029-alacarta-combo-notes-menu-copy`
+**Spec folder**: `specs/029-alacarta-combo-notes-menu-copy/`
+**Final status**: `done` (reviewer APPROVED, implementer marked done)
+
+Client-requested DB-only copy/data change, 3 parts, delivered via seed edits +
+a small additive enum migration + a full delete-and-reseed cycle. No UI/schema
+change beyond the enum extension.
+
+### Spec phase (2026-07-20)
+- **Part A** — rename the shared `rice` category's `nameEs` `'Arroz'` →
+  `'Arroces'` (`nameEn: 'Rice'` kept as-is).
+- **Part B** — corrected a premise in the original ticket: a broader grep
+  (matching "5 pzs." not just "5 pzas") found `ayceMenu.ts`/`expressMenu.ts`
+  DO already inline piece-count copy on cold/hot/sweet-roll items — the
+  client's recollection was right, just a different abbreviation. À la
+  carte's own roll descriptions had zero piece-count text — new copy
+  `'10 Pzas.'` / `'10 pcs.'` appended there only.
+- **Part C** — combo category-notes (fries+soda for burgers/hot dogs;
+  yakimeshi-or-salad+soda for sushi rolls) needed to be à-la-carte-only, but
+  research confirmed all four categories (`burgers`/`hot_dogs`/`cold_rolls`/
+  `hot_rolls`) are ALSO seeded in AYCE-buffet and Express, so the existing
+  shared `menu_categories.noteEs`/`noteEn` mechanism (kids/wings precedent)
+  was not safe to reuse as-is without modality leakage.
+- **First spec_ready design** (two nullable `cartaNoteEs`/`cartaNoteEn`
+  columns + a `groupByCategory()` modality-branch) was **rejected by the
+  human** at the approval gate, who required a genuine DB category split
+  instead. `spec_author` amended `spec.md`/`plan.md`/`data-model.md`/
+  `research.md`/`tasks.md` in place (same "amend, don't restart" pattern as
+  027/028): 4 new `menu_categories` rows (`burgers_carta`/`hot_dogs_carta`/
+  `cold_rolls_carta`/`hot_rolls_carta`, same displayed name as their shared
+  counterpart, carrying the combo note), à la carte items reassigned to point
+  at them, `menu-sets.ts`'s `AYCE_CARTA_SET` updated — `server/utils/
+  menu-queries.ts` untouched (the existing `ayceModalityFilter()` already
+  isolates à la carte items for free). One technical correction surfaced
+  during the revision: "no migration" wasn't literally achievable since
+  `menu_categories.key` is a Postgres enum — a minimal additive
+  `ALTER TYPE ... ADD VALUE IF NOT EXISTS ×4` migration was required
+  (precedent: `0021`/`0022`), smaller than the originally-planned column
+  addition. Second human approval obtained on the revised design.
+
+### Implementation (commits `367034f`, `cb529c0`, `be5464e`)
+All 21 tasks (T001-T021) done in TDD order. `server/db/seeds/menuCategories.ts`
+renamed `rice.nameEs`; `alaCarta.ts` got the 19 roll-item piece-count
+appends and 25 items (`BURGERS`/`HOT_DOGS`/`COLD_ROLLS`/`HOT_ROLLS`)
+reassigned to their new `_carta` category keys; `menuCategoryKey` pgEnum
+extended in `schema.ts`/`types/menu.ts`; new migration
+`0034_add_ala_carte_category_keys.sql` (4× additive `ALTER TYPE`, hand-written
+— `drizzle-kit generate` couldn't run non-interactively due to a pre-existing
+missing-snapshot gap from migrations `0020`+, same reason `0021`/`0022` were
+also hand-written); `menu-sets.ts`'s `AYCE_CARTA_SET` updated,
+`AYCE_BUFFET_SET`/`EXPRESS_SET` left untouched. `server/utils/menu-queries.ts`
+confirmed zero-diff, matching the design's central claim.
+
+The local Docker dev DB (`sumo_ayce`) was found stale/near-empty (missing
+migrations `0020`-`0033`) — reset via `docker compose down -v && up -d`, then
+migrated through all 34 migrations and fully reseeded clean. The pre-existing
+`resetDrinkChildren()` FK-order bug (feature 027) did **not** trigger this
+time since the DB was freshly emptied (no live option groups to violate FK
+order against) — confirmed dormant under that condition, still unfixed in
+general. End-to-end verified via direct `getFullMenu()` calls against the
+reseeded local DB for all three modality/location combinations (à la carte
+shows the 4 new `_carta` categories + notes + renamed rice; AYCE-buffet and
+Express both show only the original shared, note-less categories).
+
+**Tests**: `tests/db/menu-seeds.test.ts` (11 new/updated assertions covering
+every acceptance scenario — rice rename, piece-count copy present on
+rolls/absent elsewhere, the 4 new categories' name+note, shared categories
+staying note-less, `alaCarta.ts` categoryKey reassignment, curated-set
+membership) written failing before implementation, per Article IV.
+`app/features/menu/menu-sets.spec.ts` updated for the new `AYCE_CARTA_SET`
+keys. Full suite: 115 test files / 1034 tests green. `./init.sh` green
+throughout (lint + typecheck + tests + Storybook build).
+
+### Reviewer verdict
+**APPROVED** (`progress/review_alacarta-combo-notes-menu-copy.md`) — full
+traceability across all three parts (verified by direct file reads and
+`git diff` zero-diff checks on `ayceMenu.ts`/`expressMenu.ts`/
+`menu-queries.ts`), Constitution Check gates all pass, all 21 tasks `[x]`,
+CHECKPOINTS C1-C7 pass, sensitive-data scan clean, no `[NEEDS
+CLARIFICATION]` markers left. Non-blocking notes: a pre-existing
+double-period copy quirk in some dish descriptions (inherited, not
+introduced by this feature) and the `.env`/`.env.local` precedence tooling
+bug below (correctly flagged as out-of-scope, doesn't affect this feature's
+migration correctness).
+
+### Discovered during this session: `.env.local` does not override `.env` for `pnpm db:*` commands
+`drizzle-kit`'s bundled `dotenv` loads `.env` (pointing at the real Neon dev
+DB) **before** `drizzle.config.ts`'s own `process.loadEnvFile('.env.local')`
+ever runs; Node's `loadEnvFile` does not override an already-set
+`process.env` var, so `.env.local` is effectively a no-op for `pnpm
+db:generate`/`pnpm db:migrate` whenever `.env` is also present with its own
+`DATABASE_URL` — despite `.env.local` being the documented mechanism
+(`specs/001-db-schema-drizzle`) for pointing local dev commands at the local
+Docker DB instead of Neon. (`pnpm db:seed`'s `tsx --env-file-if-exists=...`
+flag order is unaffected — `.env.local` is listed first there and wins.)
+**Workaround used**: explicit `DATABASE_URL=postgresql://sumo:sumo@localhost:5433/sumo_ayce`
+prefix on `pnpm db:migrate`/`pnpm db:seed` invocations. As a side effect,
+migration `0034` (additive, idempotent, harmless) was inadvertently also
+applied directly to the real Neon dev DB before the workaround was found —
+verified as a non-issue (no data mutation, no destructive DDL). **Still
+unfixed as of this close** (confirmed: `drizzle.config.ts` unchanged since
+commit `7f9d170`, both `.env` and `.env.local` still present on disk) — flag
+for a future infra/chore ticket.
+
+### Known issues / TODOs carried forward
+- `.env`/`.env.local` precedence bug for `drizzle-kit`-based `pnpm db:*`
+  commands (above) — unfixed.
+- Pre-existing `resetDrinkChildren()` FK-order bug (`server/db/seeds/
+  drinkGroups.ts`, from feature 027) — still unfixed; only dormant when the
+  target DB has no live option groups before a full reseed.
+- Local Docker dev DB (`sumo_ayce`) is **no longer empty** as of this
+  feature's reseed cycle — fully migrated through `0034` and reseeded; the
+  "empty local DB" carryover from feature 028's close is now resolved.
+
+### Post-approval hotfixes (2026-07-20) — double-period bug fix + Ramen XL simplification, delta-reviewed and APPROVED
+
+After the above close, the feature was reopened same-day (`reviewing`) when a
+real defect was found via direct Neon `psql` verification, plus one
+client-requested hotfix landed alongside it. Two commits (`be204a7`,
+`98943c7`) on top of the already-approved base (`92fc3c6`):
+
+- **`be204a7` — double-period typo fix (IN scope of Part B)**: Part B's
+  piece-count copy append in `server/db/seeds/alaCarta.ts` for the 19
+  COLD_ROLLS/HOT_ROLLS/SWEET_ROLLS items appended `'. 10 Pzas.'` / `'. 10
+  pcs.'` onto descriptions that already ended with a period, producing a
+  visible double period (e.g. `'...salsa de chiltepín.. 10 Pzas.'`), confirmed
+  live on production Neon for all 19 items × 2 languages (38 occurrences).
+  Fixed by search-and-replacing `'.. 10 Pzas.'` → `'. 10 Pzas.'` and `'.. 10
+  pcs.'` → `'. 10 pcs.'` for all 38 occurrences (verified count before/after
+  with a script, not a blind regex). `tests/db/menu-seeds.test.ts` strengthened
+  with a real regression guard (`.not.toContain('..')` on both description
+  fields) in addition to the pre-existing `.endsWith()` suffix checks.
+  `ayceMenu.ts`/`expressMenu.ts` confirmed zero-diff (untouched).
+- **`98943c7` — Ramen XL extra-protein simplification (client hotfix, OUT of
+  029 spec by design)**: `server/db/seeds/menuItemOptions.ts`'s
+  `extra_protein` option group reduced from 2 choices to exactly 1:
+  `nameEs: 'Extra proteína (+$29).'` / `nameEn: 'Extra protein (+$29).'`,
+  `priceDelta: '29.00'`. `tests/db/menu-item-options-seed.test.ts` updated to
+  assert the new single-choice shape. `alaCarta.ts` confirmed zero-diff
+  (untouched by this commit).
+- **Incident during the fix session (non-destructive)**: two `pnpm db:seed`
+  invocations, intended to target the local Docker DB, actually hit Neon due
+  to a corrected understanding of the `.env`/`.env.local` precedence bug (see
+  `progress/current.md` at the time — **last-listed** `--env-file` flag wins,
+  not first-listed, so plain `pnpm db:seed` resolves to Neon, not Docker).
+  Both invocations ran `seedBranches`/`seedMenuCategories` upserts with
+  unmodified seed values (no content drift), then errored out atomically on
+  the pre-existing `resetDrinkChildren()` FK-order bug before any deletion —
+  **no data was actually altered or lost on Neon**. Verifying the fix against
+  the local Docker DB directly was left incomplete in that session.
+- **Delta review verdict: APPROVED** (`progress/current.md`'s "Delta review:
+  029 post-approval hotfixes" section, reviewed 2026-07-20) — both commits
+  independently verified correct: double-period fix confirmed zero remaining
+  occurrences (grep clean) and confirmed scoped only to the 19 roll items;
+  Ramen XL change confirmed matching the exact requested labels, confirmed no
+  runtime dependency from any Storybook fixture; both commits confirmed to
+  leave `ayceMenu.ts`/`expressMenu.ts` zero-diff. `./init.sh` green on the
+  first attempt (115 test files / 1034 tests, biome + typecheck + Storybook
+  build all clean). Sensitive-data scan on the full `92fc3c6..98943c7` range:
+  one false-positive regex hit (`AKIA` substring inside the Spanish word
+  "kakiage") — no real secrets found.
+
+**Final status after delta review: `done`.**

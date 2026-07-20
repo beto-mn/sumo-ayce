@@ -69,14 +69,13 @@ describe('menu_item_option_groups seed data (feature 027, Parts C & E)', () => {
     ])
   })
 
-  it('"Añade extra proteína" offers a $0 "no" choice and a +$29 "yes" choice', () => {
+  it('"Añade extra proteína" offers exactly one +$29 choice (DB-editable by design)', () => {
     const ramenXl = DISH_OPTIONS_SEED.find(d => d.dishNameEs === 'Ramen XL')
     const extraProtein = ramenXl?.groups.find(g => g.key === 'extra_protein')
     expect(extraProtein?.choices).toEqual([
-      { nameEs: 'No, gracias', nameEn: 'No, thanks', priceDelta: '0.00' },
       {
-        nameEs: 'Sí, extra proteína (+$29)',
-        nameEn: 'Yes, extra protein (+$29)',
+        nameEs: 'Extra proteína (+$29).',
+        nameEn: 'Extra protein (+$29).',
         priceDelta: '29.00',
       },
     ])

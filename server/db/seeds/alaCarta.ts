@@ -7,10 +7,10 @@ type CategoryKey =
   | 'salads'
   | 'rice'
   | 'ramen'
-  | 'burgers'
-  | 'hot_dogs'
-  | 'cold_rolls'
-  | 'hot_rolls'
+  | 'burgers_carta'
+  | 'hot_dogs_carta'
+  | 'cold_rolls_carta'
+  | 'hot_rolls_carta'
   | 'sweet_rolls'
   | 'wings'
 
@@ -233,7 +233,7 @@ const RAMEN: AlaCartaItem[] = [
 
 const BURGERS: AlaCartaItem[] = [
   {
-    categoryKey: 'burgers',
+    categoryKey: 'burgers_carta',
     nameEs: 'Sumo',
     nameEn: 'Sumo',
     descriptionEs:
@@ -244,7 +244,7 @@ const BURGERS: AlaCartaItem[] = [
     price: '239.00',
   },
   {
-    categoryKey: 'burgers',
+    categoryKey: 'burgers_carta',
     nameEs: 'Buffalo Chicken',
     nameEn: 'Buffalo Chicken',
     descriptionEs:
@@ -255,7 +255,7 @@ const BURGERS: AlaCartaItem[] = [
     price: '239.00',
   },
   {
-    categoryKey: 'burgers',
+    categoryKey: 'burgers_carta',
     nameEs: 'Piña Asada',
     nameEn: 'Grilled Pineapple',
     descriptionEs:
@@ -266,7 +266,7 @@ const BURGERS: AlaCartaItem[] = [
     price: '239.00',
   },
   {
-    categoryKey: 'burgers',
+    categoryKey: 'burgers_carta',
     nameEs: 'Spicy Burger',
     nameEn: 'Spicy Burger',
     descriptionEs:
@@ -277,7 +277,7 @@ const BURGERS: AlaCartaItem[] = [
     price: '239.00',
   },
   {
-    categoryKey: 'burgers',
+    categoryKey: 'burgers_carta',
     nameEs: 'Tostiburger',
     nameEn: 'Tostiburger',
     descriptionEs:
@@ -296,7 +296,7 @@ const BURGERS: AlaCartaItem[] = [
 
 const HOT_DOGS: AlaCartaItem[] = [
   {
-    categoryKey: 'hot_dogs',
+    categoryKey: 'hot_dogs_carta',
     nameEs: 'Buffalo Ranch Dog',
     nameEn: 'Buffalo Ranch Dog',
     descriptionEs:
@@ -307,7 +307,7 @@ const HOT_DOGS: AlaCartaItem[] = [
     price: '239.00',
   },
   {
-    categoryKey: 'hot_dogs',
+    categoryKey: 'hot_dogs_carta',
     nameEs: 'Guacamole Dog',
     nameEn: 'Guacamole Dog',
     descriptionEs:
@@ -318,7 +318,7 @@ const HOT_DOGS: AlaCartaItem[] = [
     price: '239.00',
   },
   {
-    categoryKey: 'hot_dogs',
+    categoryKey: 'hot_dogs_carta',
     nameEs: 'Smash Dog',
     nameEn: 'Smash Dog',
     descriptionEs:
@@ -337,92 +337,92 @@ const HOT_DOGS: AlaCartaItem[] = [
 
 const COLD_ROLLS: AlaCartaItem[] = [
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'Luna Roll',
     nameEn: 'Moon Roll',
     descriptionEs:
-      'Por dentro: aguacate y pepino. Por fuera: mango, camarones rocca, pico de piña y salsa de chiltepín..',
+      'Por dentro: aguacate y pepino. Por fuera: mango, camarones rocca, pico de piña y salsa de chiltepín. 10 Pzas.',
     descriptionEn:
-      'Inside: avocado and cucumber. Outside: mango, rocca shrimp, pineapple pico and chiltepín sauce..',
+      'Inside: avocado and cucumber. Outside: mango, rocca shrimp, pineapple pico and chiltepín sauce. 10 pcs.',
     fileName: 'menu/ala-carta/moon_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'Bora Bora',
     nameEn: 'Bora Bora',
     descriptionEs:
-      'Por dentro: queso crema, pepino y camarón empanizado. Por fuera: mango y salsa de anguila..',
+      'Por dentro: queso crema, pepino y camarón empanizado. Por fuera: mango y salsa de anguila. 10 Pzas.',
     descriptionEn:
-      'Inside: cream cheese, cucumber and breaded shrimp. Outside: mango and eel sauce..',
+      'Inside: cream cheese, cucumber and breaded shrimp. Outside: mango and eel sauce. 10 pcs.',
     fileName: 'menu/ala-carta/bora_bora.webp',
     price: '119.00',
     featured: true,
     featuredOrder: 4,
   },
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'California',
     nameEn: 'California',
     descriptionEs:
-      'Por dentro: surimi, aguacate y pepino. Por fuera: mix de ajonjolí..',
+      'Por dentro: surimi, aguacate y pepino. Por fuera: mix de ajonjolí. 10 Pzas.',
     descriptionEn:
-      'Inside: surimi, avocado and cucumber. Outside: sesame mix..',
+      'Inside: surimi, avocado and cucumber. Outside: sesame mix. 10 pcs.',
     fileName: 'menu/ala-carta/california.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'Filadelfia',
     nameEn: 'Philadelphia',
     descriptionEs:
-      'Por dentro: queso crema, aguacate y salmón. Por fuera: mix de ajonjolí..',
+      'Por dentro: queso crema, aguacate y salmón. Por fuera: mix de ajonjolí. 10 Pzas.',
     descriptionEn:
-      'Inside: cream cheese, avocado and salmon. Outside: sesame mix..',
+      'Inside: cream cheese, avocado and salmon. Outside: sesame mix. 10 pcs.',
     fileName: 'menu/ala-carta/philadelphia.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'Monkey Roll',
     nameEn: 'Monkey Roll',
     descriptionEs:
-      'Por dentro: aguacate, kakiage de zanahoria y queso crema. Por fuera: láminas de plátano macho, tampico y salsa de anguila..',
+      'Por dentro: aguacate, kakiage de zanahoria y queso crema. Por fuera: láminas de plátano macho, tampico y salsa de anguila. 10 Pzas.',
     descriptionEn:
-      'Inside: avocado, carrot kakiage and cream cheese. Outside: plantain slices, tampico and eel sauce..',
+      'Inside: avocado, carrot kakiage and cream cheese. Outside: plantain slices, tampico and eel sauce. 10 pcs.',
     fileName: 'menu/ala-carta/monkey_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'White Dragon',
     nameEn: 'White Dragon',
     descriptionEs:
-      'Por dentro: camarón empanizado, piña asada y aguacate. Por fuera: queso crema, condimento de camarón y salsa panthai..',
+      'Por dentro: camarón empanizado, piña asada y aguacate. Por fuera: queso crema, condimento de camarón y salsa panthai. 10 Pzas.',
     descriptionEn:
-      'Inside: breaded shrimp, grilled pineapple and avocado. Outside: cream cheese, shrimp seasoning and pad thai sauce..',
+      'Inside: breaded shrimp, grilled pineapple and avocado. Outside: cream cheese, shrimp seasoning and pad thai sauce. 10 pcs.',
     fileName: 'menu/ala-carta/white_dragon.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'Nipon Roll',
     nameEn: 'Nipon Roll',
     descriptionEs:
-      'Por dentro: aguacate y surimi empanizado. Por fuera: queso manchego, guacamole, pico de piña y chile serrano..',
+      'Por dentro: aguacate y surimi empanizado. Por fuera: queso manchego, guacamole, pico de piña y chile serrano. 10 Pzas.',
     descriptionEn:
-      'Inside: avocado and breaded surimi. Outside: manchego cheese, guacamole, pineapple pico and serrano pepper..',
+      'Inside: avocado and breaded surimi. Outside: manchego cheese, guacamole, pineapple pico and serrano pepper. 10 pcs.',
     fileName: 'menu/ala-carta/nipon_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'cold_rolls',
+    categoryKey: 'cold_rolls_carta',
     nameEs: 'Tiki Thai Roll',
     nameEn: 'Tiki Thai Roll',
     descriptionEs:
-      'Por dentro: camarón empanizado, pepino y piña. Por fuera: aguacate, ajonjolí y salsa panthai..',
+      'Por dentro: camarón empanizado, pepino y piña. Por fuera: aguacate, ajonjolí y salsa panthai. 10 Pzas.',
     descriptionEn:
-      'Inside: breaded shrimp, cucumber and pineapple. Outside: avocado, sesame and pad thai sauce..',
+      'Inside: breaded shrimp, cucumber and pineapple. Outside: avocado, sesame and pad thai sauce. 10 pcs.',
     fileName: 'menu/ala-carta/tiki_thai_roll.webp',
     price: '119.00',
   },
@@ -433,103 +433,103 @@ const COLD_ROLLS: AlaCartaItem[] = [
 
 const HOT_ROLLS: AlaCartaItem[] = [
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Kekoto',
     nameEn: 'Kekoto',
     descriptionEs:
-      'Por dentro: camarón empanizado, queso crema y aguacate. Por fuera: empanizado, tampico y mayonesa chipotle..',
+      'Por dentro: camarón empanizado, queso crema y aguacate. Por fuera: empanizado, tampico y mayonesa chipotle. 10 Pzas.',
     descriptionEn:
-      'Inside: breaded shrimp, cream cheese and avocado. Outside: breaded with tampico and chipotle mayo..',
+      'Inside: breaded shrimp, cream cheese and avocado. Outside: breaded with tampico and chipotle mayo. 10 pcs.',
     fileName: 'menu/ala-carta/kekoto.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Coco Roll',
     nameEn: 'Coco Roll',
     descriptionEs:
-      'Por dentro: aguacate, piña, queso crema y camarón empanizado. Por fuera: empanizado con panko y coco, bañado de salsa piña chiltepín. Sushi sin alga..',
+      'Por dentro: aguacate, piña, queso crema y camarón empanizado. Por fuera: empanizado con panko y coco, bañado de salsa piña chiltepín. Sushi sin alga. 10 Pzas.',
     descriptionEn:
-      'Inside: avocado, pineapple, cream cheese and breaded shrimp. Outside: panko and coconut breading, drizzled with chipotle-pineapple sauce. Seaweed-free..',
+      'Inside: avocado, pineapple, cream cheese and breaded shrimp. Outside: panko and coconut breading, drizzled with chipotle-pineapple sauce. Seaweed-free. 10 pcs.',
     fileName: 'menu/ala-carta/coco_roll.webp',
     price: '119.00',
     featured: true,
     featuredOrder: 5,
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Sumo Roll',
     nameEn: 'Sumo Roll',
     descriptionEs:
-      'Por dentro: aguacate, queso manchego y tender. Por fuera: empanizado y salsa de preferencia a escoger..',
+      'Por dentro: aguacate, queso manchego y tender. Por fuera: empanizado y salsa de preferencia a escoger. 10 Pzas.',
     descriptionEn:
-      'Inside: avocado, manchego cheese and chicken tender. Outside: breaded with your choice of sauce..',
+      'Inside: avocado, manchego cheese and chicken tender. Outside: breaded with your choice of sauce. 10 pcs.',
     fileName: 'menu/ala-carta/sumo_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Rikishi Roll',
     nameEn: 'Rikishi Roll',
     descriptionEs:
-      'Por dentro: base de arroz frito, queso crema y camarón empanizado. Por fuera: alga nori empanizado y bañado en salsa de anguila..',
+      'Por dentro: base de arroz frito, queso crema y camarón empanizado. Por fuera: alga nori empanizado y bañado en salsa de anguila. 10 Pzas.',
     descriptionEn:
-      'Inside: fried rice base, cream cheese and breaded shrimp. Outside: breaded nori seaweed drizzled with eel sauce..',
+      'Inside: fried rice base, cream cheese and breaded shrimp. Outside: breaded nori seaweed drizzled with eel sauce. 10 pcs.',
     fileName: 'menu/ala-carta/rikishi_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Más de lo Mismo',
     nameEn: 'More of the Same',
     descriptionEs:
-      'Por dentro: base de arroz frito, camarón empanizado y aguacate. Por fuera: empanizado, queso crema, tampico, chile serrano bañado en salsa de anguila..',
+      'Por dentro: base de arroz frito, camarón empanizado y aguacate. Por fuera: empanizado, queso crema, tampico, chile serrano bañado en salsa de anguila. 10 Pzas.',
     descriptionEn:
-      'Inside: fried rice base, breaded shrimp and avocado. Outside: breaded, cream cheese, tampico and serrano pepper drizzled with eel sauce..',
+      'Inside: fried rice base, breaded shrimp and avocado. Outside: breaded, cream cheese, tampico and serrano pepper drizzled with eel sauce. 10 pcs.',
     fileName: 'menu/ala-carta/more_of_the_same.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Tempura Roll',
     nameEn: 'Tempura Roll',
     descriptionEs:
-      'Por dentro: aguacate y camarón empanizado. Por fuera: empanizado, queso manchego, mayonesa chipotle, salsa de anguila y cebollín. Sushi sin alga..',
+      'Por dentro: aguacate y camarón empanizado. Por fuera: empanizado, queso manchego, mayonesa chipotle, salsa de anguila y cebollín. Sushi sin alga. 10 Pzas.',
     descriptionEn:
-      'Inside: avocado and breaded shrimp. Outside: breaded with manchego cheese, chipotle mayo, eel sauce and green onion. Seaweed-free..',
+      'Inside: avocado and breaded shrimp. Outside: breaded with manchego cheese, chipotle mayo, eel sauce and green onion. Seaweed-free. 10 pcs.',
     fileName: 'menu/ala-carta/tempura_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Texas Roll',
     nameEn: 'Texas Roll',
     descriptionEs:
-      'Por dentro: carne de res, manchego, aguacate, chile serrano y cebollín. Por fuera: empanizado, tiritas de papas fritas, mayonesa chipotle y salsa BBQ..',
+      'Por dentro: carne de res, manchego, aguacate, chile serrano y cebollín. Por fuera: empanizado, tiritas de papas fritas, mayonesa chipotle y salsa BBQ. 10 Pzas.',
     descriptionEn:
-      'Inside: beef, manchego, avocado, serrano pepper and green onion. Outside: breaded with french fry strips, chipotle mayo and BBQ sauce..',
+      'Inside: beef, manchego, avocado, serrano pepper and green onion. Outside: breaded with french fry strips, chipotle mayo and BBQ sauce. 10 pcs.',
     fileName: 'menu/ala-carta/texas_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Manchego Roll',
     nameEn: 'Manchego Roll',
     descriptionEs:
-      'Por dentro: queso crema, aguacate, surimi empanizado, kakiage de zanahoria. Por fuera: queso manchego derretido con chiles toreados y cebollín. Sushi sin alga..',
+      'Por dentro: queso crema, aguacate, surimi empanizado, kakiage de zanahoria. Por fuera: queso manchego derretido con chiles toreados y cebollín. Sushi sin alga. 10 Pzas.',
     descriptionEn:
-      'Inside: cream cheese, avocado, breaded surimi and carrot kakiage. Outside: melted manchego cheese with roasted chiles and green onion. Seaweed-free..',
+      'Inside: cream cheese, avocado, breaded surimi and carrot kakiage. Outside: melted manchego cheese with roasted chiles and green onion. Seaweed-free. 10 pcs.',
     fileName: 'menu/ala-carta/manchego_roll.webp',
     price: '119.00',
   },
   {
-    categoryKey: 'hot_rolls',
+    categoryKey: 'hot_rolls_carta',
     nameEs: 'Banana Frie',
     nameEn: 'Banana Frie',
     descriptionEs:
-      'Por dentro: queso crema y surimi. Por fuera: plátano macho frito y salsa de anguila..',
+      'Por dentro: queso crema y surimi. Por fuera: plátano macho frito y salsa de anguila. 10 Pzas.',
     descriptionEn:
-      'Inside: cream cheese and surimi. Outside: fried plantain and eel sauce..',
+      'Inside: cream cheese and surimi. Outside: fried plantain and eel sauce. 10 pcs.',
     fileName: 'menu/ala-carta/banana_fried_roll.webp',
     price: '119.00',
   },
@@ -543,9 +543,9 @@ const SWEET_ROLLS: AlaCartaItem[] = [
     nameEs: 'Canela Roll',
     nameEn: 'Cinnamon Roll',
     descriptionEs:
-      'Por dentro: queso crema y plátano macho. Por fuera: tempura dulce, espolvoreado con azúcar y canela. Bañado en salsa de chocolate..',
+      'Por dentro: queso crema y plátano macho. Por fuera: tempura dulce, espolvoreado con azúcar y canela. Bañado en salsa de chocolate. 10 Pzas.',
     descriptionEn:
-      'Inside: cream cheese and plantain. Outside: sweet tempura dusted with sugar and cinnamon, drizzled with chocolate sauce..',
+      'Inside: cream cheese and plantain. Outside: sweet tempura dusted with sugar and cinnamon, drizzled with chocolate sauce. 10 pcs.',
     fileName: 'menu/ala-carta/cinnamon_roll.webp',
     featured: true,
     featuredOrder: 6,
@@ -556,9 +556,9 @@ const SWEET_ROLLS: AlaCartaItem[] = [
     nameEs: 'Beach Roll',
     nameEn: 'Beach Roll',
     descriptionEs:
-      'Por dentro: queso crema y mango. Por fuera: plátano macho. Bañado en salsa de chocolate..',
+      'Por dentro: queso crema y mango. Por fuera: plátano macho. Bañado en salsa de chocolate. 10 Pzas.',
     descriptionEn:
-      'Inside: cream cheese and mango. Outside: plantain, drizzled with chocolate sauce..',
+      'Inside: cream cheese and mango. Outside: plantain, drizzled with chocolate sauce. 10 pcs.',
     fileName: 'menu/ala-carta/beach_roll.webp',
     price: '119.00',
   },
@@ -644,10 +644,10 @@ export async function seedAlaCarta() {
     'salads',
     'rice',
     'ramen',
-    'burgers',
-    'hot_dogs',
-    'cold_rolls',
-    'hot_rolls',
+    'burgers_carta',
+    'hot_dogs_carta',
+    'cold_rolls_carta',
+    'hot_rolls_carta',
     'sweet_rolls',
     'wings',
   ]

@@ -64,7 +64,7 @@ export const menuLocationType = pgEnum('menu_location_type', [
   'both',
 ])
 
-// fixed, code-referenced category keys (17) — English identifiers
+// fixed, code-referenced category keys (21) — English identifiers
 export const menuCategoryKey = pgEnum('menu_category_key', [
   'appetizers',
   'salads',
@@ -83,6 +83,11 @@ export const menuCategoryKey = pgEnum('menu_category_key', [
   'extras',
   'drinks',
   'kids',
+  // à la carte-only combo-note variants (feature 029, Part C — category split).
+  'burgers_carta',
+  'hot_dogs_carta',
+  'cold_rolls_carta',
+  'hot_rolls_carta',
 ])
 
 // ─── Tables ──────────────────────────────────────────────────────────────────
